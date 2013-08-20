@@ -46,7 +46,7 @@ public class AudioActivity extends Activity {
 	
 	private Timer timer = null;
 	private TimerTask task = null;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -106,4 +106,6 @@ public class AudioActivity extends Activity {
 		AudioRecordFunc func = AudioRecordFunc.getInstance();
 		func.stopRecordAndFile();
 	}
+	
+	
 }

@@ -27,7 +27,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.phoenix.police.Police"
+            android:name="com.phoenix.police.MainScene"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,27 +36,7 @@
                 <category android:name="android.intent.category.MONKEY"/>
             </intent-filter>
         </activity>
-        <activity 
-            android:name=".CameraActivity">
-            <intent-filter >
-                <action android:name="com.phoenix.police.CameraActivity"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
-        <activity 
-            android:name=".VideoActivity">
-            <intent-filter >
-                <action android:name="com.phoenix.police.VideoActivity"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
-        <activity 
-            android:name=".AudioActivity">
-            <intent-filter >
-                <action android:name="com.phoenix.police.AudioActivity"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
+
         <activity 
             android:name=".FilesActivity"
             >

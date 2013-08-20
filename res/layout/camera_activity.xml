@@ -8,35 +8,90 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2"
+        android:layout_weight="3"
         android:background="@android:color/black"
-        android:layout_margin="5dp"
         >
         <RelativeLayout
 	        android:id="@+id/camera"
-	        android:layout_width="match_parent"
-	        android:layout_height="match_parent"
-	        android:background="@android:color/black"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:background="@android:color/white"
 	        android:layout_margin="5dp"
-        >
+	        android:padding="5dp"
+	        android:layout_centerInParent="true"
+        	>
+        		<LinearLayout 
+        		    android:id="@+id/bar_widget"
+        		    android:layout_width="match_parent"
+			        android:layout_height="36dp"
+			        android:layout_alignParentTop="true"
+			        android:layout_alignParentLeft="true"
+			        android:visibility="invisible"
+			        >
+			        <Button 
+			            android:id="@+id/resolution"
+			            android:layout_width="wrap_content"
+			            android:layout_height="wrap_content"
+			            />
+			        <ImageButton 
+			            android:id="@+id/flashmode"
+			            android:layout_width="wrap_content"
+			            android:layout_height="wrap_content"
+			            android:src="@drawable/ic_flash_auto_holo_light"/>
+    			</LinearLayout>
+    	        <LinearLayout 
+    	            android:id="@+id/bar_timer"
+		            android:layout_width="wrap_content"
+		            android:layout_height="24dp"
+		            android:orientation="horizontal"
+		            android:layout_alignParentBottom="true"
+		            android:layout_alignParentRight="true"
+		            android:visibility="invisible"
+		            >
+		            <TextView 
+		                android:id="@+id/recordType"
+		                android:layout_width="wrap_content"
+		                android:layout_height="wrap_content"/>
+		            <ImageButton
+			            android:id="@+id/redPoint"
+			            android:layout_width="24dp"
+			            android:layout_height="24dp"
+			            android:scaleType="fitCenter"
+			            android:src="@drawable/red_point"
+			            android:background="#00000000"/>
+		       		 <TextView 
+			            android:id="@+id/timeCount"
+			            android:layout_height="wrap_content"
+			            android:layout_width="wrap_content"
+			            android:text="@string/timeCount"
+		            />
+       			 </LinearLayout>
         </RelativeLayout>
+        
         <ImageButton
             android:id="@+id/qiezi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:background="@drawable/qiezi_button_press"/>
-        <ImageButton
-            android:id="@+id/flashmode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:background="@drawable/ic_flash_auto_holo_light"/>
+            android:layout_centerInParent="true"
+            android:background="@drawable/qiezi_button_press"
+            />
+
     </RelativeLayout>
-	<include layout= "@layout/main_menus"
+	<RelativeLayout
 	    android:layout_width="match_parent"
 	    android:layout_height="0dp"
-	    android:layout_weight="1"/>
+	    android:layout_weight="1">
+	   <Button 
+	       android:id="@+id/setting"
+	       android:layout_width="wrap_content"
+	       android:layout_height="wrap_content"
+	       android:layout_alignParentLeft = "true"
+	       android:background="@drawable/setting"/>
+	   <Button 
+	       android:id="@+id/files"
+	       android:layout_width="wrap_content"
+	       android:layout_height="wrap_content"
+	       android:layout_alignParentRight = "true"
+	       android:background="@drawable/files"/>
+	</RelativeLayout>
 </LinearLayout>

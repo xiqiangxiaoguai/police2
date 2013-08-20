@@ -156,16 +156,16 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 				parameters.setPreviewSize(Constants.resolution_with_2, Constants.resolution_height_2); // 指定preview的大小
 				// 这两个属性 如果这两个属性设置的和真实手机的不一样时，就会报错
 
-				// 横竖屏镜头自动调整
-				if (this.getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
-					parameters.set("orientation", "portrait"); //
-					parameters.set("rotation", 0); // 镜头角度转90度（默认摄像头是横拍）
-					myCamera.setDisplayOrientation(180); // 在2.2以上可以使用
-				} else// 如果是横屏
-				{
+//				// 横竖屏镜头自动调整
+//				if (this.getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
 					parameters.set("orientation", "landscape"); //
-					myCamera.setDisplayOrientation(0); // 在2.2以上可以使用
-				}
+					parameters.set("rotation", -90); // 镜头角度转90度（默认摄像头是横拍）
+					myCamera.setDisplayOrientation(180); // 在2.2以上可以使用
+//				} else// 如果是横屏
+//				{
+//					parameters.set("orientation", "landscape"); //
+//					myCamera.setDisplayOrientation(0); // 在2.2以上可以使用
+//				}
 
 				/* 视频流编码处理 */
 				// 添加对视频流处理函数
