@@ -11,13 +11,11 @@
         android:layout_weight="3"
         android:background="@android:color/black"
         >
-        <RelativeLayout
+       <RelativeLayout
 	        android:id="@+id/camera"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:background="@android:color/white"
-	        android:layout_margin="5dp"
-	        android:padding="5dp"
+	        android:background="@android:color/black"
 	        android:layout_centerInParent="true"
         	>
         		<LinearLayout 
@@ -37,7 +35,7 @@
 			            android:id="@+id/flashmode"
 			            android:layout_width="wrap_content"
 			            android:layout_height="wrap_content"
-			            android:src="@drawable/ic_flash_auto_holo_light"/>
+			            android:src="@drawable/ic_flash_off_holo_light"/>
     			</LinearLayout>
     	        <LinearLayout 
     	            android:id="@+id/bar_timer"
@@ -47,6 +45,7 @@
 		            android:layout_alignParentBottom="true"
 		            android:layout_alignParentRight="true"
 		            android:visibility="invisible"
+		            android:layout_marginRight="10dp"
 		            >
 		            <TextView 
 		                android:id="@+id/recordType"
@@ -66,16 +65,9 @@
 			            android:text="@string/timeCount"
 		            />
        			 </LinearLayout>
+
         </RelativeLayout>
         
-        <ImageButton
-            android:id="@+id/qiezi"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:background="@drawable/qiezi_button_press"
-            />
-
     </RelativeLayout>
 	<RelativeLayout
 	    android:layout_width="match_parent"

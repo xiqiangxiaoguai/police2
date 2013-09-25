@@ -8,5 +8,12 @@
         android:layout_gravity="center"
         android:background="#000000"
         android:flipInterval="30"
-        android:persistentDrawingCache="animation" />
+        android:persistentDrawingCache="animation"
+        android:layout_marginBottom="80dp" />
+    <Button android:id="@+id/back"
+	    android:layout_width="match_parent"
+	    android:layout_height="80dp"
+	    android:gravity="center"
+	    android:text="@string/back"
+	    android:layout_alignParentBottom="true"/>
 </RelativeLayout>

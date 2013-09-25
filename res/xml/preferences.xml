@@ -1,37 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
+    <PreferenceCategory android:title="@string/function">
+         <com.phoenix.setting.VolumeSeekBarPreference
+            android:key="setting_function_valume"
+ 			android:title="@string/valume"
+ 			android:summary="@string/valume_modify"
+ 			android:dialogMessage="@string/valume_modify"
+ 			android:defaultValue="5"
+ 			android:text="@string/baifenbi"
+ 			android:max="100"
+ 			android:icon="@drawable/ic_settings_sound"
+         />
+         <com.phoenix.setting.BrightnessSeekBarPreference
+            android:key="setting_function_brightness"
+ 			android:title="@string/brightness"
+ 			android:summary="@string/brightness_modify"
+ 			android:dialogMessage="@string/brightness_modify"
+ 			android:defaultValue="60"
+ 			android:text="@string/baifenbi"
+ 			android:max="100"
+ 			android:icon="@drawable/ic_appwidget_settings_brightness_full_holo"
+         />
+         <ListPreference 
+			android:key="setting_function_resolution"
+			android:title="@string/video_resolution"
+			android:summary="@string/video_resolution_modify"
+			android:entries="@array/resolution"
+			android:entryValues="@array/resolution_value"
+			android:dialogTitle="@string/video_resolution"
+			android:defaultValue="0"
+			android:icon="@drawable/ic_settings_dock"
+             />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/wireless2" >
-
-        
         <SwitchPreference
                 android:key="setting_wifi_switch_preference"
-                android:title="@string/wifi">
+                android:title="@string/wifi"
+                android:icon="@drawable/ic_wifi_signal_4">
         </SwitchPreference>
         <PreferenceScreen 
             android:key="setting_wifi_preference"
-            android:title="@string/wifi_setting">
+            android:title="@string/wifi_setting"
+            android:icon="@drawable/ic_wifi_signal_4">
             <PreferenceCategory 
                 android:title="@string/wifi" >
    			 </PreferenceCategory>
         </PreferenceScreen>
         <SwitchPreference
                 android:key="setting_3g_switch_preference"
-                android:title="@string/threeg" />
+                android:title="@string/threeg" 
+                android:icon="@drawable/ic_network_signal_4"/>
         
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/device" >
 
-        <PreferenceScreen
+        <Preference
             android:key="setting_storage_preference"
-            android:title="@string/storage">
-            <Preference />
-        </PreferenceScreen>
+            android:title="@string/storage"
+            android:icon="@drawable/ic_settings_storage">
+        </Preference>
 
         <PreferenceScreen
             android:key="setting_about_preference"
-            android:title="@string/about" />
+            android:title="@string/about" 
+            android:icon="@drawable/ic_tab_selected_all"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

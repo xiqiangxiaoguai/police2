@@ -1,14 +1,15 @@
 package com.phoenix.police;
 
-import java.io.FileFilter;
-
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.net.wifi.p2p.WifiP2pManager.ActionListener;
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 
 public class FilesActivity extends Activity implements ActionBar.TabListener{
 
@@ -24,13 +25,20 @@ public class FilesActivity extends Activity implements ActionBar.TabListener{
 		
 		ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		
 		actionBar.addTab(actionBar.newTab().setText(R.string.camera)
 				.setTabListener(this));
 		actionBar.addTab(actionBar.newTab().setText(R.string.video)
 				.setTabListener(this));
 		actionBar.addTab(actionBar.newTab().setText(R.string.record)
 				.setTabListener(this));
+		
+		Button button = (Button) findViewById(R.id.back);
+		button.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				finish();
+			}
+		});
 	}
 
 	@Override
@@ -75,7 +83,16 @@ public class FilesActivity extends Activity implements ActionBar.TabListener{
 
 	@Override
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-		// TODO Auto-generated method stub
 		
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()){
+		case android.R.id.home:
+			onBackPressed();
+			break;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 }

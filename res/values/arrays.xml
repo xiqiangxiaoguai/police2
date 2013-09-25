@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="resolution">
+        <item >480P</item>
+        <item >720P</item>
+        <item >1080P</item>
+    </string-array>
+    <string-array name="resolution_value">
+        <item >0</item>
+        <item >1</item>
+        <item >2</item>
+    </string-array>
+</resources>

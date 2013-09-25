@@ -7,13 +7,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.zip.DataFormatException;
 
-import com.phoenix.data.Constants;
- 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.util.Log;
+//import android.widget.Toast;
+
+import com.phoenix.data.Constants;
  
 public class AudioRecordFunc { 
 	
@@ -27,7 +29,7 @@ public class AudioRecordFunc {
     private String AudioName = "";  
      
     //NewAudioName可播放的音频文件  
-    private String NewAudioName = "";
+    public String NewAudioName = "";
      
     private AudioRecord audioRecord;  
     private boolean isRecord = false;// 设置正在录制的状态  
@@ -35,13 +37,15 @@ public class AudioRecordFunc {
     private static final String audioPath = "police/audio/";
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
     private static AudioRecordFunc mInstance; 
-          
+    private static Context mContext;
+    
     private AudioRecordFunc(){
          
     }   
      
-    public synchronized static AudioRecordFunc getInstance()
+    public synchronized static AudioRecordFunc getInstance(Context context)
     {
+    	mContext = context;
         if(mInstance == null) 
             mInstance = new AudioRecordFunc(); 
         return mInstance; 
@@ -67,7 +71,6 @@ public class AudioRecordFunc {
                 isRecord = true;  
                 // 开启音频文件写入线程  
                 new Thread(new AudioRecordThread()).start();  
-                 
                 return true;
             }
              
@@ -109,7 +112,9 @@ public class AudioRecordFunc {
         File folderPath = new File(AudioFileFunc.getWavFilePath() + audioPath);
         if(!folderPath.exists())
         	folderPath.mkdirs();
-        NewAudioName = AudioFileFunc.getWavFilePath() + audioPath + dateFormat.format(new Date()) + ".wav"; 
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(Constants.SETTING_PREFERENCES, Context.MODE_PRIVATE);
+        String police_num = sharedPreferences.getString(Constants.SHARED_POL_NUM, Constants.SHARED_POL_NUM_DEF);
+        NewAudioName = AudioFileFunc.getWavFilePath() + audioPath + Constants.AUDIO_NAME_HEAD + police_num + "_" + dateFormat.format(new Date()) +".wav";
          
         // 获得缓冲区字节大小  
         bufferSizeInBytes = AudioRecord.getMinBufferSize(AudioFileFunc.AUDIO_SAMPLE_RATE,  
@@ -146,15 +151,17 @@ public class AudioRecordFunc {
             }  
             fos = new FileOutputStream(file);// 建立一个可存取字节的文件  
         } catch (Exception e) {  
-            e.printStackTrace();  
+            e.printStackTrace(); 
+//            Toast.makeText(mContext, R.string.audio_fail, Toast.LENGTH_SHORT).show();
         }  
         while (isRecord == true) {  
             readsize = audioRecord.read(audiodata, 0, bufferSizeInBytes);  
             if (AudioRecord.ERROR_INVALID_OPERATION != readsize && fos!=null) {  
                 try {  
-                    fos.write(audiodata);  
+                    fos.write(audiodata);
                 } catch (IOException e) {  
-                    e.printStackTrace();  
+                    e.printStackTrace(); 
+//                    Toast.makeText(mContext, R.string.audio_fail, Toast.LENGTH_SHORT).show();
                 }  
             }  
         }  
@@ -162,8 +169,12 @@ public class AudioRecordFunc {
             if(fos != null)
                 fos.close();// 关闭写入流  
         } catch (IOException e) {  
-            e.printStackTrace();  
+            e.printStackTrace(); 
+//            Toast.makeText(mContext, R.string.audio_fail, Toast.LENGTH_SHORT).show();
         }  
+        
+//        Toast.makeText(mContext, R.string.audio_success, Toast.LENGTH_SHORT).show();
+        
     }  
    
     // 这里得到可播放的音频文件  

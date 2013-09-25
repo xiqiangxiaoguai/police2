@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import android.annotation.SuppressLint;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -117,34 +117,26 @@ public class PlayerView implements OnBufferingUpdateListener,
                 
 
                 btnPlay = (ImageView) view.findViewById(R.id.palyer_control_paly);
+                btnPlay.setClickable(true);
                 btnPlay.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                                if(PlayerView.STATE ==PlayerView.STOP){
-                                        btnPlay.setImageResource(R.drawable.stop);        
+                                if(STATE ==STOP){
                                         playUrl();
-                                        
                                         layout_title.startAnimation(getAnimUp());
                                         layout_control.startAnimation(getAnimDown());
                                         isAnim = true;
-                                        btnPlay.setClickable(false);
                                         
-                                        PlayerView.STATE=PlayerView.PLAYING;
                                 }else
-                                if(PlayerView.STATE==PlayerView.PLAYING){
-                                        btnPlay.setImageResource(R.drawable.end);
+                                if(STATE==PLAYING){
                                         pause();
-                                        PlayerView.STATE=PlayerView.PAUSE;
                                         
-                                }else if(PlayerView.STATE==PlayerView.PAUSE){
-                                        btnPlay.setImageResource(R.drawable.end);
+                                }else if(STATE==PAUSE){
                                         play();
                                         
                                         layout_title.startAnimation(getAnimUp());
                                         layout_control.startAnimation(getAnimDown());
                                         isAnim = true;
-                                        btnPlay.setClickable(false);
-                                        PlayerView.STATE=PlayerView.PLAYING;
                                 }
                         }
                 });
@@ -164,12 +156,10 @@ public class PlayerView implements OnBufferingUpdateListener,
                                                 layout_title.startAnimation(getAnimUp());
                                                 layout_control.startAnimation(getAnimDown());
                                                 isAnim = true;
-                                                btnPlay.setClickable(false);
                                         } else {
                                                 layout_title.clearAnimation();
                                                 layout_control.clearAnimation();
                                                 isAnim = false;
-                                                btnPlay.setClickable(true);
                                         }
                                 }
                                 return true;
@@ -224,6 +214,8 @@ public class PlayerView implements OnBufferingUpdateListener,
                 } catch (IOException e) {
                         e.printStackTrace();
                 }
+                STATE = PLAYING;
+                btnPlay.setImageResource(R.drawable.audio_pause);
         }
         /**
          * 播放
@@ -231,6 +223,8 @@ public class PlayerView implements OnBufferingUpdateListener,
         public void play()
         {
                 mediaPlayer.start();
+                STATE = PLAYING;
+                btnPlay.setImageResource(R.drawable.audio_pause);
         }
 
         /**
@@ -239,6 +233,8 @@ public class PlayerView implements OnBufferingUpdateListener,
         public void pause()
         {
                 mediaPlayer.pause();
+                STATE = PAUSE;
+                btnPlay.setImageResource(R.drawable.audio_play);
         }
         /**
          * 停止
@@ -252,8 +248,8 @@ public class PlayerView implements OnBufferingUpdateListener,
 
             skbProgress.setProgress(0);
             thumb.setVisibility(View.VISIBLE);
-            PlayerView.STATE =PlayerView.STOP;
-                    btnPlay.setImageResource(R.drawable.end);
+            STATE =STOP;
+            btnPlay.setImageResource(R.drawable.audio_play);
         } 
         }
         
@@ -326,7 +322,7 @@ public class PlayerView implements OnBufferingUpdateListener,
          * @param paramUri        资源路径
          * @return Bitmap
          */
-	@SuppressLint("NewApi")
+	
 	private Bitmap getThumbnail(Context paramContext, long paramLong,
 			Uri paramUri) {
 		MediaMetadataRetriever localMediaMetadataRetriever = new MediaMetadataRetriever();
@@ -394,5 +390,5 @@ public class PlayerView implements OnBufferingUpdateListener,
         public static final int PLAYING=1;//播放中
         public static final int PAUSE=2;//暂停
         public static final int STOP=3;//停止
-        public static int STATE=STOP;
+        public int STATE=STOP;
 }

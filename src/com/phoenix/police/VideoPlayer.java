@@ -21,6 +21,13 @@ public class VideoPlayer extends Activity{
 	@Override
 	protected void onStart() {
 		super.onStart();
-		player.stop();
+//		player.stop();
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if(null != player & player.STATE == PlayerView.PLAYING)
+			player.pause();
 	}
 }

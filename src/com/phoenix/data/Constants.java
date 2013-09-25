@@ -5,29 +5,34 @@ import com.phoenix.police.R;
 public class Constants {
 	public static final boolean LOG_SWITCH = true;
 	
-	public static final int resolution_with_1 = 320; 
-	public static final int resolution_with_2 = 640;
-	public static final int resolution_with_3 = 1280;
-	public static final int resolution_with_4 = 1920;
-	public static final int resolution_with_5 = 2592;
+	public static final int resolution_with_1 = 720;
+	public static final int resolution_with_2 = 1280;
+	public static final int resolution_with_3 = 1920;
+	public static final int resolution_with_4 = 2592;
 	
-	public static final int resolution_height_1 = 240;
-	public static final int resolution_height_2 = 480;
-	public static final int resolution_height_3 = 720;
-	public static final int resolution_height_4 = 1080;
-	public static final int resolution_height_5 = 1944;
+	public static final int resolution_height_1 = 480;
+	public static final int resolution_height_2 = 720;
+	public static final int resolution_height_3 = 1080;
+	public static final int resolution_height_4 = 1944;
 	
 	public static final int[][] resolutions = 
-			new int[][]{{resolution_with_1, resolution_height_1}
+			new int[][]{
+						{resolution_with_1, resolution_height_1}
 						,{resolution_with_2, resolution_height_2}
 						,{resolution_with_3, resolution_height_3}
-						,{resolution_with_4, resolution_height_4}
-						,{resolution_with_5, resolution_height_5}};
+						,{resolution_with_4, resolution_height_4}};
 	
-	public static final String CAMERA_PATH = "/sdcard/police/camera/";
-	public static final String VIDEO_PATH = "/sdcard/police/video/";
-	public static final String VIDEO_THUMBNAIL_PATH = "/sdcard/police/video/thumbnail/";
-	public static final String AUDIO_PATH = "/sdcard/police/audio/";
+	public static final String CAMERA_PATH = "/mnt/sdcard/police/camera/";
+	public static final String VIDEO_PATH = "/mnt/sdcard/police/video/";
+	public static final String VIDEO_THUMBNAIL_PATH = "/mnt/sdcard/police/video/thumbnail/";
+	public static final String AUDIO_PATH = "/mnt/sdcard/police/audio/";
+	
+	public static final String CAMERA_NAME_HEAD = "IMG_";
+	public static final String VIDEO_NAME_HEAD = "VID_";
+	public static final String AUDIO_NAME_HEAD = "AUD";
+	
+	public static final String LOG_PATH = "/mnt/sdcard/police/log/";
+	public static final String LOG_NAME = "log.txt";
 	
 	public static final String DEVICE_NAME = "Phenix ÷≥÷÷’∂À";
 	public static final String ANDROID_VERSION = "Android 4.1";
@@ -37,15 +42,29 @@ public class Constants {
 	public static final int MODE_VIDEO = 1;
 	public static final int MODE_AUDIO = 2;
 	
-	public static final String SETTING_PREFERENCES = "setting_preferences";
-	public static final String PREFERENCES_CAMERA_RESOLUTION = "camera_resolution";
-	public static final String PREFERENCES_VIDEO_RESOLUTION = "video_resolution";
+	public static final String SETTING_PREFERENCES = "com.phoenix.police_preferences";
+	public static final String PREFERENCES_RESOLUTION = "setting_function_resolution";
 	public static final String PREFERENCES_FLASH_MODE = "flash_mode";
 	
 	public static final int[] flash_resource = new int[]{
-			R.drawable.ic_flash_auto_holo_light
-			,R.drawable.ic_flash_on_holo_light
+			R.drawable.ic_flash_on_holo_light
 			,R.drawable.ic_flash_off_holo_light
 			};
+	
+	public static final String ACTION_CAMERA_START = "com.phoenix.police.START_CAMERA";
+	public static final String ACTION_VIDEO_START = "com.phoenix.police.START_VIDEO";
+	public static final String ACTION_VIDEO_END = "com.phoenix.police.END_VIDEO";
+	public static final String ACTION_AUDIO_START = "com.phoenix.police.START_AUDIO";
+	public static final String ACTION_AUDIO_END = "com.phoenix.police.END_AUDIO";
+	
+	public static final String SHARED_VOLUME = "shared_volume";
+	public static final String SHARED_BRIGHTNESS = "shared_brightness";
+	
+	public static final String SHARED_DEV_NUM = "device_num";
+	public static final String SHARED_DEV_NUM_DEF = "DSJA900001";
+	public static final String SHARED_POL_NUM = "police_num";
+	public static final String SHARED_POL_NUM_DEF = "XXXX0001";
+	
+	public static final int TIME_AUTO_SAVED = 10;//min
 	
 }

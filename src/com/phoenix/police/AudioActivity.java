@@ -99,11 +99,11 @@ public class AudioActivity extends Activity {
 	}
 	
 	private void startRecord(){
-		AudioRecordFunc func = AudioRecordFunc.getInstance();
+		AudioRecordFunc func = AudioRecordFunc.getInstance(this);
 		func.startRecordAndFile();
 	}
 	private void stopRecord(){
-		AudioRecordFunc func = AudioRecordFunc.getInstance();
+		AudioRecordFunc func = AudioRecordFunc.getInstance(this);
 		func.stopRecordAndFile();
 	}
 	

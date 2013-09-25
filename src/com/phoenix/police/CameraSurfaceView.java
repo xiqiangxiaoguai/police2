@@ -3,18 +3,17 @@ package com.phoenix.police;
 import java.io.IOException;
 import java.util.List;
 
-import com.phoenix.data.Constants;
-
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.Size;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
 import com.phoenix.data.Constants;
 
 public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
@@ -27,27 +26,30 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 	public final static int FLASH_MODE_OFF = 2;
 	public final static int FLASH_MODE_TORCH = 3;
 	
+	Handler mHandler = new Handler(){
+		
+	};
+	
+	private thread startPreviewRun = new thread();
 	
 	SurfaceHolder holder;
 	Camera myCamera;
 	boolean bIfPreview = false;
-	int mPreviewHeight = 0;
-	int mPreviewWidth = 0;
-	
+	int mRes = 3;
 	public CameraSurfaceView(Context context) {
 		super(context);
-		init(context);
+		init();
 	}
 	public CameraSurfaceView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		init(context);
+		init();
 	}
 	public CameraSurfaceView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		init(context);
+		init();
 	}
 
-	private void init(Context context){
+	private void init(){
 		holder = getHolder();// 获得surfaceHolder引用
 		holder.addCallback(this); 
 //		holder.setFixedSize(176, 144);
@@ -55,15 +57,12 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 	}
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
-		new Thread(new thread()).start();
+		mHandler.post(startPreviewRun);
 	}
 
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
-		mPreviewHeight = height;
-		mPreviewWidth = width;
-		Log.d("qiqi", "height:" + height + " width:" + width);
 
 	}
 	
@@ -94,13 +93,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 	
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		if(null != myCamera){
-			myCamera.setPreviewCallback(null);
-			myCamera.stopPreview();
-			bIfPreview = false;
-			myCamera.release();
-			myCamera = null;
-		}
+		stopPreview();
 	}
 	private void initCamera(){
 		if(bIfPreview){
@@ -144,7 +137,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 					Log.i(LOG_TAG + "initCamera", "previewformates:" + pf);
 				}
 				//Set camera flash mode.
-				parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+				parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
 				//Set zoom 
 				if(parameters.isSmoothZoomSupported()){
 					Log.d("qiqi", "" + parameters.getMaxZoom());
@@ -152,15 +145,21 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 				}
 				// 设置拍照和预览图片大小
 //				parameters.setPictureSize(2592, 1944); // 指定拍照图片的大小
-				parameters.setPictureSize(Constants.resolution_with_5, Constants.resolution_height_5);
-				parameters.setPreviewSize(Constants.resolution_with_2, Constants.resolution_height_2); // 指定preview的大小
+				parameters.setPictureSize(Constants.resolutions[mRes][0], Constants.resolutions[mRes][1]);
+				if(mRes == 3)
+				{
+					parameters.setPreviewSize(640, 480); // 指定preview的大小
+				}else{
+					parameters.setPreviewSize(Constants.resolutions[mRes][0], Constants.resolutions[mRes][1]); // 指定preview的大小
+				}
+				
 				// 这两个属性 如果这两个属性设置的和真实手机的不一样时，就会报错
 
 //				// 横竖屏镜头自动调整
 //				if (this.getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
-					parameters.set("orientation", "landscape"); //
-					parameters.set("rotation", -90); // 镜头角度转90度（默认摄像头是横拍）
-					myCamera.setDisplayOrientation(180); // 在2.2以上可以使用
+//					parameters.set("orientation", "landscape"); //
+//					parameters.set("rotation", -90); // 镜头角度转90度（默认摄像头是横拍）
+//					myCamera.setDisplayOrientation(180); // 在2.2以上可以使用
 //				} else// 如果是横屏
 //				{
 //					parameters.set("orientation", "landscape"); //
@@ -169,7 +168,6 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
 				/* 视频流编码处理 */
 				// 添加对视频流处理函数
-
 				// 设定配置参数并开启预览
 				myCamera.setParameters(parameters); // 将Camera.Parameters设定予Camera
 				myCamera.startPreview(); // 打开预览画面
@@ -177,8 +175,6 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
 				// 【调试】设置后的图片大小和预览大小以及帧率
 				Camera.Size csize = myCamera.getParameters().getPreviewSize();
-				mPreviewHeight = csize.height; //
-				mPreviewWidth = csize.width;
 				Log.i(LOG_TAG + "initCamera", "after setting, previewSize:width: "
 						+ csize.width + " height: " + csize.height);
 				csize = myCamera.getParameters().getPictureSize();
@@ -198,23 +194,40 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 		return myCamera;
 	}
 	public void resumePreview(){
-		myCamera.startPreview();
+		if(myCamera != null)
+			myCamera.startPreview();
+		
 	}
-	public void setFlashMode(int flashMode){
-		Parameters parameters = myCamera.getParameters();
-		switch(flashMode){
-		case FLASH_MODE_AUTO:
-			parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-			break;
-		case FLASH_MODE_ON:
-			parameters.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
-			break;
-		case FLASH_MODE_OFF:
-			parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-			break;
-		case FLASH_MODE_TORCH:
-			parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+	public void startPreview(){
+		if(myCamera == null)
+			mHandler.post(startPreviewRun);
+	}
+	
+	public void stopPreview(){
+		mHandler.removeCallbacks(startPreviewRun);
+		if(null != myCamera){
+			myCamera.setPreviewCallback(null);
+			myCamera.stopPreview();
+			bIfPreview = false;
+			myCamera.release();
+			myCamera = null;
 		}
-		myCamera.setParameters(parameters);
 	}
+	public void setSize(int size, int flag){
+		if (LOG_SWITCH) {
+			Log.d(LOG_TAG, "setSize() size:" + size + " flag:" + flag );
+		}
+		if(flag == 0 ){
+			Parameters parameters = myCamera.getParameters();
+			parameters.setPictureSize(Constants.resolutions[size][0], Constants.resolutions[size][1]);
+			if(size == 3)
+				size = 0;
+			parameters.setPreviewSize(Constants.resolutions[size][0], Constants.resolutions[size][1]); // 指定preview的大小
+			myCamera.setParameters(parameters);
+		}else if(flag == 1){
+			mRes = size;
+			initCamera();
+		}
+	}
+	
 }

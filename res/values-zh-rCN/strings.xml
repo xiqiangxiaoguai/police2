@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">警务终端</string>
+    <string name="action_settings">设置</string>
+    <string name="hello_world">Hello world!</string>
+
+    <string name="camera">照相机</string>
+    <string name="video">摄像机</string>
+    <string name="record">录音机</string>
+    <string name="files">文件</string>
+    <string name="setting">设置</string>
+    <string name="wireless">一键传输</string>
+    <string name="back">返回</string>
+    <string name="storage_no_enough">存储空间不足,拍摄失败!</string>
+    <string name="timeCount">00:00:00</string>
+    <string name="wireless2">无线和网络</string>
+    <string name="device">设备</string>
+    <string name="wifi">WIFI</string>
+    <string name="wifi_setting">WIFI设置</string>
+    <string name="threeg">3G</string>
+    <string name="storage">存储</string>
+    <string name="about">关于本机</string>
+    <string name="connected">已经连接</string>
+    <string name="storage_describe">存储(可用/全部)</string>
+    <string name="camera_file">照片</string>
+    <string name="video_file">视频</string>
+    <string name="audio_file">录音</string>
+    <string name="device_name">机器型号</string>
+    <string name="android_version">平台版本</string>
+    <string name="version">软件版本</string>
+    <string name="level">信号</string>
+    <string name="security">安全性</string>
+    <string name="password">密码</string>
+    <string name="connect">连接</string>
+    <string name="cancel">取消</string>
+    <string name="video_recording">正在录像</string>
+    <string name="audio_recording">正在录音</string>
+    <string name="valume">音量</string>
+    <string name="valume_modify">调节系统音量</string>
+    <string name="brightness">亮度</string>
+    <string name="brightness_modify">调节亮度</string>
+    <string name="resolution">分辨率</string>
+    <string name="video_resolution">录像分辨率</string>
+    <string name="video_resolution_modify">调节录像分辨率</string>
+    <string name="function">功能</string>
+    <string name="wifi_1">差</string>
+    <string name="wifi_2">一般</string>
+    <string name="wifi_3">良好</string>
+    <string name="wifi_4">优</string>
+    	<string name="time1">00:00</string>
+	<string name="time2">/00:00</string>
+	<string name="baifenbi"> %</string>
+	<string name="camera_succcess">拍照成功</string>
+	<string name="video_success">录像成功</string>
+	<string name="audio_success">录音成功</string>
+	<string name="camera_fail">拍照失败</string>
+	<string name="video_fail">录像失败</string>
+	<string name="audio_fail">录音失败</string>
+	<string name="plus">*</string>
+	<string name="device_name_detail">Phoenix警务终端</string>
+	<string name="time_range_1">今天</string>
+	<string name="time_range_2">一周内</string>
+	<string name="time_range_3">一个月内</string>
+	<string name="time_range_4">三个月内</string>
+	<string name="time_range_5">三个月前</string>
+</resources>
