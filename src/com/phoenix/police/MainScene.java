@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import android.R.integer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -19,7 +18,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
-import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.media.ThumbnailUtils;
 import android.os.Bundle;
@@ -32,10 +30,12 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.Button;
+import android.view.Window;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -53,10 +53,11 @@ public class MainScene extends Activity implements OnClickListener{
 	private static final int STATE_RECORDING = 1;
 	private int mState = STATE_IDLE;
 	CameraSurfaceView mySurface;
-	ImageButton bQiezi;
-	ImageButton bFlashBtn;
-	Button bSetting;
-	Button bFiles;
+//	ImageButton bQiezi;
+//	ImageButton bFlashBtn;
+//	Button bSetting;
+//	Button bFiles;
+	ImageView mPreview;
 	private int cFlashMode = CameraSurfaceView.FLASH_MODE_OFF;
 	private String cameraPath = Constants.CAMERA_PATH;
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -82,6 +83,7 @@ public class MainScene extends Activity implements OnClickListener{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.camera_activity);
 		
 		sharedPreferences = getSharedPreferences(Constants.SETTING_PREFERENCES, Context.MODE_PRIVATE);
@@ -94,12 +96,15 @@ public class MainScene extends Activity implements OnClickListener{
 		
 		initPreviewWidget();
 		
-		bFlashBtn = (ImageButton) findViewById(R.id.flashmode);
-		bFlashBtn.setOnClickListener(this);
-		bSetting = (Button) findViewById(R.id.setting);
-		bSetting.setOnClickListener(this);
-		bFiles = (Button) findViewById(R.id.files);
-		bFiles.setOnClickListener(this);
+//		bFlashBtn = (ImageButton) findViewById(R.id.flashmode);
+//		bFlashBtn.setOnClickListener(this);
+//		bSetting = (Button) findViewById(R.id.setting);
+//		bSetting.setOnClickListener(this);
+//		bFiles = (Button) findViewById(R.id.files);
+//		bFiles.setOnClickListener(this);
+		
+		mPreview = (ImageView)findViewById(R.id.preview);
+		mPreview.setOnClickListener(this);
 		
 	}
 	
@@ -107,10 +112,30 @@ public class MainScene extends Activity implements OnClickListener{
 		mySurface = new CameraSurfaceView(this);
 		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera);
 		cameraLayout.setGravity(Gravity.CENTER);
-		mySurface.setLayoutParams(new LayoutParams(480, (int)(480*((double)Constants.resolution_height_4/Constants.resolution_with_4))));
-		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(480, (int)(480*((double)Constants.resolution_height_4/Constants.resolution_with_4)));
-		params.addRule(RelativeLayout.CENTER_IN_PARENT, -1);
-		cameraLayout.setLayoutParams(params);
+		ViewGroup.LayoutParams cameraParams = new LayoutParams(480, (int)(480*9/16));
+		mySurface.setLayoutParams(cameraParams);
+		RelativeLayout.LayoutParams containerParams = new RelativeLayout.LayoutParams(480, (int)(480*((double)3/4)));
+		containerParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, -1);
+		cameraLayout.setLayoutParams(containerParams);
+		cameraLayout.addView(mySurface, 0);
+	}
+	
+	private void reCreateSurfaceView(){
+		mySurface = new CameraSurfaceView(this);
+		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera);
+		cameraLayout.setGravity(Gravity.CENTER);
+		if(MODE == Constants.MODE_CAMERA){
+			mySurface.setLayoutParams(new LayoutParams(480, (int)(480*9/16)));
+			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(480, (int)(480*((double)3/4)));
+			params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, -1);
+			cameraLayout.setLayoutParams(params);
+		}else{
+			mySurface.setLayoutParams(new LayoutParams(480, (int)(480*3/4)));
+			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(480, (int)(480*((double)3/4)));
+			params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, -1);
+			cameraLayout.setLayoutParams(params);
+		}
+		cameraLayout.removeViewAt(0);
 		cameraLayout.addView(mySurface, 0);
 	}
 	private void destoySurfaceView(){
@@ -146,7 +171,7 @@ public class MainScene extends Activity implements OnClickListener{
 			mHandler.post(new Runnable() {
 				@Override
 				public void run() {
-					createSurfaceView();
+					reCreateSurfaceView();
 				}
 			});
 			appPaused = false;
@@ -178,57 +203,62 @@ public class MainScene extends Activity implements OnClickListener{
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()){
-		case R.id.flashmode:
-			switch (cFlashMode) {
-			case CameraSurfaceView.FLASH_MODE_ON:
-				cFlashMode = CameraSurfaceView.FLASH_MODE_OFF;
-				bFlashBtn.setImageResource(R.drawable.ic_flash_off_holo_light);
-				PhoenixMethod.setFlashLed(false);
-				break;
-			case CameraSurfaceView.FLASH_MODE_OFF:
-				cFlashMode = CameraSurfaceView.FLASH_MODE_ON;
-				bFlashBtn.setImageResource(R.drawable.ic_flash_on_holo_light);
-				PhoenixMethod.setFlashLed(true);
-				break;
-			default:
-				break;
+		case  R.id.preview:
+			if(MODE == Constants.MODE_CAMERA){
+				setMode(MODE);
+				MODE = Constants.MODE_VIDEO;
+			}else{
+				setMode(MODE);
+				MODE = Constants.MODE_CAMERA;
 			}
 			break;
-		case R.id.files:
-			startActivity(new Intent("com.phoenix.police.FilesActivity"));
-			break;
-		case R.id.setting:
-			startActivity(new Intent("com.phoenix.setting.SettingActivity"));
-			break;
+//		case R.id.flashmode:
+//			switch (cFlashMode) {
+//			case CameraSurfaceView.FLASH_MODE_ON:
+//				cFlashMode = CameraSurfaceView.FLASH_MODE_OFF;
+//				bFlashBtn.setImageResource(R.drawable.ic_flash_off_holo_light);
+//				PhoenixMethod.setFlashLed(false);
+//				break;
+//			case CameraSurfaceView.FLASH_MODE_OFF:
+//				cFlashMode = CameraSurfaceView.FLASH_MODE_ON;
+//				bFlashBtn.setImageResource(R.drawable.ic_flash_on_holo_light);
+//				PhoenixMethod.setFlashLed(true);
+//				break;
+//			default:
+//				break;
+//			}
+//			break;
+//		case R.id.files:
+//			startActivity(new Intent("com.phoenix.police.FilesActivity"));
+//			break;
+//		case R.id.setting:
+//			startActivity(new Intent("com.phoenix.setting.SettingActivity"));
+//			break;
 		}
 	}
 	
 	private void initPreviewWidget(){
-		LinearLayout bar_widget = (LinearLayout)findViewById(R.id.bar_widget);
 		LinearLayout bar_timer = (LinearLayout)findViewById(R.id.bar_timer);
 		resolution = Integer.valueOf(sharedPreferences.getString(Constants.PREFERENCES_RESOLUTION, "0"));
 		int flash_mode = 1;
-		TextView resoWidget = (TextView) findViewById(R.id.resolution);
-		ImageButton flashWidget = (ImageButton) findViewById(R.id.flashmode);
+//		TextView resoWidget = (TextView) findViewById(R.id.resolution);
+//		ImageButton flashWidget = (ImageButton) findViewById(R.id.flashmode);
 		TextView recordTypeWidget = (TextView) findViewById(R.id.recordType);
 		timeCount = (TextView) findViewById(R.id.timeCount);
 		switch(MODE){
 		case Constants.MODE_CAMERA:
-			bar_widget.setVisibility(View.VISIBLE);
 			bar_timer.setVisibility(View.GONE);
-			resoWidget.setText(Constants.resolutions[3][0] + getResources().getString(R.string.plus) + Constants.resolutions[3][1]);
-			flashWidget.setImageResource(Constants.flash_resource[flash_mode]);
+//			resoWidget.setText(Constants.resolutions[3][0] + getResources().getString(R.string.plus) + Constants.resolutions[3][1]);
+//			flashWidget.setImageResource(Constants.flash_resource[flash_mode]);
 			break;
 		case Constants.MODE_VIDEO:
-			bar_widget.setVisibility(View.VISIBLE);
 			bar_timer.setVisibility(View.VISIBLE);
 			
 			recordTypeWidget.setText(R.string.video_recording);
-			resoWidget.setText(Constants.resolutions[resolution][0] + getResources().getString(R.string.plus) + Constants.resolutions[resolution ][1]);
-			flashWidget.setImageResource(Constants.flash_resource[flash_mode]);
+//			resoWidget.setText(Constants.resolutions[resolution][0] + getResources().getString(R.string.plus) + Constants.resolutions[resolution ][1]);
+//			flashWidget.setImageResource(Constants.flash_resource[flash_mode]);
 			break;
 		case Constants.MODE_AUDIO:
-			bar_widget.setVisibility(View.GONE);
 			bar_timer.setVisibility(View.VISIBLE);
 			
 			recordTypeWidget.setText(R.string.audio_recording);
@@ -442,9 +472,10 @@ public class MainScene extends Activity implements OnClickListener{
 	//***********************************************************Audio**************************************************
 	private void setMode(int mode){
 		MODE = mode;
+		reCreateSurfaceView();
 		initPreviewWidget();
 		
-		updateResForMode();
+//		updateResForMode();
 	}
 	
 	@Override
@@ -454,9 +485,11 @@ public class MainScene extends Activity implements OnClickListener{
 		}
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_CAMERA:
-//			setMode(Constants.MODE_CAMERA);
+			setMode(Constants.MODE_CAMERA);
 			//Camera
-
+			mKeyLockForFrequentClick = true;
+			Camera camera = mySurface.getCamera();
+			camera.takePicture(null, null, jpegCallback);
 			break;
 			
 		case KeyEvent.KEYCODE_MEDIA_RECORD:

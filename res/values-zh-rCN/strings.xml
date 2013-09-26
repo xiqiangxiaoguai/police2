@@ -64,4 +64,6 @@
 	<string name="time_range_3">一个月内</string>
 	<string name="time_range_4">三个月内</string>
 	<string name="time_range_5">三个月前</string>
+	<string name="police_left">警</string>
+	<string name="police_right">察</string>
 </resources>
