@@ -270,7 +270,13 @@ public class MainScene extends Activity implements OnClickListener{
 	//ÅÄÕÕ »Øµ÷º¯Êý
 	private PictureCallback jpegCallback = new PictureCallback(){
 		public void onPictureTaken(byte[] data, Camera camera) {
-			String path = save(data);
+			final byte[] mData =  data;
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					String path = save(mData);
+				}
+			}).start();
 			mySurface.resumePreview();
 		}
 	};
@@ -304,7 +310,7 @@ public class MainScene extends Activity implements OnClickListener{
 				bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
 				fos.flush();
 				fos.close();
-				Toast.makeText(this, R.string.camera_succcess, Toast.LENGTH_SHORT).show();
+//				Toast.makeText(this, R.string.camera_succcess, Toast.LENGTH_SHORT).show();
 				if (LOG_SWITCH)
 					Log.d(LOG_TAG, "Image captured successfully!");
 				//Send broadcast for record in log.
@@ -312,13 +318,13 @@ public class MainScene extends Activity implements OnClickListener{
 				intent.putExtra("name", path );
 				sendBroadcast(intent);
 			}else{
-				Toast.makeText(this, R.string.storage_no_enough, 500).show();
+//				Toast.makeText(this, R.string.storage_no_enough, 500).show();
 				if (LOG_SWITCH)
 					Log.d(LOG_TAG, "Image captured failed.Cause:Storage not enough.");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			Toast.makeText(this, R.string.camera_fail, Toast.LENGTH_SHORT).show();
+//			Toast.makeText(this, R.string.camera_fail, Toast.LENGTH_SHORT).show();
 			if (LOG_SWITCH)
 				Log.d(LOG_TAG, "Image capture failed.Cause:" + e);
 			return null;
@@ -485,6 +491,15 @@ public class MainScene extends Activity implements OnClickListener{
 		}
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_CAMERA:
+			if(mKeyLockForFrequentClick)
+				break;
+			if(mAudioKeyLocked)
+				break;
+			if(mVideoKeyLocked){
+				Camera camera = mySurface.getCamera();
+				camera.takePicture(null, null, jpegCallback);
+				break;
+			}
 			setMode(Constants.MODE_CAMERA);
 			//Camera
 			mKeyLockForFrequentClick = true;
@@ -518,12 +533,19 @@ public class MainScene extends Activity implements OnClickListener{
 	            mrec.release();
 	            mrec = null;
 	            //Add into runnable.
-	            mHandler.post(new Runnable() {
+//	            mHandler.post(new Runnable() {
+//					@Override
+//					public void run() {
+//						stopRecording(cPath);
+//					}
+//				});
+	            new Thread(new Runnable() {
+					
 					@Override
 					public void run() {
 						stopRecording(cPath);
 					}
-				});
+				}).start();
 	            
 				stopTimer();
 				setMode(Constants.MODE_CAMERA);
