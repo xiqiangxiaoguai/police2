@@ -2,11 +2,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black">
+    android:background="#4682B4">
     <RelativeLayout 
         android:layout_width="match_parent"
         android:layout_height="200px"
-        android:background="#00FFFF"
         >
         <ImageButton 
             android:id="@+id/main_menu"
@@ -53,14 +52,12 @@
         android:layout_width="match_parent"
         android:layout_height="360px"
         android:layout_marginTop="200px"
-        android:background="@android:color/black"
         >
         
        <RelativeLayout
 	        android:id="@+id/camera_layout"
 	        android:layout_width="480dp"
 	        android:layout_height="360dp"
-	        android:background="@android:color/black"
 	        android:gravity="top"
         	>
     	        <LinearLayout 
@@ -99,7 +96,6 @@
         android:layout_height="250px"
         android:layout_width="match_parent"
         android:layout_alignParentBottom="true"
-        android:background="@android:color/black"
         >
         <ImageButton 
             android:id="@+id/preview"

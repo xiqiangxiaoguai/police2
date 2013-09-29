@@ -36,9 +36,8 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 	Camera myCamera;
 	boolean bIfPreview = false;
 	int mRes = 3;
-	public CameraSurfaceView(Context context, int res) {
+	public CameraSurfaceView(Context context) {
 		super(context);
-		mRes = res;
 		init();
 	}
 	public CameraSurfaceView(Context context, AttributeSet attrs) {
@@ -214,8 +213,25 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 			myCamera = null;
 		}
 	}
+	public void setSize(int size, int flag){
+		if (LOG_SWITCH) {
+			Log.d(LOG_TAG, "setSize() size:" + size + " flag:" + flag );
+		}
+//		if(flag == 0 ){
+//			mRes = size;
+//			Parameters parameters = myCamera.getParameters();
+//			parameters.setPictureSize(Constants.resolutions[size][0], Constants.resolutions[size][1]);
+//			if(size == 3)
+//				size = 0;
+//			parameters.setPreviewSize(Constants.resolutions[size][0], Constants.resolutions[size][1]); // 指定preview的大小
+//			myCamera.setParameters(parameters);
+//		}else if(flag == 1){
+			mRes = size;
+			initCamera();
+//		}
+	}
+	
 	public int getRes(){
 		return mRes;
 	}
-	
 }
