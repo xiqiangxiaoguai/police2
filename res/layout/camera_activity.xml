@@ -5,8 +5,8 @@
     android:background="@android:color/black">
     <RelativeLayout 
         android:layout_width="match_parent"
-        android:layout_height="244px"
-        android:background="@android:color/black"
+        android:layout_height="200px"
+        android:background="#00FFFF"
         >
         <ImageButton 
             android:id="@+id/main_menu"
@@ -52,7 +52,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="360px"
-        android:layout_marginTop="244px"
+        android:layout_marginTop="200px"
         android:background="@android:color/black"
         >
         

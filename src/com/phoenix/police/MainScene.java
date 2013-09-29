@@ -140,7 +140,6 @@ public class MainScene extends Activity implements OnClickListener{
 		}
 		
 		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
-		cameraLayout.setGravity(Gravity.CENTER);
 		mySurface.setLayoutParams(new LayoutParams(480, (int)(480*Constants.resolutions[mySurface.getRes()][1]/Constants.resolutions[mySurface.getRes()][0])));
 		RelativeLayout.LayoutParams containerParams = new RelativeLayout.LayoutParams(480, (int)(480*Constants.resolutions[mySurface.getRes()][1]/Constants.resolutions[mySurface.getRes()][0]));
 		if (LOG_SWITCH) {
@@ -150,28 +149,6 @@ public class MainScene extends Activity implements OnClickListener{
 		cameraLayout.setLayoutParams(containerParams);
 		cameraLayout.addView(mySurface, 0);
 	}
-	private void reCreateSurfaceView(){
-		if(MODE == Constants.MODE_CAMERA){
-			mySurface = new CameraSurfaceView(this,3);
-		}else{
-			mySurface = new CameraSurfaceView(this,Integer.valueOf(sharedPreferences.getString(Constants.PREFERENCES_RESOLUTION, "0")));
-		}
-		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
-		cameraLayout.setGravity(Gravity.CENTER);
-		if(MODE == Constants.MODE_CAMERA){
-			mySurface.setLayoutParams(new LayoutParams(480, (int)(480*9/16)));
-			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(480, (int)(480*((double)3/4)));
-			params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, -1);
-			cameraLayout.setLayoutParams(params);
-		}else{
-			mySurface.setLayoutParams(new LayoutParams(480, (int)(480*3/4)));
-			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(480, (int)(480*((double)3/4)));
-			params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, -1);
-			cameraLayout.setLayoutParams(params);
-		}
-		cameraLayout.removeViewAt(0);
-		cameraLayout.addView(mySurface, 0);
-	}	
 	private void destoySurfaceView(){
 		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
 		cameraLayout.removeViewAt(0);
@@ -244,11 +221,9 @@ public class MainScene extends Activity implements OnClickListener{
 				Log.d(LOG_TAG, "preview clicked!");
 			}
 			if(MODE == Constants.MODE_CAMERA){
-				MODE = Constants.MODE_VIDEO;
-				setMode(MODE);
+				setMode(Constants.MODE_VIDEO);
 			}else{
-				MODE = Constants.MODE_CAMERA;
-				setMode(MODE);
+				setMode(Constants.MODE_CAMERA);
 			}
 			break;
 		case R.id.main_menu:
@@ -419,10 +394,10 @@ public class MainScene extends Activity implements OnClickListener{
 		if(!thumbnailFile.exists()){
 			thumbnailFile.mkdirs();
 		}
-		
+
 		police_num = sharedPreferences.getString(Constants.SHARED_POL_NUM, Constants.SHARED_POL_NUM_DEF);
 		cPath = Constants.VIDEO_PATH + Constants.VIDEO_NAME_HEAD + police_num + "_" + dateFormat.format(new Date()) +".mp4";
-		
+
 		Camera mCamera = mySurface.getCamera();
 		SurfaceHolder surfaceHolder = mySurface.getHolder();
         mrec = new MediaRecorder();  // Works well
@@ -527,27 +502,24 @@ public class MainScene extends Activity implements OnClickListener{
 	}
 	//***********************************************************Audio**************************************************
 	private void setMode(int mode){
-//		if(MODE != mode){
-//			MODE = mode;
-//			if(null != mySurface){
-//				destoySurfaceView();
-//				RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
-//				if (LOG_SWITCH) {
-//					Log.d(LOG_TAG,"MODE:" + MODE+  " destoySurfaceView() child count:" + cameraLayout.getChildCount());
-//				}
-//				createSurfaceView();
-//				if (LOG_SWITCH) {
-//					Log.d(LOG_TAG, "child count:" + cameraLayout.getChildCount());
-//				}
-//			}
-//			initPreviewWidget();
-//		}else{
-//			MODE = mode;
-//			initPreviewWidget();
-//		}
-		MODE = mode;
-		reCreateSurfaceView();
-		initPreviewWidget();
+		if(MODE != mode){
+			MODE = mode;
+			if(null != mySurface){
+				destoySurfaceView();
+				RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
+				if (LOG_SWITCH) {
+					Log.d(LOG_TAG, "create SurfaceView...");
+				}
+				createSurfaceView();
+			}
+			if (LOG_SWITCH) {
+				Log.d(LOG_TAG, "init preview widget...");
+			}
+			initPreviewWidget();
+		}else{
+			MODE = mode;
+			initPreviewWidget();
+		}
 //		updateResForMode();
 	}
 	
@@ -579,10 +551,16 @@ public class MainScene extends Activity implements OnClickListener{
 				break;
 			mKeyLockForFrequentClick = true;
 			if(mState == STATE_IDLE){ 
+				if (LOG_SWITCH) {
+					Log.d(LOG_TAG, "set mode...");
+				}
 				setMode(Constants.MODE_VIDEO);
 				if(mVideoKeyLocked)
 					break;
 				try {
+					if (LOG_SWITCH) {
+						Log.d(LOG_TAG, "start recording...");
+					}
 	                startRecording();
 					startTimer();
 					mVideoKeyLocked = true;
