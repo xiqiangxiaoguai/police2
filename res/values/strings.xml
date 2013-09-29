@@ -66,4 +66,5 @@
 	<string name="time_range_5">Before three months ago</string>
 	<string name="police_left">Police</string>
 	<string name="police_right">Police</string>
+	<string name="police_detail">Police</string>
 </resources>

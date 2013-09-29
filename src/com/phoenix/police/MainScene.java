@@ -30,7 +30,6 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
@@ -39,9 +38,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.phoenix.data.Constants;
+import com.phoenix.lib.SlidingMenu;
+import com.phoenix.lib.SlidingMenu.OnClosedListener;
+import com.phoenix.lib.SlidingMenu.OnOpenedListener;
 import com.phoenix.setting.PhoenixMethod;
 
 public class MainScene extends Activity implements OnClickListener{
@@ -53,7 +54,8 @@ public class MainScene extends Activity implements OnClickListener{
 	private static final int STATE_RECORDING = 1;
 	private int mState = STATE_IDLE;
 	CameraSurfaceView mySurface;
-//	ImageButton bQiezi;
+	ImageButton mQiezi;
+	ImageButton mMainMenu;
 //	ImageButton bFlashBtn;
 //	Button bSetting;
 //	Button bFiles;
@@ -70,6 +72,7 @@ public class MainScene extends Activity implements OnClickListener{
 	private int MODE = Constants.MODE_CAMERA;
 	SharedPreferences sharedPreferences;
 	
+//	SlidingMenu mainMenu = null;
 	
 	private int resolution = 0;
 	private int preRes = -1;
@@ -93,36 +96,67 @@ public class MainScene extends Activity implements OnClickListener{
 		}
 		
 		createSurfaceView();
-		
+		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
+		if (LOG_SWITCH) {
+			Log.d(LOG_TAG, "child count:" + cameraLayout.getChildCount());
+		}
 		initPreviewWidget();
 		
-//		bFlashBtn = (ImageButton) findViewById(R.id.flashmode);
-//		bFlashBtn.setOnClickListener(this);
-//		bSetting = (Button) findViewById(R.id.setting);
-//		bSetting.setOnClickListener(this);
-//		bFiles = (Button) findViewById(R.id.files);
-//		bFiles.setOnClickListener(this);
+		mMainMenu = (ImageButton) findViewById(R.id.main_menu);
+		mMainMenu.setOnClickListener(this);
+		mQiezi = (ImageButton) findViewById(R.id.qiezi);
+		mQiezi.setOnClickListener(this);
 		
 		mPreview = (ImageView)findViewById(R.id.preview);
 		mPreview.setOnClickListener(this);
-		
+//		mainMenu = new SlidingMenu(this);
+//		mainMenu.setMode(SlidingMenu.LEFT);
+//		mainMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+//		mainMenu.setShadowWidthRes(R.dimen.shadow_width);
+////        menu.setShadowDrawable(R.drawable.shadow);
+//		mainMenu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
+//		mainMenu.setFadeDegree(0.35f);
+//		mainMenu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
+//		mainMenu.setMenu(R.layout.main_menus);
+//		mainMenu.setOnOpenedListener(new OnOpenedListener() {
+//			@Override
+//			public void onOpened() {
+//			}
+//		});
+//		mainMenu.setOnClosedListener(new OnClosedListener() {
+//			@Override
+//			public void onClosed() {
+//				if(null == mySurface){
+//				}
+//			}
+//		});
 	}
 	
 	private void createSurfaceView(){
-		mySurface = new CameraSurfaceView(this);
-		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera);
+		if(MODE == Constants.MODE_CAMERA){
+			mySurface = new CameraSurfaceView(this,3);
+		}else{
+			mySurface = new CameraSurfaceView(this,Integer.valueOf(sharedPreferences.getString(Constants.PREFERENCES_RESOLUTION, "0")));
+		}
+		
+		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
 		cameraLayout.setGravity(Gravity.CENTER);
-		ViewGroup.LayoutParams cameraParams = new LayoutParams(480, (int)(480*9/16));
-		mySurface.setLayoutParams(cameraParams);
-		RelativeLayout.LayoutParams containerParams = new RelativeLayout.LayoutParams(480, (int)(480*((double)3/4)));
-		containerParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, -1);
+		mySurface.setLayoutParams(new LayoutParams(480, (int)(480*Constants.resolutions[mySurface.getRes()][1]/Constants.resolutions[mySurface.getRes()][0])));
+		RelativeLayout.LayoutParams containerParams = new RelativeLayout.LayoutParams(480, (int)(480*Constants.resolutions[mySurface.getRes()][1]/Constants.resolutions[mySurface.getRes()][0]));
+		if (LOG_SWITCH) {
+			Log.d(LOG_TAG, "setlayout:480*" + 480*Constants.resolutions[mySurface.getRes()][1]/Constants.resolutions[mySurface.getRes()][0]);
+		}
+		containerParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, -1);
 		cameraLayout.setLayoutParams(containerParams);
 		cameraLayout.addView(mySurface, 0);
 	}
-	
 	private void reCreateSurfaceView(){
-		mySurface = new CameraSurfaceView(this);
-		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera);
+		if(MODE == Constants.MODE_CAMERA){
+			mySurface = new CameraSurfaceView(this,3);
+		}else{
+			mySurface = new CameraSurfaceView(this,Integer.valueOf(sharedPreferences.getString(Constants.PREFERENCES_RESOLUTION, "0")));
+		}
+		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
 		cameraLayout.setGravity(Gravity.CENTER);
 		if(MODE == Constants.MODE_CAMERA){
 			mySurface.setLayoutParams(new LayoutParams(480, (int)(480*9/16)));
@@ -137,9 +171,9 @@ public class MainScene extends Activity implements OnClickListener{
 		}
 		cameraLayout.removeViewAt(0);
 		cameraLayout.addView(mySurface, 0);
-	}
+	}	
 	private void destoySurfaceView(){
-		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera);
+		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
 		cameraLayout.removeViewAt(0);
 		if(null != mySurface){
 			mySurface = null;
@@ -158,6 +192,10 @@ public class MainScene extends Activity implements OnClickListener{
 				if(null != mySurface)
 					mySurface.stopPreview();
 				destoySurfaceView();
+				RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
+				if (LOG_SWITCH) {
+					Log.d(LOG_TAG, "child count:" + cameraLayout.getChildCount());
+				}
 			}
 		});
 		
@@ -171,45 +209,57 @@ public class MainScene extends Activity implements OnClickListener{
 			mHandler.post(new Runnable() {
 				@Override
 				public void run() {
-					reCreateSurfaceView();
+					createSurfaceView();
+					RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
+					if (LOG_SWITCH) {
+						Log.d(LOG_TAG, "child count:" + cameraLayout.getChildCount());
+					}
 				}
 			});
 			appPaused = false;
 		}
-		createDirs();
+		mHandler.postDelayed(dirRun, 3000);
+		
 	}
 	
-	private void updateResForMode(){
-		if(MODE == Constants.MODE_CAMERA || MODE == Constants.MODE_AUDIO){
-			mySurface.setSize(3, 0);
-		}else if( MODE == Constants.MODE_VIDEO){
-			int i = Integer.valueOf(sharedPreferences.getString(Constants.PREFERENCES_RESOLUTION, "0"));
-			if(preRes == i){
-				mySurface.setSize(preRes,0);	
-			}else{
-				preRes = i;
-				mySurface.setSize(preRes, 1);
+	Runnable dirRun = new Runnable() {
+		@Override
+		public void run() {
+			for(String str : fold_paths){
+				File floderPath = new File(str);
+				if(!floderPath.exists()){
+					floderPath.mkdirs();
+				}
+			}
+			if(!new File(fold_paths[fold_paths.length -1]).exists()){
+				mHandler.postDelayed(dirRun, 3000);
 			}
 		}
-	}
-	private void createDirs(){
-		for(String str : fold_paths){
-			File floderPath = new File(str);
-			if(!floderPath.exists()){
-				floderPath.mkdirs();
-			}
-		}
-	}
+	};
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()){
 		case  R.id.preview:
+			if (LOG_SWITCH) {
+				Log.d(LOG_TAG, "preview clicked!");
+			}
 			if(MODE == Constants.MODE_CAMERA){
-				setMode(MODE);
 				MODE = Constants.MODE_VIDEO;
-			}else{
 				setMode(MODE);
+			}else{
 				MODE = Constants.MODE_CAMERA;
+				setMode(MODE);
+			}
+			break;
+		case R.id.main_menu:
+			if (LOG_SWITCH) {
+				Log.d(LOG_TAG, "main_menu clicked!");
+			}
+//			mainMenu.toggle(true);
+			break;
+		case R.id.qiezi:
+			if (LOG_SWITCH) {
+				Log.d(LOG_TAG, "qiezi clicked!");
 			}
 			break;
 //		case R.id.flashmode:
@@ -477,18 +527,32 @@ public class MainScene extends Activity implements OnClickListener{
 	}
 	//***********************************************************Audio**************************************************
 	private void setMode(int mode){
+//		if(MODE != mode){
+//			MODE = mode;
+//			if(null != mySurface){
+//				destoySurfaceView();
+//				RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
+//				if (LOG_SWITCH) {
+//					Log.d(LOG_TAG,"MODE:" + MODE+  " destoySurfaceView() child count:" + cameraLayout.getChildCount());
+//				}
+//				createSurfaceView();
+//				if (LOG_SWITCH) {
+//					Log.d(LOG_TAG, "child count:" + cameraLayout.getChildCount());
+//				}
+//			}
+//			initPreviewWidget();
+//		}else{
+//			MODE = mode;
+//			initPreviewWidget();
+//		}
 		MODE = mode;
 		reCreateSurfaceView();
 		initPreviewWidget();
-		
 //		updateResForMode();
 	}
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (LOG_SWITCH) {
-			Log.d(LOG_TAG, "keycode:" + keyCode);
-		}
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_CAMERA:
 			if(mKeyLockForFrequentClick)

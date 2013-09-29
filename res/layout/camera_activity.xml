@@ -2,12 +2,23 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#33b5e5">
+    android:background="@android:color/black">
     <RelativeLayout 
         android:layout_width="match_parent"
         android:layout_height="244px"
-        android:background="@drawable/blue"
+        android:background="@android:color/black"
         >
+        <ImageButton 
+            android:id="@+id/main_menu"
+            android:layout_height="80px"
+            android:layout_width="80px"
+            android:layout_marginLeft="10px"
+            android:layout_centerVertical="true"
+            android:background="@android:color/transparent"
+            android:src="@drawable/main_menu"
+            android:scaleType="fitXY"
+            android:clickable="true"
+            />
 	   	<LinearLayout 
 	            android:id="@+id/header"
 	            android:layout_width="wrap_content"
@@ -19,34 +30,38 @@
 	            <TextView 
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
-	                android:textSize="48sp"
+	                android:textSize="36sp"
 	                android:textColor="@android:color/white"
 	                android:text="@string/police_left"
-	                android:gravity="bottom"/>
+	                android:gravity="bottom"
+	                android:layout_marginRight="20px"/>
 	            <ImageView 
-	                android:layout_height="120px"
-	                android:layout_width="120px"
+	                android:layout_height="80px"
+	                android:layout_width="80px"
 	                android:src="@drawable/ic_launcher"/>
 	            <TextView 
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
-	                android:textSize="48sp"
+	                android:textSize="36sp"
 	                android:textColor="@android:color/white"
 	                android:text="@string/police_right"
-	                android:gravity="bottom"/>
+	                android:gravity="bottom"
+	                android:layout_marginLeft="20px"/>
 	        </LinearLayout>
     </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="360px"
         android:layout_marginTop="244px"
+        android:background="@android:color/black"
         >
         
        <RelativeLayout
-	        android:id="@+id/camera"
+	        android:id="@+id/camera_layout"
 	        android:layout_width="480dp"
 	        android:layout_height="360dp"
 	        android:background="@android:color/black"
+	        android:gravity="top"
         	>
     	        <LinearLayout 
     	            android:id="@+id/bar_timer"
@@ -84,33 +99,35 @@
         android:layout_height="250px"
         android:layout_width="match_parent"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/blue"
+        android:background="@android:color/black"
         >
-        <ImageView 
+        <ImageButton 
             android:id="@+id/preview"
-            android:layout_width="200px"
-            android:layout_height="200px"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="25px"
-            android:layout_centerHorizontal="true"
-            android:background="@android:color/black"/>
+            android:layout_width="80px"
+            android:layout_height="80px"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="25px"
+            android:layout_alignParentLeft="true"
+            android:background="@android:color/transparent"
+            android:src="@android:color/white"
+            android:scaleType="fitXY"/>
+        <ImageButton 
+            android:id="@+id/qiezi"
+            android:layout_width="160px"
+            android:layout_height="160px"
+            android:layout_centerInParent="true"
+            android:background="@android:color/transparent"
+            android:src="@drawable/qiezi_button_press"
+            android:scaleType="fitXY"/>
+        <ImageButton 
+            android:id="@+id/mode"
+            android:layout_width="80px"
+            android:layout_height="80px"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="25px"
+            android:background="@android:color/transparent"
+            android:src="@drawable/mode_video"
+            android:scaleType="fitXY"/>
     </RelativeLayout>
-    
-<!-- 	<RelativeLayout
-	    android:layout_width="match_parent"
-	    android:layout_height="0dp"
-	    android:layout_weight="1">
-	   <Button 
-	       android:id="@+id/setting"
-	       android:layout_width="wrap_content"
-	       android:layout_height="wrap_content"
-	       android:layout_alignParentLeft = "true"
-	       android:background="@drawable/setting"/>
-	   <Button 
-	       android:id="@+id/files"
-	       android:layout_width="wrap_content"
-	       android:layout_height="wrap_content"
-	       android:layout_alignParentRight = "true"
-	       android:background="@drawable/files"/>
-	</RelativeLayout> -->
 </RelativeLayout>

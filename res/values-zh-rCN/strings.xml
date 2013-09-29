@@ -66,4 +66,5 @@
 	<string name="time_range_5">三个月前</string>
 	<string name="police_left">警</string>
 	<string name="police_right">察</string>
+	<string name="police_detail">凤凰警务终端</string>
 </resources>
