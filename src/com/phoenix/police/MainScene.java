@@ -176,9 +176,23 @@ public class MainScene extends Activity implements OnClickListener{
 			});
 			appPaused = false;
 		}
-		createDirs();
+		mHandler.postDelayed(dirRun, 3000);
 	}
 	
+	Runnable dirRun = new Runnable() {
+		@Override
+		public void run() {
+			for(String str : fold_paths){
+				File floderPath = new File(str);
+				if(!floderPath.exists()){
+					floderPath.mkdirs();
+				}
+			}
+			if(!new File(fold_paths[fold_paths.length -1]).exists()){
+				mHandler.postDelayed(dirRun, 3000);
+			}
+		}
+	};
 	private void updateResForMode(){
 		if(MODE == Constants.MODE_CAMERA || MODE == Constants.MODE_AUDIO){
 			mySurface.setSize(3, 0);
@@ -189,14 +203,6 @@ public class MainScene extends Activity implements OnClickListener{
 			}else{
 				preRes = i;
 				mySurface.setSize(preRes, 1);
-			}
-		}
-	}
-	private void createDirs(){
-		for(String str : fold_paths){
-			File floderPath = new File(str);
-			if(!floderPath.exists()){
-				floderPath.mkdirs();
 			}
 		}
 	}
