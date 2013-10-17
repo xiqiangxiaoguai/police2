@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+	<SwitchPreference
+		android:key="setting_wifi_switch_preference"
+		android:title="@string/wifi"
+		android:icon="@drawable/ic_wifi_signal_4">
+	</SwitchPreference>
+	<PreferenceCategory 
+	    android:title="@string/wifi"
+	    android:key="setting_wifi_search_category">
+	    
+	</PreferenceCategory>
+</PreferenceScreen>

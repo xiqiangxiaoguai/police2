@@ -4,14 +4,26 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class AudioActivity extends Activity {
+import com.phoenix.data.Constants;
+import com.phoenix.lib.SlidingMenu;
+import com.phoenix.setting.PhoenixMethod;
+import com.phoenix.setting.SettingActivity;
+
+public class AudioActivity extends Activity implements OnClickListener {
 	/** Called when the activity is first created. */
 
 	private static final int STATE_IDLE = 0;
@@ -20,6 +32,9 @@ public class AudioActivity extends Activity {
 	private ImageButton btnRecord;
 	private int cSecs =0;
 	private TextView timeCount;
+	private SlidingMenu mainMenu = null;
+	private boolean mKeyLockForFrequentClick =false;
+	LinearLayout timeBar ;
 	Handler mHandler = new Handler(){
 		public void handleMessage(android.os.Message msg) {
 			switch(msg.what){
@@ -39,37 +54,88 @@ public class AudioActivity extends Activity {
 				int sec = cSecs%60;
 				timeCount.setText(String.format("%1$02d:%2$02d:%3$02d",hour, min, sec));
 				break;
+			case 2:
+				startRecord();
+				mState = STATE_RECORDING;
+				startTimer();
+				timeBar.setVisibility(View.VISIBLE);
+				mHandler.sendEmptyMessage(0);
+				PhoenixMethod.setAudioLed(true);
+				break;
 			}
-			
 		};
 	};
 	
 	private Timer timer = null;
 	private TimerTask task = null;
 
+	private void audioEvent(){
+		if(mKeyLockForFrequentClick)
+			return;
+		mKeyLockForFrequentClick = true;
+		//Audio
+		if(mState == STATE_IDLE){
+			startRecord();
+			mState = STATE_RECORDING;
+			startTimer();
+			timeBar.setVisibility(View.VISIBLE);
+			mHandler.sendEmptyMessage(0);
+			PhoenixMethod.setAudioLed(true);
+		}else if(mState == STATE_RECORDING){ 
+			stopRecord();
+			mState = STATE_IDLE;
+			mHandler.sendEmptyMessage(0);
+			stopTimer();
+			PhoenixMethod.setAudioLed(false);
+			timeBar.setVisibility(View.GONE);
+		}
+		mKeyLockForFrequentClick = false;
+	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.audio_activity);
+		timeBar = (LinearLayout) findViewById(R.id.bar_timer);
 		btnRecord = (ImageButton) findViewById(R.id.record);
 		btnRecord.setOnClickListener(new OnClickListener() {
-			
 			@Override
 			public void onClick(View v) {
-				if(mState == STATE_IDLE){
-					startRecord();
-					mState = STATE_RECORDING;
-					startTimer();
-					mHandler.sendEmptyMessage(0);
-				}else if(mState == STATE_RECORDING){ 
-					stopRecord();
-					mState = STATE_IDLE;
-					mHandler.sendEmptyMessage(0);
-					stopTimer();
-				}
+				audioEvent();
 			}
 		});
 		timeCount = (TextView) findViewById(R.id.timeCount);
+		
+		ImageButton mMainMenu = (ImageButton) findViewById(R.id.main_menu);
+		mMainMenu.setOnClickListener(this);
+		
+		mainMenu = new SlidingMenu(this);
+		mainMenu.setMode(SlidingMenu.LEFT);
+		mainMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+		mainMenu.setShadowWidthRes(R.dimen.shadow_width);
+//        menu.setShadowDrawable(R.drawable.shadow);
+		mainMenu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
+		mainMenu.setFadeDegree(0.35f);
+		mainMenu.setSlidingEnabled(true);
+		mainMenu.setDragEnabled(false);
+		mainMenu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
+		mainMenu.setMenu(R.layout.main_menus);
+		RelativeLayout mCameraMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_camera);
+		mCameraMenu.setOnClickListener(this);
+		RelativeLayout mAudioMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_audio);
+		mAudioMenu.setOnClickListener(this);
+		mAudioMenu.setBackgroundColor(Color.argb(100, 0, 255, 255));
+		RelativeLayout mFilesMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_files);
+		mFilesMenu.setOnClickListener(this);
+		RelativeLayout mSettingMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_setting);
+		mSettingMenu.setOnClickListener(this);
+		RelativeLayout mWirelessMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_wireless);
+		mWirelessMenu.setOnClickListener(this);
+		if(getIntent() != null){
+			if(getIntent().getExtras()!= null){
+				if(getIntent().getExtras().getBoolean(Constants.AUTO_AUDIO, false)){
+					mHandler.sendEmptyMessageDelayed(2, 1000);
+				}}}
 	}
 	
 	private void startTimer(){
@@ -95,6 +161,7 @@ public class AudioActivity extends Activity {
 			timer.purge();
 			timer = null;
 			mHandler.removeMessages(1);
+			timeCount.setText(String.format("%1$02d:%2$02d:%3$02d",0, 0, 0));
 		}
 	}
 	
@@ -105,7 +172,60 @@ public class AudioActivity extends Activity {
 	private void stopRecord(){
 		AudioRecordFunc func = AudioRecordFunc.getInstance(this);
 		func.stopRecordAndFile();
+		Toast.makeText(this, R.string.audio_success, Toast.LENGTH_SHORT).show();
+	}
+
+	@Override
+	public void onClick(View view) {
+		switch(view.getId()){
+			case R.id.main_menu:
+				mainMenu.toggle();
+				break;
+			case R.id.menu_camera:
+				startActivity(new Intent(this, MainScene.class));
+				break;
+			case R.id.menu_audio:
+				mainMenu.toggle();
+				break;
+			case R.id.menu_files:
+				startActivity(new Intent(this, FilesActivity.class));
+				break;
+			case R.id.menu_setting:
+				startActivity(new Intent(this, SettingActivity.class));
+				break;
+			case R.id.menu_wireless:
+				break;
+		}
 	}
 	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		Intent intent;
+		switch (keyCode) {
+		case KeyEvent.KEYCODE_CAMERA:
+			if(mState == STATE_RECORDING)
+				break;
+			intent = new Intent(this, MainScene.class);
+			intent.putExtra(Constants.AUTO_VIDEO, false);
+			startActivity(intent);
+			break;
+			
+		case KeyEvent.KEYCODE_MEDIA_RECORD:
+			if(mState == STATE_RECORDING)
+				break;
+			intent = new Intent(this, MainScene.class);
+			intent.putExtra(Constants.AUTO_VIDEO, true);
+			startActivity(intent);
+			break;
+			
+		case KeyEvent.KEYCODE_MUSIC:
+			audioEvent();
+			break;
+			
+		default:
+			break;
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 	
 }

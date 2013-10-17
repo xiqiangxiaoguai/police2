@@ -23,6 +23,15 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:src="@drawable/audio_play" />
+    <ImageView
+        android:id="@+id/palyer_control_stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/palyer_control_paly"
+        android:src="@drawable/audio_stop"
+        android:layout_centerVertical="true"
+        />
 <RelativeLayout 
      android:layout_width="match_parent"
     android:layout_height="match_parent" 

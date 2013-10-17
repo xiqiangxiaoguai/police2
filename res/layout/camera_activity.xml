@@ -73,7 +73,8 @@
 		            <TextView 
 		                android:id="@+id/recordType"
 		                android:layout_width="wrap_content"
-		                android:layout_height="wrap_content"/>
+		                android:layout_height="wrap_content"
+		                android:text="@string/video_recording"/>
 		            <ImageButton
 			            android:id="@+id/redPoint"
 			            android:layout_width="24dp"
@@ -99,10 +100,10 @@
         >
         <ImageButton 
             android:id="@+id/preview"
-            android:layout_width="80px"
-            android:layout_height="80px"
+            android:layout_width="100px"
+            android:layout_height="100px"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="25px"
+            android:layout_marginLeft="15px"
             android:layout_alignParentLeft="true"
             android:background="@android:color/transparent"
             android:src="@android:color/white"

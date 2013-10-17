@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="11"
+        android:minSdkVersion="14"
         android:targetSdkVersion="17" />
 	<uses-permission android:name="android.permission.CAMERA"></uses-permission>
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
@@ -77,6 +77,14 @@
                 <data />
             </intent-filter>
         </activity>
+        <activity android:name="com.phoenix.setting.WifiActivity"
+            android:label="@string/wifi">
+            <intent-filter >
+                <action android:name="com.phoenix.setting.WifiActivity"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data />
+            </intent-filter>
+        </activity>
         <activity android:name="com.phoenix.setting.StorPreActivity"
             android:label="@string/storage">
             <intent-filter >
@@ -89,6 +97,15 @@
             android:label="@string/about">
             <intent-filter >
                 <action android:name="com.phoenix.setting.AboutPreActivity"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name="com.phoenix.police.AudioActivity"
+            android:label="@string/record">
+            <intent-filter >
+                <action android:name="com.phoenix.police.AudioActivity"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <data />
             </intent-filter>

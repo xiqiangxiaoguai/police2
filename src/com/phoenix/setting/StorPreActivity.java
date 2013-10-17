@@ -32,13 +32,5 @@ public class StorPreActivity extends PreferenceActivity{
 		cameraScreen.setSummary(data.getString(KEY_STOR_CAMERA));
 		videoScreen.setSummary(data.getString(KEY_STOR_VIDEO));
 		audioScreen.setSummary(data.getString(KEY_STOR_AUDIO));
-		
-		Button button = (Button) findViewById(R.id.back);
-		button.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				finish();
-			}
-		});
 	}
 }

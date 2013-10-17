@@ -36,7 +36,7 @@ public class Constants {
 	
 	public static final String DEVICE_NAME = "Phenix ÷≥÷÷’∂À";
 	public static final String ANDROID_VERSION = "Android 4.1";
-	public static final String VERSION = "V1.0";
+	public static final String VERSION = "V0.1";
 	
 	public static final int MODE_CAMERA = 0;
 	public static final int MODE_VIDEO = 1;
@@ -65,6 +65,10 @@ public class Constants {
 	public static final String SHARED_POL_NUM = "police_num";
 	public static final String SHARED_POL_NUM_DEF = "XXXX0001";
 	
+	public static final String SHARED_PREVIEW_PATH = "preview";
 	public static final int TIME_AUTO_SAVED = 10;//min
+	
+	public static final String AUTO_AUDIO ="auto_audio";
+	public static final String AUTO_VIDEO = "auto_video";
 	
 }

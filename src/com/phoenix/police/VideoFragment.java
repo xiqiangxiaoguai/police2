@@ -286,7 +286,7 @@ public class VideoFragment extends Fragment implements OnItemClickListener{
 	        timeView.setText("" + mTimeFormat.format(mDatas[position]));
 	        TextView dateView = (TextView) convertView  
 	                .findViewById(R.id.friends_item_date);  
-	        dateView.setText("" + mTimeFormat.format(mDatas[position]));
+	        dateView.setText("" + mDateFormat.format(mDatas[position]));
 	        
 	        ImageView imageView = (ImageView) convertView.findViewById(R.id.freinds_image);
 			imageView.setImageResource(R.drawable.image_loading);

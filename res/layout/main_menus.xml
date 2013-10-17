@@ -13,14 +13,13 @@
             <RelativeLayout 
                 android:id="@+id/menu_camera"
                 android:layout_height="120px"
-                android:layout_width="match_parent"
-                android:background="#AA00FFFF">
+                android:layout_width="match_parent">
                 <ImageView 
                     android:layout_width="60px"
                     android:layout_height="60px"
                     android:scaleType="fitXY"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="150px"
+                    android:layout_marginLeft="120px"
                     android:src="@drawable/menu_camera"/>
                 <TextView 
                     android:textSize="22dp"
@@ -29,7 +28,7 @@
                     android:layout_height="80px"
                     android:gravity="center_vertical"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="210px"
+                    android:layout_marginLeft="180px"
                     android:text="@string/camera"/>
             </RelativeLayout>
             <RelativeLayout 
@@ -41,7 +40,7 @@
                     android:layout_height="80px"
                     android:scaleType="fitXY"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="130px"
+                    android:layout_marginLeft="100px"
                     android:src="@drawable/menu_audio"/>
                 <TextView 
                     android:textSize="22dp"
@@ -50,7 +49,7 @@
                     android:layout_height="80px"
                     android:gravity="center_vertical"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="210px"
+                    android:layout_marginLeft="180px"
                     android:text="@string/record"/>
             </RelativeLayout>
             <RelativeLayout 
@@ -62,7 +61,7 @@
                     android:layout_height="80px"
                     android:scaleType="fitXY"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="130px"
+                    android:layout_marginLeft="100px"
                     android:src="@drawable/menu_files"/>
                 <TextView  
                     android:textSize="22dp"
@@ -71,7 +70,7 @@
                     android:layout_height="80px"
                     android:gravity="center_vertical"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="210px"
+                    android:layout_marginLeft="180px"
                     android:text="@string/files"/>
             </RelativeLayout>
             <RelativeLayout 
@@ -83,7 +82,7 @@
                     android:layout_height="80px"
                     android:scaleType="fitXY"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="130px"
+                    android:layout_marginLeft="100px"
                     android:src="@drawable/menu_setting"/>
                 <TextView  
                     android:textSize="22dp"
@@ -92,7 +91,7 @@
                     android:layout_height="80px"
                     android:gravity="center_vertical"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="210px"
+                    android:layout_marginLeft="180px"
                     android:text="@string/setting"/>
             </RelativeLayout>
             <RelativeLayout 
@@ -104,7 +103,7 @@
                     android:layout_height="80px"
                     android:scaleType="fitXY"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="130px"
+                    android:layout_marginLeft="100px"
                     android:src="@drawable/menu_wireless"/>
                 <TextView  
                     android:textSize="22dp"
@@ -113,7 +112,7 @@
                     android:layout_height="80px"
                     android:gravity="center_vertical"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="210px"
+                    android:layout_marginLeft="180px"
                     android:text="@string/wireless"/>
             </RelativeLayout>
         </LinearLayout>

@@ -75,6 +75,25 @@ public class SlidingMenu extends RelativeLayout {
 
 	private OnCloseListener mCloseListener;
 
+	//Added by JiangzhouQ 2013/09/30 Begin
+	//Email:jiangzhouq@gmail.com
+	
+	/**
+	 * The listener interface for receiveing onStartOpen enents.
+	 * The class that is interested in processing a onStartOpen
+	 * event implements this interface, and the object created
+	 * with that class is registered with a component using the 
+	 * component's <code>addOnStartOpenListener<code>method.When
+	 * the onStartOpen event occurs, that object's appropriate
+	 * method is invoked
+	 */
+	public interface OnStartOpenListener{
+		/**
+		 * On start open
+		 */
+		public void onStartOpen();
+	}
+	//Added by JiangzhouQ 2013/09/30 End
 	/**
 	 * The listener interface for receiving onOpen events.
 	 * The class that is interested in processing a onOpen
@@ -218,7 +237,8 @@ public class SlidingMenu extends RelativeLayout {
 			public static final int POSITION_SECONDARY_OPEN = 2;
 
 			public void onPageScrolled(int position, float positionOffset,
-					int positionOffsetPixels) { }
+					int positionOffsetPixels) {
+			}
 
 			public void onPageSelected(int position) {
 				if (position == POSITION_OPEN && mOpenListener != null) {
@@ -431,6 +451,17 @@ public class SlidingMenu extends RelativeLayout {
 		mViewAbove.setSlidingEnabled(b);
 	}
 
+	//Added by JiangzhouQ 2013/09/29 Begin
+	//Email:jiangzhouq@gmail.com
+	/**
+	 * Sets the gesture to drag enabled.
+	 *
+	 * @param b true to enable gesture todrag, false to disable it.
+	 */
+	public void setDragEnabled(boolean b){
+		mViewAbove.setDragEnabled(b);
+	}
+	//Added by JiangzhouQ 2013/09/29 End
 	/**
 	 * Checks if is sliding enabled.
 	 *
@@ -874,6 +905,17 @@ public class SlidingMenu extends RelativeLayout {
 		mViewAbove.clearIgnoredViews();
 	}
 
+	//Added by Jiangzhouq 2013-9-30 Begin
+	//Email:jiangzhouq@gmail.com
+	/**
+	 * Sets the OnStartOpenListener. {@link OnStartOpenListener#onStartOpen() OnStartOpenListener.onStartOpen()} will be called when the SlidingMenu is start to opened
+	 *
+	 * @param listener the new OnStartOpenListener
+	 */
+	public void setOnStartOpenListener(OnStartOpenListener listener) {
+		mViewAbove.setOnStartOpenListener(listener);
+	}
+	//Added by Jiangzhouq 2013-9-30 End 
 	/**
 	 * Sets the OnOpenListener. {@link OnOpenListener#onOpen() OnOpenListener.onOpen()} will be called when the SlidingMenu is opened
 	 *

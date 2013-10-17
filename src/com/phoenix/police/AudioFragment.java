@@ -11,18 +11,16 @@ import java.util.Map;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
@@ -34,9 +32,6 @@ import android.widget.SectionIndexer;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.phoenix.data.Constants;
 import com.phoenix.police.PinnedHeaderListView.PinnedHeaderAdapter;
 
@@ -62,7 +57,16 @@ public class AudioFragment extends Fragment{
 	};
 	
 	private Handler mHandler = new Handler(){
-		
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			switch (msg.what){
+				case 0:
+					((ImageView)grid.getChildAt(mCurrentPlayPos - grid.getFirstVisiblePosition() + grid.getHeaderViewsCount()).findViewById(R.id.audio_control)).setImageResource(R.drawable.end);
+					mCurrentPlayPos = -1;
+					break;
+			}
+		}
 	};
 	
 	private List<String> mSections;
@@ -76,7 +80,11 @@ public class AudioFragment extends Fragment{
 	TextView mRemaingTime;
 		
 	PinnedHeaderListView grid;
-	int mCurrentPlayPos = 0;
+	int mCurrentPlayPos = -1;
+    public static final int PLAYING=1;//≤•∑≈÷–
+    public static final int PAUSE=2;//‘›Õ£
+    public static final int STOP=3;//Õ£÷π
+    public int STATE=STOP;
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -197,23 +205,48 @@ public class AudioFragment extends Fragment{
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int arg2, long arg3) {
 				mHandler.removeCallbacks(updateSeekbar);
-				if(mediaPlayer != null){
-					mediaPlayer.stop();
-					mediaPlayer.release();
+				if(mCurrentPlayPos == arg2){
+					if(STATE == PLAYING){
+						if(mediaPlayer != null){
+							mediaPlayer.pause();
+							STATE = PAUSE;
+							((ImageView)grid.getChildAt(mCurrentPlayPos- grid.getFirstVisiblePosition() + grid.getHeaderViewsCount()).findViewById(R.id.audio_control)).setImageResource(R.drawable.end);
+						}
+					}else if(STATE == PAUSE){
+						if(mediaPlayer != null){
+							mediaPlayer.start();
+							STATE = PLAYING;
+							mHandler.post(updateSeekbar);
+							((ImageView)grid.getChildAt(mCurrentPlayPos- grid.getFirstVisiblePosition() + grid.getHeaderViewsCount()).findViewById(R.id.audio_control)).setImageResource(R.drawable.pause);
+						}
+					}
+				}else{
+					if(mediaPlayer != null){
+						mediaPlayer.stop();
+						mediaPlayer.release();
+					}
+					mediaPlayer = new MediaPlayer();
+					mediaPlayer.setOnCompletionListener(new OnCompletionListener() {
+						@Override
+						public void onCompletion(MediaPlayer mp) {
+							STATE = STOP;
+							mHandler.sendEmptyMessage(0);
+						}
+					});
+					try {
+						ImageView audioControl = (ImageView) arg1.findViewById(R.id.audio_control);
+						audioControl.setImageDrawable(getResources().getDrawable(R.drawable.pause));
+						mediaPlayer.setDataSource( info.info_audioUrls.get(arg2));
+						mCurrentPlayPos = arg2;
+						mediaPlayer.prepare();
+						mediaPlayer.start();
+						mSeekBar.setMax(mediaPlayer.getDuration()/1000);
+						mHandler.post(updateSeekbar);
+						STATE = PLAYING;
+					} catch (Exception e) {
+						e.printStackTrace();
+					} 
 				}
-				mediaPlayer = new MediaPlayer();
-				try {
-					ImageView audioControl = (ImageView) arg1.findViewById(R.id.audio_control);
-					audioControl.setImageDrawable(getResources().getDrawable(R.drawable.pause));
-					mediaPlayer.setDataSource( info.info_audioUrls.get(arg2));
-					mCurrentPlayPos = arg2;
-					mediaPlayer.prepare();
-					mediaPlayer.start();
-					mSeekBar.setMax(mediaPlayer.getDuration()/1000);
-					mHandler.post(updateSeekbar);
-				} catch (Exception e) {
-					e.printStackTrace();
-				} 
 			}
 		});
 		return view;
@@ -224,7 +257,6 @@ public class AudioFragment extends Fragment{
 			int curPosition = mediaPlayer.getCurrentPosition()/1000;
 			int remaining = mSeekBar.getMax() - curPosition;
 			if(curPosition == mSeekBar.getMax()){
-				((ImageView)grid.getChildAt(mCurrentPlayPos).findViewById(R.id.audio_control)).setImageResource(R.drawable.end);
 				mSeekBar.setProgress(0);
 				mPastedTime.setText(String.format("%1$02d:%2$02d", 0/60,0%60));
 				mRemaingTime.setText(String.format("%1$02d:%2$02d", mSeekBar.getMax()/60,mSeekBar.getMax()%60));
@@ -293,7 +325,9 @@ public class AudioFragment extends Fragment{
 	        LinearLayout mHeaderParent = (LinearLayout) convertView  
 	                .findViewById(R.id.friends_item_header_parent);  
 	        TextView mHeaderText = (TextView) convertView  
-	                .findViewById(R.id.friends_item_header_text);  
+	                .findViewById(R.id.friends_item_header_text);
+	        ImageView mAudioControl = (ImageView) convertView
+	        		.findViewById(R.id.audio_control);
 	        if (getPositionForSection(section) == position) {  
 	            mHeaderParent.setVisibility(View.VISIBLE);  
 	            mHeaderText.setText(mFriendsSections.get(section));  
@@ -303,7 +337,11 @@ public class AudioFragment extends Fragment{
 	        TextView textView = (TextView) convertView  
 	                .findViewById(R.id.friends_item);  
 	        textView.setText("" + sDateFormat.format(mDatas[position]));  
-	        
+	        if(position == mCurrentPlayPos){
+	        	mAudioControl.setImageResource(R.drawable.pause);
+	        }else{
+	        	mAudioControl.setImageResource(R.drawable.end);
+	        }
 	        return convertView; 
 	        
 //			imageView.setImageResource(R.drawable.image_loading);

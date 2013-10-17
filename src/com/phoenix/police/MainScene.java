@@ -10,23 +10,23 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.media.MediaRecorder;
 import android.media.ThumbnailUtils;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.StatFs;
 import android.provider.MediaStore.Video.Thumbnails;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
@@ -38,14 +38,20 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.phoenix.data.Constants;
 import com.phoenix.lib.SlidingMenu;
 import com.phoenix.lib.SlidingMenu.OnClosedListener;
-import com.phoenix.lib.SlidingMenu.OnOpenedListener;
+import com.phoenix.lib.SlidingMenu.OnStartOpenListener;
+import com.phoenix.lib.app.SlidingActivity;
 import com.phoenix.setting.PhoenixMethod;
+import com.phoenix.setting.SettingActivity;
 
-public class MainScene extends Activity implements OnClickListener{
+public class MainScene extends SlidingActivity implements OnClickListener{
 	/** Called when the activity is first created. */
 	private static final String LOG_TAG = MainScene.class.getSimpleName();
 	private static final boolean LOG_SWITCH = Constants.LOG_SWITCH;
@@ -56,11 +62,11 @@ public class MainScene extends Activity implements OnClickListener{
 	CameraSurfaceView mySurface;
 	ImageButton mQiezi;
 	ImageButton mMainMenu;
+	ImageButton mModeSwitch;
 //	ImageButton bFlashBtn;
 //	Button bSetting;
 //	Button bFiles;
 	ImageView mPreview;
-	private int cFlashMode = CameraSurfaceView.FLASH_MODE_OFF;
 	private String cameraPath = Constants.CAMERA_PATH;
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 	public MediaRecorder mrec;
@@ -73,7 +79,7 @@ public class MainScene extends Activity implements OnClickListener{
 	SharedPreferences sharedPreferences;
 	
 	SlidingMenu mainMenu = null;
-	
+	LinearLayout bar_timer;
 	private int resolution = 0;
 	private int preRes = -1;
 	private boolean mVideoKeyLocked = false;
@@ -83,6 +89,15 @@ public class MainScene extends Activity implements OnClickListener{
 	private boolean appPaused = false;
 	private String[] fold_paths = new String[]{Constants.CAMERA_PATH, Constants.VIDEO_PATH, Constants.VIDEO_THUMBNAIL_PATH, Constants.AUDIO_PATH, Constants.LOG_PATH};
 	
+	private ImageLoader imageLoader;
+	
+	private String previewImagePath;
+	DisplayImageOptions options = new DisplayImageOptions.Builder()
+	.showImageForEmptyUri(R.drawable.image_loading)
+	.imageScaleType(ImageScaleType.EXACTLY)
+	.showStubImage(R.drawable.image_loading)
+	.cacheInMemory().cacheOnDisc().build(); 
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -90,10 +105,6 @@ public class MainScene extends Activity implements OnClickListener{
 		setContentView(R.layout.camera_activity);
 		
 		sharedPreferences = getSharedPreferences(Constants.SETTING_PREFERENCES, Context.MODE_PRIVATE);
-		int flash_mode = sharedPreferences.getInt(Constants.PREFERENCES_FLASH_MODE, -1);
-		if(flash_mode == -1){
-			sharedPreferences.edit().putInt(Constants.PREFERENCES_FLASH_MODE, 0);
-		}
 		
 		createSurfaceView();
 		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
@@ -102,25 +113,34 @@ public class MainScene extends Activity implements OnClickListener{
 		}
 		initPreviewWidget();
 		
+		imageLoader = ImageLoader.getInstance();
 		mMainMenu = (ImageButton) findViewById(R.id.main_menu);
 		mMainMenu.setOnClickListener(this);
+		mModeSwitch = (ImageButton) findViewById(R.id.mode);
+		mModeSwitch.setOnClickListener(this);
 		mQiezi = (ImageButton) findViewById(R.id.qiezi);
 		mQiezi.setOnClickListener(this);
 		
 		mPreview = (ImageView)findViewById(R.id.preview);
 		mPreview.setOnClickListener(this);
-		mainMenu = new SlidingMenu(this);
+		bar_timer = (LinearLayout)findViewById(R.id.bar_timer);
+		timeCount = (TextView) findViewById(R.id.timeCount);
+		bar_timer.setVisibility(View.GONE);
+		
+		setBehindContentView(R.layout.main_menus);
+		
+		mainMenu = getSlidingMenu();
 		mainMenu.setMode(SlidingMenu.LEFT);
 		mainMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
 		mainMenu.setShadowWidthRes(R.dimen.shadow_width);
 //        menu.setShadowDrawable(R.drawable.shadow);
 		mainMenu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
 		mainMenu.setFadeDegree(0.35f);
-		mainMenu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
-		mainMenu.setMenu(R.layout.main_menus);
-		mainMenu.setOnOpenedListener(new OnOpenedListener() {
+		mainMenu.setDragEnabled(false);
+		
+		mainMenu.setOnStartOpenListener(new OnStartOpenListener() {
 			@Override
-			public void onOpened() {
+			public void onStartOpen() {
 				onPause();
 			}
 		});
@@ -133,9 +153,29 @@ public class MainScene extends Activity implements OnClickListener{
 			}
 		});
 		RelativeLayout mCameraMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_camera);
+		mCameraMenu.setBackgroundColor(Color.argb(100, 0, 255, 255));
 		mCameraMenu.setOnClickListener(this);
+		RelativeLayout mAudioMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_audio);
+		mAudioMenu.setOnClickListener(this);
+		RelativeLayout mFilesMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_files);
+		mFilesMenu.setOnClickListener(this);
+		RelativeLayout mSettingMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_setting);
+		mSettingMenu.setOnClickListener(this);
+		RelativeLayout mWirelessMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_wireless);
+		mWirelessMenu.setOnClickListener(this);
+		if(getIntent() != null){
+			if(getIntent().getExtras()!= null){
+				if(getIntent().getExtras().getBoolean(Constants.AUTO_VIDEO, false)){
+					mHandler.sendEmptyMessageDelayed(3, 3000);
+				}
+			}
+		}
 	}
-	
+	@Override
+	protected void onStop() {
+		super.onStop();
+		imageLoader.stop();
+	}
 	private void createSurfaceView(){
 		mySurface = new CameraSurfaceView(this);
 		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
@@ -156,9 +196,16 @@ public class MainScene extends Activity implements OnClickListener{
 	}
 	private void destoySurfaceView(){
 		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
-		cameraLayout.removeViewAt(0);
+		if(cameraLayout != null & cameraLayout.getChildCount() == 2)
+			cameraLayout.removeViewAt(0);
 		if(null != mySurface){
-			mySurface = null;
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					mySurface.stopPreview();
+					mySurface = null;
+				}
+			}).start();
 		}
 	}
 	@Override
@@ -168,18 +215,7 @@ public class MainScene extends Activity implements OnClickListener{
 			Log.d(LOG_TAG, "onPause()");
 		}
 		appPaused = true;
-		mHandler.post(new Runnable() {
-			@Override
-			public void run() {
-				if(null != mySurface)
-					mySurface.stopPreview();
-				destoySurfaceView();
-				RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
-				if (LOG_SWITCH) {
-					Log.d(LOG_TAG, "child count:" + cameraLayout.getChildCount());
-				}
-			}
-		});
+		destoySurfaceView();
 		
 	}
 	
@@ -201,7 +237,8 @@ public class MainScene extends Activity implements OnClickListener{
 			appPaused = false;
 		}
 		mHandler.postDelayed(dirRun, 3000);
-		
+		previewImagePath = sharedPreferences.getString(Constants.SHARED_PREVIEW_PATH, "");
+		mHandler.sendEmptyMessage(2);
 	}
 	
 	Runnable dirRun = new Runnable() {
@@ -222,9 +259,17 @@ public class MainScene extends Activity implements OnClickListener{
 	public void onClick(View v) {
 		switch (v.getId()){
 		case  R.id.preview:
-			if (LOG_SWITCH) {
-				Log.d(LOG_TAG, "preview clicked!");
+			break;
+		case R.id.qiezi:
+			if(MODE == Constants.MODE_CAMERA){
+				cameraEvent();
+			}else{
+				videoEvent();
 			}
+			break;
+		case R.id.mode:
+			if(mVideoKeyLocked)
+				break;
 			if(MODE == Constants.MODE_CAMERA){
 				setMode(Constants.MODE_VIDEO);
 			}else{
@@ -232,49 +277,29 @@ public class MainScene extends Activity implements OnClickListener{
 			}
 			break;
 		case R.id.main_menu:
-			if (LOG_SWITCH) {
-				Log.d(LOG_TAG, "main_menu clicked!");
-			}
+			if(mVideoKeyLocked)
+				break;
 			mainMenu.toggle();
 			break;
 		case R.id.menu_camera:
 			mainMenu.toggle();
 			break;
-		case R.id.qiezi:
-			if (LOG_SWITCH) {
-				Log.d(LOG_TAG, "qiezi clicked!");
-			}
+		case R.id.menu_audio:
+			startActivity(new Intent(this, AudioActivity.class));
+			break;
+		case R.id.menu_files:
+			startActivity(new Intent(this, FilesActivity.class));
+			break;
+		case R.id.menu_setting:
+			startActivity(new Intent(this, SettingActivity.class));
+			break;
+		case R.id.menu_wireless:
 			break;
 		}
 	}
 	
 	private void initPreviewWidget(){
-		LinearLayout bar_timer = (LinearLayout)findViewById(R.id.bar_timer);
-		resolution = Integer.valueOf(sharedPreferences.getString(Constants.PREFERENCES_RESOLUTION, "0"));
-		int flash_mode = 1;
-//		TextView resoWidget = (TextView) findViewById(R.id.resolution);
-//		ImageButton flashWidget = (ImageButton) findViewById(R.id.flashmode);
-		TextView recordTypeWidget = (TextView) findViewById(R.id.recordType);
-		timeCount = (TextView) findViewById(R.id.timeCount);
-		switch(MODE){
-		case Constants.MODE_CAMERA:
-			bar_timer.setVisibility(View.GONE);
-//			resoWidget.setText(Constants.resolutions[3][0] + getResources().getString(R.string.plus) + Constants.resolutions[3][1]);
-//			flashWidget.setImageResource(Constants.flash_resource[flash_mode]);
-			break;
-		case Constants.MODE_VIDEO:
-			bar_timer.setVisibility(View.VISIBLE);
-			
-			recordTypeWidget.setText(R.string.video_recording);
-//			resoWidget.setText(Constants.resolutions[resolution][0] + getResources().getString(R.string.plus) + Constants.resolutions[resolution ][1]);
-//			flashWidget.setImageResource(Constants.flash_resource[flash_mode]);
-			break;
-		case Constants.MODE_AUDIO:
-			bar_timer.setVisibility(View.VISIBLE);
-			
-			recordTypeWidget.setText(R.string.audio_recording);
-			break;
-		}
+
 	}
 	
 	//***********************************************************Camera**************************************************
@@ -282,11 +307,15 @@ public class MainScene extends Activity implements OnClickListener{
 	private PictureCallback jpegCallback = new PictureCallback(){
 		public void onPictureTaken(byte[] data, Camera camera) {
 			final byte[] mData =  data;
+			
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					String path = save(mData);
+					previewImagePath = save(mData);
+					sharedPreferences.edit().putString(Constants.SHARED_PREVIEW_PATH, previewImagePath).commit();
+					mHandler.sendEmptyMessage(2);
 				}
+				
 			}).start();
 			mySurface.resumePreview();
 			mKeyLockForFrequentClick = false;
@@ -353,7 +382,7 @@ public class MainScene extends Activity implements OnClickListener{
 			bos = new BufferedOutputStream(new FileOutputStream(
 					myCaptureFile));
 			ThumbnailUtils.createVideoThumbnail(path,
-					Thumbnails.MINI_KIND).compress(
+					Thumbnails.MINI_KIND).compress( 
 					Bitmap.CompressFormat.JPEG, 80, bos);
 			try {
 				bos.flush();
@@ -365,6 +394,9 @@ public class MainScene extends Activity implements OnClickListener{
 //			Toast.makeText(this, R.string.video_success, Toast.LENGTH_SHORT).show();
 			Intent intent = new Intent(Constants.ACTION_VIDEO_END);
 			sendBroadcast(intent);
+			previewImagePath = myCaptureFile.getAbsolutePath();
+			sharedPreferences.edit().putString(Constants.SHARED_PREVIEW_PATH, previewImagePath).commit();
+			mHandler.sendEmptyMessage(4);
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 //			Toast.makeText(this, R.string.video_fail, Toast.LENGTH_SHORT).show();
@@ -387,8 +419,8 @@ public class MainScene extends Activity implements OnClickListener{
 
 		Camera mCamera = mySurface.getCamera();
 		SurfaceHolder surfaceHolder = mySurface.getHolder();
-        mrec = new MediaRecorder();  // Works well
-        mCamera.unlock();
+		mrec = new MediaRecorder();  // Works well
+		mCamera.unlock();
         mrec.setCamera(mCamera);
         mrec.setPreviewDisplay(surfaceHolder.getSurface());
         mrec.setVideoSource(MediaRecorder.VideoSource.CAMERA);
@@ -430,19 +462,28 @@ public class MainScene extends Activity implements OnClickListener{
 				timeCount.setText(String.format("%1$02d:%2$02d:%3$02d",hour, min, sec));
 				if(min == 10){
 					mrec.stop();
-		            mrec.release();
-		            mrec = null;
+					mrec.release();
+					mrec = null;
 					stopRecording(cPath);
 					stopTimer();
 					try {
 		                startRecording();
 						startTimer();
-		            } catch (Exception e) {
-		                mrec.release();
+					} catch (Exception e) {
+						mrec.release();
 						stopTimer();
-		            }
-					
+					}
 				}
+				break;
+			case 2:
+				imageLoader.displayImage("file:/" + previewImagePath, mPreview ,options,null);
+				break;
+			case 3:
+				videoEvent();
+				break;
+			case 4:
+				imageLoader.displayImage("file:/" + previewImagePath, mPreview ,options,null);
+				Toast.makeText(MainScene.this, R.string.video_success, Toast.LENGTH_SHORT).show();
 				break;
 			}
 		};
@@ -474,19 +515,6 @@ public class MainScene extends Activity implements OnClickListener{
 		}
 	}
 	
-	private void startRecord(){
-		AudioRecordFunc func = AudioRecordFunc.getInstance(this);
-		func.startRecordAndFile();
-		Intent intent = new Intent(Constants.ACTION_AUDIO_START);
-		intent.putExtra("name", func.NewAudioName);
-		sendBroadcast(intent);
-	}
-	private void stopRecord(){
-		AudioRecordFunc func = AudioRecordFunc.getInstance(this);
-		func.stopRecordAndFile();
-		Intent intent = new Intent(Constants.ACTION_AUDIO_END);
-		sendBroadcast(intent);
-	}
 	//***********************************************************Audio**************************************************
 	private void setMode(int mode){
 //		if(MODE != mode){
@@ -509,8 +537,12 @@ public class MainScene extends Activity implements OnClickListener{
 //		}
 //		updateResForMode();
 		MODE = mode;
+		if(mode == Constants.MODE_CAMERA){
+			mModeSwitch.setImageResource(R.drawable.mode_video);
+		}else if (mode == Constants.MODE_VIDEO){
+			mModeSwitch.setImageResource(R.drawable.mode_camera);
+		}
 		initPreviewWidget();
-		
 		updateResForMode();
 	}
 	private void updateResForMode(){
@@ -535,108 +567,91 @@ public class MainScene extends Activity implements OnClickListener{
 		containerParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, -1);
 		cameraLayout.setLayoutParams(containerParams);
 	}
+	private void cameraEvent(){
+		if(mKeyLockForFrequentClick)
+			return;
+		if(mVideoKeyLocked){
+			Camera camera = mySurface.getCamera();
+			camera.takePicture(null, null, jpegCallback);
+			return;
+		}
+		setMode(Constants.MODE_CAMERA);
+		//Camera
+		mKeyLockForFrequentClick = true;
+		Camera camera = mySurface.getCamera();
+		camera.takePicture(null, null, jpegCallback);
+	}
+	private void videoEvent(){
+		//Video
+		if(mKeyLockForFrequentClick)
+			return;
+		mKeyLockForFrequentClick = true;
+		if(mState == STATE_IDLE){ 
+			if (LOG_SWITCH) {
+				Log.d(LOG_TAG, "set mode...");
+			}
+			setMode(Constants.MODE_VIDEO);
+			if(mVideoKeyLocked)
+				return;
+			try {
+				if (LOG_SWITCH) {
+					Log.d(LOG_TAG, "start recording...");
+				}
+                startRecording();
+				startTimer();
+				mVideoKeyLocked = true;
+				mainMenu.setSlidingEnabled(!mVideoKeyLocked);
+            } catch (Exception e) {
+                mrec.release();
+				stopTimer();
+            }
+			bar_timer.setVisibility(View.VISIBLE);
+			mState = STATE_RECORDING;
+			PhoenixMethod.setVideoLed(true);
+		}else if(mState == STATE_RECORDING){
+			mrec.stop();
+            mrec.release();
+            mrec = null;
+            //Add into runnable.
+//            mHandler.post(new Runnable() {
+//				@Override
+//				public void run() {
+//					stopRecording(cPath);
+//				}
+//			});
+            new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					stopRecording(cPath);
+				}
+			}).start();
+            bar_timer.setVisibility(View.GONE);
+			stopTimer();
+			mVideoKeyLocked = false;
+			mainMenu.setSlidingEnabled(!mVideoKeyLocked);
+			mState = STATE_IDLE;
+			PhoenixMethod.setVideoLed(false);
+		}
+		mKeyLockForFrequentClick = false;
+	}
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_CAMERA:
-			if(mKeyLockForFrequentClick)
-				break;
-			if(mAudioKeyLocked)
-				break;
-			if(mVideoKeyLocked){
-				Camera camera = mySurface.getCamera();
-				camera.takePicture(null, null, jpegCallback);
-				break;
-			}
-			setMode(Constants.MODE_CAMERA);
-			//Camera
-			mKeyLockForFrequentClick = true;
-			Camera camera = mySurface.getCamera();
-			camera.takePicture(null, null, jpegCallback);
+			cameraEvent();
 			break;
 			
 		case KeyEvent.KEYCODE_MEDIA_RECORD:
-			//Video
-			if(mKeyLockForFrequentClick)
-				break;
-			if(mAudioKeyLocked)
-				break;
-			mKeyLockForFrequentClick = true;
-			if(mState == STATE_IDLE){ 
-				if (LOG_SWITCH) {
-					Log.d(LOG_TAG, "set mode...");
-				}
-				setMode(Constants.MODE_VIDEO);
-				if(mVideoKeyLocked)
-					break;
-				try {
-					if (LOG_SWITCH) {
-						Log.d(LOG_TAG, "start recording...");
-					}
-	                startRecording();
-					startTimer();
-					mVideoKeyLocked = true;
-	            } catch (Exception e) {
-	                mrec.release();
-					stopTimer();
-	            }
-				mState = STATE_RECORDING;
-				PhoenixMethod.setVideoLed(true);
-			}else if(mState == STATE_RECORDING){
-				mrec.stop();
-	            mrec.release();
-	            mrec = null;
-	            //Add into runnable.
-//	            mHandler.post(new Runnable() {
-//					@Override
-//					public void run() {
-//						stopRecording(cPath);
-//					}
-//				});
-	            new Thread(new Runnable() {
-					
-					@Override
-					public void run() {
-						stopRecording(cPath);
-					}
-				}).start();
-	            
-				stopTimer();
-				setMode(Constants.MODE_CAMERA);
-				mVideoKeyLocked = false;
-				mState = STATE_IDLE;
-				PhoenixMethod.setVideoLed(false);
-			}
-			mKeyLockForFrequentClick = false;
+			videoEvent();
 			break;
 			
 		case KeyEvent.KEYCODE_MUSIC:
-			if(mKeyLockForFrequentClick)
-				break;
 			if(mVideoKeyLocked)
 				break;
-			mKeyLockForFrequentClick = true;
-			//Audio
-			if(mState == STATE_IDLE){
-				if(mAudioKeyLocked)
-					break;
-				setMode(Constants.MODE_AUDIO);
-				startRecord();
-				mState = STATE_RECORDING;
-				startTimer();
-				mHandler.sendEmptyMessage(0);
-				mAudioKeyLocked = true;
-				PhoenixMethod.setAudioLed(true);
-			}else if(mState == STATE_RECORDING){ 
-				stopRecord();
-				mState = STATE_IDLE;
-				mHandler.sendEmptyMessage(0);
-				stopTimer();
-				setMode(Constants.MODE_CAMERA);
-				mAudioKeyLocked = false;
-				PhoenixMethod.setAudioLed(false);
-			}
-			mKeyLockForFrequentClick = false;
+			Intent intent = new Intent("com.phoenix.police.AudioActivity");
+			intent.putExtra(Constants.AUTO_AUDIO, true);
+			startActivity(intent);
 			break;
 			
 		default:

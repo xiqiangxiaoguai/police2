@@ -24,13 +24,5 @@ public class AboutPreActivity extends PreferenceActivity{
 		deviceName.setSummary(R.string.device_name_detail);
 		platformName.setSummary(Constants.ANDROID_VERSION);
 		versionName.setSummary(Constants.VERSION);
-		
-		Button button = (Button) findViewById(R.id.back);
-		button.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				finish();
-			}
-		});
 	}
 }

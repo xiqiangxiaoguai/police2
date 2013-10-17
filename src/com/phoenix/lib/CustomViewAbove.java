@@ -28,6 +28,7 @@ import android.widget.Scroller;
 
 import com.phoenix.lib.SlidingMenu.OnClosedListener;
 import com.phoenix.lib.SlidingMenu.OnOpenedListener;
+import com.phoenix.lib.SlidingMenu.OnStartOpenListener;
 import com.phoenix.police.R;
 public class CustomViewAbove extends ViewGroup {
 
@@ -86,7 +87,7 @@ public class CustomViewAbove extends ViewGroup {
 	private CustomViewBehind mViewBehind;
 	//	private int mMode;
 	private boolean mEnabled = true;
-
+	private boolean mDragEnabled = true;
 	private OnPageChangeListener mOnPageChangeListener;
 	private OnPageChangeListener mInternalPageChangeListener;
 
@@ -94,7 +95,10 @@ public class CustomViewAbove extends ViewGroup {
 	//	private OnOpenListener mOpenListener;
 	private OnClosedListener mClosedListener;
 	private OnOpenedListener mOpenedListener;
-
+	//Added by Jiangzhouq 2013-9-30 Begin
+	//Email:jiangzhouq@gmail.com
+	private OnStartOpenListener mStartOpenListener;
+	//Added by Jiangzhouq 2013-9-30 End
 	private List<View> mIgnoredViews = new ArrayList<View>();
 
 	//	private int mScrollState = SCROLL_STATE_IDLE;
@@ -257,6 +261,13 @@ public class CustomViewAbove extends ViewGroup {
 		mCloseListener = l;
 	}
 	 */
+	
+	//Added by Jiangzhouq 2013-9-30 Begin
+	//Email:jiangzhouq@gmail.com
+	public void setOnStartOpenListener(OnStartOpenListener l){
+		mStartOpenListener = l;
+	}
+	//Added by Jiangzhouq 2013-9-30 End
 	public void setOnOpenedListener(OnOpenedListener l) {
 		mOpenedListener = l;
 	}
@@ -363,7 +374,14 @@ public class CustomViewAbove extends ViewGroup {
 	public void setSlidingEnabled(boolean b) {
 		mEnabled = b;
 	}
-
+	
+	//Added by Jiangzhouq 2013/09/29 Begin
+	//Email:jiangzhouq@gmail.com
+	public void setDragEnabled(boolean b){
+		mDragEnabled = b;
+	}
+	//Added by Jiangzhouq 2013/09/29 End
+	
 	/**
 	 * Like {@link View#scrollBy}, but scroll smoothly instead of immediately.
 	 *
@@ -402,7 +420,8 @@ public class CustomViewAbove extends ViewGroup {
 			}
 			return;
 		}
-
+		if(mStartOpenListener != null)
+			mStartOpenListener.onStartOpen();
 		setScrollingCacheEnabled(true);
 		mScrolling = true;
 
@@ -700,7 +719,7 @@ public class CustomViewAbove extends ViewGroup {
 				if (mIsUnableToDrag)
 					return false;
 			}
-			if (mIsBeingDragged) {
+			if (mIsBeingDragged && mDragEnabled) {
 				// Scroll to follow the motion event
 				final int activePointerIndex = getPointerIndex(ev, mActivePointerId);
 				if (mActivePointerId == INVALID_POINTER)

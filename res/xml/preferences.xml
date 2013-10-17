@@ -34,18 +34,10 @@
              />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/wireless2" >
-        <SwitchPreference
-                android:key="setting_wifi_switch_preference"
-                android:title="@string/wifi"
-                android:icon="@drawable/ic_wifi_signal_4">
-        </SwitchPreference>
         <PreferenceScreen 
             android:key="setting_wifi_preference"
             android:title="@string/wifi_setting"
             android:icon="@drawable/ic_wifi_signal_4">
-            <PreferenceCategory 
-                android:title="@string/wifi" >
-   			 </PreferenceCategory>
         </PreferenceScreen>
         <SwitchPreference
                 android:key="setting_3g_switch_preference"

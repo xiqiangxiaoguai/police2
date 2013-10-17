@@ -52,7 +52,8 @@ public class PlayerView implements OnBufferingUpdateListener,
         
         private ImageView thumb;
         private SurfaceView surfaceView;
-        private ImageView  btnPlay;
+        private ImageView btnPlay;
+        private ImageView btnStop;
         private TextView title;
         
         private RelativeLayout layout_control;
@@ -125,6 +126,8 @@ public class PlayerView implements OnBufferingUpdateListener,
                                         playUrl();
                                         layout_title.startAnimation(getAnimUp());
                                         layout_control.startAnimation(getAnimDown());
+                                        btnPlay.setVisibility(View.GONE);
+                                        btnStop.setVisibility(View.GONE);
                                         isAnim = true;
                                         
                                 }else
@@ -133,13 +136,23 @@ public class PlayerView implements OnBufferingUpdateListener,
                                         
                                 }else if(STATE==PAUSE){
                                         play();
-                                        
                                         layout_title.startAnimation(getAnimUp());
                                         layout_control.startAnimation(getAnimDown());
+                                        btnPlay.setVisibility(View.GONE);
+                                        btnStop.setVisibility(View.GONE);
                                         isAnim = true;
                                 }
                         }
                 });
+                btnStop = (ImageView) view.findViewById(R.id.palyer_control_stop);
+                btnStop.setClickable(true);
+                btnStop.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View arg0) {
+						stop();
+						context.finish();
+					}
+				});
                 this.title.setText(titleStr);
                 surfaceHolder=surfaceView.getHolder();
                 surfaceHolder.addCallback(this);
@@ -155,8 +168,12 @@ public class PlayerView implements OnBufferingUpdateListener,
                                         if (isAnim == false) {
                                                 layout_title.startAnimation(getAnimUp());
                                                 layout_control.startAnimation(getAnimDown());
+                                                btnPlay.setVisibility(View.GONE);
+                                                btnStop.setVisibility(View.GONE);
                                                 isAnim = true;
                                         } else {
+	                                        	btnPlay.setVisibility(View.VISIBLE);
+                                        		btnStop.setVisibility(View.VISIBLE);
                                                 layout_title.clearAnimation();
                                                 layout_control.clearAnimation();
                                                 isAnim = false;
