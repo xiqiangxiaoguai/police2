@@ -10,8 +10,8 @@ import java.util.List;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
@@ -26,6 +26,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -86,6 +87,9 @@ public class WifiActivity extends SlidingPreferenceActivity implements Preferenc
 		_wifiSwitch.setOnPreferenceChangeListener(this);
 		mWifiSearchCategory = (PreferenceCategory) findPreference("setting_wifi_search_category");
 		
+		Button back = (Button) findViewById(R.id.back);
+		back.setOnClickListener(this);
+		
 		HandlerThread hThread = new HandlerThread(WifiActivity.class.getSimpleName());
 		hThread.start();
 		mHandler = new Handler(hThread.getLooper());
@@ -126,12 +130,13 @@ public class WifiActivity extends SlidingPreferenceActivity implements Preferenc
 				if(mWifiManager.isWifiEnabled()){
 					mWifiManager.setWifiEnabled(false);
 				}
+				mWifiSearchCategory.removeAll();
 			}else{
 				if(!mWifiManager.isWifiEnabled()){
 					mWifiManager.setWifiEnabled(true);
+					mHandler.post(scanWifiRun);
 				}
 			}
-			mWifiSearchCategory.removeAll();
 		}
 		return true;
 	}
@@ -293,8 +298,10 @@ public class WifiActivity extends SlidingPreferenceActivity implements Preferenc
 				}else{
 					accessPoint.setIcon(wifiDrawableLock[c]);
 				}
-				if(("\"" + result.SSID + "\"").contains(curSSID)){
-					accessPoint.setSummary(R.string.connected);
+				if(null != curSSID){
+					if(("\"" + result.SSID + "\"").contains(curSSID)){
+						accessPoint.setSummary(R.string.connected);
+					}
 				}
 				accessPoint.setOnPreferenceClickListener(this);
 				mResults.put(result.SSID, result);
@@ -316,7 +323,7 @@ public class WifiActivity extends SlidingPreferenceActivity implements Preferenc
 		public void run() {
 			if(_wifiSwitch.isChecked())
 				updateAccessPoints();
-			mHandler.postDelayed(scanWifiRun, 5000);
+			mHandler.postDelayed(scanWifiRun, 10000);
 		}
 	};
 
@@ -336,6 +343,9 @@ public class WifiActivity extends SlidingPreferenceActivity implements Preferenc
 			mainMenu.toggle();
 			break;
 		case R.id.menu_wireless:
+			break;
+		case R.id.back:
+			finish();
 			break;
 		}
 	}

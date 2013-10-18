@@ -158,7 +158,6 @@ public class SettingActivity extends SlidingPreferenceActivity implements Prefer
 	public void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.preferences_layout);
 		addPreferencesFromResource(R.xml.preferences);
 		wifiScreen = (PreferenceScreen) findPreference("setting_wifi_preference");
 		storageScreen = (Preference) findPreference("setting_storage_preference");

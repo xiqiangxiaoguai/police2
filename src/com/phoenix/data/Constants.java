@@ -29,7 +29,7 @@ public class Constants {
 	
 	public static final String CAMERA_NAME_HEAD = "IMG_";
 	public static final String VIDEO_NAME_HEAD = "VID_";
-	public static final String AUDIO_NAME_HEAD = "AUD";
+	public static final String AUDIO_NAME_HEAD = "AUD_";
 	
 	public static final String LOG_PATH = "/mnt/sdcard/police/log/";
 	public static final String LOG_NAME = "log.txt";

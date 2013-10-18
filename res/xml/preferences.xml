@@ -41,8 +41,9 @@
         </PreferenceScreen>
         <SwitchPreference
                 android:key="setting_3g_switch_preference"
-                android:title="@string/threeg" 
-                android:icon="@drawable/ic_network_signal_4"/>
+                android:summary="@string/threeg" 
+                android:icon="@drawable/ic_network_signal_4"
+                />
         
     </PreferenceCategory>
 

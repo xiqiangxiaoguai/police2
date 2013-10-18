@@ -34,6 +34,7 @@ public class AudioActivity extends Activity implements OnClickListener {
 	private TextView timeCount;
 	private SlidingMenu mainMenu = null;
 	private boolean mKeyLockForFrequentClick =false;
+	private boolean mAudioLocked =false;
 	LinearLayout timeBar ;
 	Handler mHandler = new Handler(){
 		public void handleMessage(android.os.Message msg) {
@@ -75,6 +76,8 @@ public class AudioActivity extends Activity implements OnClickListener {
 		mKeyLockForFrequentClick = true;
 		//Audio
 		if(mState == STATE_IDLE){
+			mAudioLocked = true;
+			mainMenu.setSlidingEnabled(false);
 			startRecord();
 			mState = STATE_RECORDING;
 			startTimer();
@@ -88,6 +91,8 @@ public class AudioActivity extends Activity implements OnClickListener {
 			stopTimer();
 			PhoenixMethod.setAudioLed(false);
 			timeBar.setVisibility(View.GONE);
+			mAudioLocked = false;
+			mainMenu.setSlidingEnabled(true);
 		}
 		mKeyLockForFrequentClick = false;
 	}
@@ -116,7 +121,6 @@ public class AudioActivity extends Activity implements OnClickListener {
 //        menu.setShadowDrawable(R.drawable.shadow);
 		mainMenu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
 		mainMenu.setFadeDegree(0.35f);
-		mainMenu.setSlidingEnabled(true);
 		mainMenu.setDragEnabled(false);
 		mainMenu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
 		mainMenu.setMenu(R.layout.main_menus);
@@ -179,6 +183,8 @@ public class AudioActivity extends Activity implements OnClickListener {
 	public void onClick(View view) {
 		switch(view.getId()){
 			case R.id.main_menu:
+				if (mAudioLocked)
+					break;
 				mainMenu.toggle();
 				break;
 			case R.id.menu_camera:

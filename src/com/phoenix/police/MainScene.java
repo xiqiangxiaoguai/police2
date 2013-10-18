@@ -83,7 +83,6 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 	private int resolution = 0;
 	private int preRes = -1;
 	private boolean mVideoKeyLocked = false;
-	private boolean mAudioKeyLocked = false;
 	private boolean mKeyLockForFrequentClick = false;
 	private String police_num;
 	private boolean appPaused = false;
@@ -163,6 +162,7 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 		mSettingMenu.setOnClickListener(this);
 		RelativeLayout mWirelessMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_wireless);
 		mWirelessMenu.setOnClickListener(this);
+		//从录音过来，需要延迟开启录像，给预览足够的准备时间
 		if(getIntent() != null){
 			if(getIntent().getExtras()!= null){
 				if(getIntent().getExtras().getBoolean(Constants.AUTO_VIDEO, false)){
@@ -259,6 +259,7 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 	public void onClick(View v) {
 		switch (v.getId()){
 		case  R.id.preview:
+			
 			break;
 		case R.id.qiezi:
 			if(MODE == Constants.MODE_CAMERA){
@@ -413,7 +414,7 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 		if(!thumbnailFile.exists()){
 			thumbnailFile.mkdirs();
 		}
-
+		resolution = Integer.parseInt(sharedPreferences.getString("setting_function_resolution", "0"));
 		police_num = sharedPreferences.getString(Constants.SHARED_POL_NUM, Constants.SHARED_POL_NUM_DEF);
 		cPath = Constants.VIDEO_PATH + Constants.VIDEO_NAME_HEAD + police_num + "_" + dateFormat.format(new Date()) +".mp4";
 
@@ -643,6 +644,7 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 			break;
 			
 		case KeyEvent.KEYCODE_MEDIA_RECORD:
+			mHandler.removeMessages(3);
 			videoEvent();
 			break;
 			

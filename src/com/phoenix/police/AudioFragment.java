@@ -1,6 +1,7 @@
 package com.phoenix.police;
 
 import java.io.File;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,6 +55,7 @@ public class AudioFragment extends Fragment{
 		new SimpleDateFormat("yyMMdd"),
 		new SimpleDateFormat("yyMM"),
 		new SimpleDateFormat("dd"),
+		new SimpleDateFormat("yyyyMMddhhmmss")
 	};
 	
 	private Handler mHandler = new Handler(){
@@ -91,20 +93,28 @@ public class AudioFragment extends Fragment{
 		HandlerThread hThread = new HandlerThread(AudioFragment.class.getSimpleName());
 		hThread.start();
 	}
-	
+	private Long getTimeFromFileName(String str){
+		long l = 0;
+		try {
+			l =  mDateFormats[3].parse(str.split("\\.")[0].split("\\_")[2]).getTime();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return l;
+	}
 	private int getImages(){
 		File[] files = new File(Constants.AUDIO_PATH).listFiles();
 		Arrays.sort(files, new Comparator<File>(){
 		    public int compare(File f1, File f2)
 		    {
-		        return -((Long)f1.lastModified()).compareTo(f2.lastModified());
+		    	return -((Long)f1.lastModified()).compareTo(f2.lastModified());
 		    } });
 		if(files.length == 0){
 			return files.length;
 		}
 		for(int i=0; i <files.length; i++){
 			info.info_audioUrls.add(files[i].getAbsolutePath());
-			info.info_createdTime.add(files[i].lastModified());
+			info.info_createdTime.add(getTimeFromFileName(files[i].getName()));
 		}
 		
 		mSections = new ArrayList<String>();

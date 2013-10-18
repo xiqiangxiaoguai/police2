@@ -1,6 +1,7 @@
 package com.phoenix.police;
 
 import java.io.File;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,6 +55,7 @@ public class CameraFragment extends Fragment implements OnItemClickListener{
 		new SimpleDateFormat("yyMMdd"),
 		new SimpleDateFormat("yyMM"),
 		new SimpleDateFormat("dd"),
+		new SimpleDateFormat("yyyyMMddhhmmss")
 	};
 	
 	private Handler mHandler;
@@ -90,7 +92,16 @@ public class CameraFragment extends Fragment implements OnItemClickListener{
 //		mHandler.post(run);
 	}
 	
-	private int getImages(){
+	private Long getTimeFromFileName(String str){
+		long l = 0;
+		try {
+			l =  mDateFormats[3].parse(str.split("\\.")[0].split("\\_")[2]).getTime();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return l;
+	}
+	public int getImages(){
 		File[] files = new File(Constants.CAMERA_PATH).listFiles();
 		if(files.length == 0){
 			return files.length;
@@ -98,11 +109,11 @@ public class CameraFragment extends Fragment implements OnItemClickListener{
 		Arrays.sort(files, new Comparator<File>(){
 		    public int compare(File f1, File f2)
 		    {
-		        return -((Long)f1.lastModified()).compareTo(f2.lastModified());
+		        return -((Long)getTimeFromFileName(f1.getName())).compareTo(getTimeFromFileName(f2.getName()));
 		    } });
 		for(int i=0; i <files.length; i++){
 			info.info_imageUrls.add(files[i].getAbsolutePath());
-			info.info_createdTime.add(files[i].lastModified());
+			info.info_createdTime.add(getTimeFromFileName(files[i].getName()));
 		}
 		
 		mSections = new ArrayList<String>();
@@ -160,8 +171,6 @@ public class CameraFragment extends Fragment implements OnItemClickListener{
 			mMap.get(mTimeRange[4]).add(info.info_createdTime.get(i));
 			continue;
 			}
-			
-				
 		}
 		for(int i = (mSections.size() - 1); i >= 0 ;i --){
 			if(mMap.get(mSections.get(i)).size() == 0){

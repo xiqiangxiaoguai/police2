@@ -1,6 +1,7 @@
 package com.phoenix.police;
 
 import java.io.File;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,6 +62,7 @@ public class VideoFragment extends Fragment implements OnItemClickListener{
 		new SimpleDateFormat("yyMMdd"),
 		new SimpleDateFormat("yyMM"),
 		new SimpleDateFormat("dd"),
+		new SimpleDateFormat("yyyyMMddhhmmss")
 	};
 	
 	private Handler mHandler;
@@ -96,7 +98,19 @@ public class VideoFragment extends Fragment implements OnItemClickListener{
 		imageloader = ImageLoader.getInstance();
 //		mHandler.post(run);
 	}
-	
+	private Long getTimeFromFileName(String str){
+		long l = 0;
+		try {
+			if(str.split("\\.").length < 2){
+				return l;
+			}else{
+				l =  mDateFormats[3].parse(str.split("\\.")[0].split("\\_")[2]).getTime();
+			}
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return l;
+	}
 	private int getImages(){
 		File[] files = new File(Constants.VIDEO_THUMBNAIL_PATH).listFiles();
 		if(files.length == 0){
@@ -105,7 +119,7 @@ public class VideoFragment extends Fragment implements OnItemClickListener{
 		Arrays.sort(files, new Comparator<File>(){
 		    public int compare(File f1, File f2)
 		    {
-		        return -((Long)f1.lastModified()).compareTo(f2.lastModified());
+		        return -((Long)getTimeFromFileName(f1.getName())).compareTo(getTimeFromFileName(f2.getName()));
 		    } });
 		for(int i=0; i <files.length; i++){
 			info.info_imageUrls.add(files[i].getAbsolutePath());
@@ -114,13 +128,13 @@ public class VideoFragment extends Fragment implements OnItemClickListener{
 		Arrays.sort(files, new Comparator<File>(){
 		    public int compare(File f1, File f2)
 		    {
-		        return -((Long)f1.lastModified()).compareTo(f2.lastModified());
+		    	return -((Long)getTimeFromFileName(f1.getName())).compareTo(getTimeFromFileName(f2.getName()));
 		    } });
 		
 		for(int i=0; i <files.length; i++){
 			if(files[i].isFile()){
 				info.info_videoUrls.add(files[i].getAbsolutePath());
-				info.info_createdTime.add(files[i].lastModified());
+				info.info_createdTime.add(getTimeFromFileName(files[i].getName()));
 			}
 		}
 		mSections = new ArrayList<String>();
