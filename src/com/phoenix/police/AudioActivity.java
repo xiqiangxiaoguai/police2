@@ -128,7 +128,6 @@ public class AudioActivity extends Activity implements OnClickListener {
 		mCameraMenu.setOnClickListener(this);
 		RelativeLayout mAudioMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_audio);
 		mAudioMenu.setOnClickListener(this);
-		mAudioMenu.setBackgroundColor(Color.argb(100, 0, 255, 255));
 		RelativeLayout mFilesMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_files);
 		mFilesMenu.setOnClickListener(this);
 		RelativeLayout mSettingMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_setting);

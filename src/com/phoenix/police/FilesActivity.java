@@ -57,7 +57,6 @@ public class FilesActivity extends SlidingActivity implements ActionBar.TabListe
 		mAudioMenu.setOnClickListener(this);
 		RelativeLayout mFilesMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_files);
 		mFilesMenu.setOnClickListener(this);
-		mFilesMenu.setBackgroundColor(Color.argb(100, 0, 255, 255));
 		RelativeLayout mSettingMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_setting);
 		mSettingMenu.setOnClickListener(this);
 		RelativeLayout mWirelessMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_wireless);

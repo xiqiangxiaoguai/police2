@@ -152,7 +152,6 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 			}
 		});
 		RelativeLayout mCameraMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_camera);
-		mCameraMenu.setBackgroundColor(Color.argb(100, 0, 255, 255));
 		mCameraMenu.setOnClickListener(this);
 		RelativeLayout mAudioMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_audio);
 		mAudioMenu.setOnClickListener(this);

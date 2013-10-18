@@ -10,7 +10,7 @@
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:orientation="vertical">
-            <RelativeLayout 
+            <com.phoenix.widget.ColorRelativeLayout 
                 android:id="@+id/menu_camera"
                 android:layout_height="120px"
                 android:layout_width="match_parent">
@@ -30,8 +30,8 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="180px"
                     android:text="@string/camera"/>
-            </RelativeLayout>
-            <RelativeLayout 
+            </com.phoenix.widget.ColorRelativeLayout>
+            <com.phoenix.widget.ColorRelativeLayout 
                 android:id="@+id/menu_audio"
                 android:layout_height="120px"
                 android:layout_width="match_parent">
@@ -51,8 +51,8 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="180px"
                     android:text="@string/record"/>
-            </RelativeLayout>
-            <RelativeLayout 
+            </com.phoenix.widget.ColorRelativeLayout>
+            <com.phoenix.widget.ColorRelativeLayout 
                 android:id="@+id/menu_files"
                 android:layout_height="120px"
                 android:layout_width="match_parent">
@@ -72,8 +72,8 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="180px"
                     android:text="@string/files"/>
-            </RelativeLayout>
-            <RelativeLayout 
+            </com.phoenix.widget.ColorRelativeLayout>
+            <com.phoenix.widget.ColorRelativeLayout 
                 android:id="@+id/menu_setting"
                 android:layout_height="120px"
                 android:layout_width="match_parent">
@@ -93,8 +93,8 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="180px"
                     android:text="@string/setting"/>
-            </RelativeLayout>
-            <RelativeLayout 
+            </com.phoenix.widget.ColorRelativeLayout>
+            <com.phoenix.widget.ColorRelativeLayout 
                 android:id="@+id/menu_wireless"
                 android:layout_height="120px"
                 android:layout_width="match_parent">
@@ -114,6 +114,6 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="180px"
                     android:text="@string/wireless"/>
-            </RelativeLayout>
+            </com.phoenix.widget.ColorRelativeLayout>
         </LinearLayout>
     </RelativeLayout>

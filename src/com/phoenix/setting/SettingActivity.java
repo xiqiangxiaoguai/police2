@@ -227,7 +227,6 @@ public class SettingActivity extends SlidingPreferenceActivity implements Prefer
 		mFilesMenu.setOnClickListener(this);
 		RelativeLayout mSettingMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_setting);
 		mSettingMenu.setOnClickListener(this);
-		mSettingMenu.setBackgroundColor(Color.argb(100, 0, 255, 255));
 		RelativeLayout mWirelessMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_wireless);
 		mWirelessMenu.setOnClickListener(this);
 	}
