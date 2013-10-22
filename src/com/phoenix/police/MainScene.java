@@ -258,7 +258,32 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 	public void onClick(View v) {
 		switch (v.getId()){
 		case  R.id.preview:
-			
+			if(null != previewImagePath){
+				if (LOG_SWITCH) {
+					Log.d(LOG_TAG, "previewImagePath:" + previewImagePath.split("\\.")[1]);
+				}
+				if(previewImagePath.contains("camera")){
+					Intent intent = new Intent("com.phoenix.police.CameraBrowseActivity");
+					Bundle bundle = new Bundle();
+					FileHelper helper = new FileHelper();
+					helper.query(0);
+					bundle.putStringArrayList("cameraPaths", helper.getUrls());
+					bundle.putInt("currentPic", 0);
+					intent.putExtras(bundle);
+					startActivity(intent);
+				}else{
+					Intent intent = new Intent("com.phoenix.police.VideoPlayer");
+					Bundle bundle = new Bundle();
+					FileHelper helper = new FileHelper();
+					helper.query(1);
+					String cUrl = helper.getUrls().get(0);
+					
+					bundle.putString("url", cUrl);
+					bundle.putString("name", cUrl.substring(cUrl.lastIndexOf('/'), cUrl.lastIndexOf('.')));
+					intent.putExtras(bundle);
+					startActivity(intent);
+				}
+			}
 			break;
 		case R.id.qiezi:
 			if(MODE == Constants.MODE_CAMERA){
