@@ -62,7 +62,7 @@ public class VideoFragment extends Fragment implements OnItemClickListener{
 		new SimpleDateFormat("yyMMdd"),
 		new SimpleDateFormat("yyMM"),
 		new SimpleDateFormat("dd"),
-		new SimpleDateFormat("yyyyMMddhhmmss")
+		new SimpleDateFormat("yyyyMMddHHmmss")
 	};
 	
 	private Handler mHandler;

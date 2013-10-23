@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="400px"
+    android:layout_height="400px" >
+    <TextView 
+        android:text="@string/usb_warming"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"/>
+    <Button android:id="@+id/negative"
+        android:text="@string/usb_no"
+        android:layout_height="100px"
+        android:layout_width="180px"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"/>
+    <Button android:id="@+id/positive"
+        android:text="@string/usb_yes"
+        android:layout_height="100px"
+        android:layout_width="180px"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"/>
+</RelativeLayout>

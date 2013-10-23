@@ -110,7 +110,14 @@
                 <data />
             </intent-filter>
         </activity>
-        
+        <activity android:name="com.phoenix.police.UsbDialogActivity"
+            android:theme="@android:style/Theme.Holo.Dialog">
+            <intent-filter >
+                <action android:name="com.phoenix.police.UsbDialogActivity"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data />
+            </intent-filter>
+        </activity>
         <receiver android:name="com.phoenix.police.LogReceiver">
 			<intent-filter >
 			    <action android:name="android.intent.action.BOOT_COMPLETED"/>
@@ -121,6 +128,12 @@
 			    <action android:name="com.phoenix.police.START_AUDIO"/>
 			    <action android:name="com.phoenix.police.END_AUDIO"/>
 			</intent-filter>            
+        </receiver>
+        <receiver 
+            android:name="com.phoenix.police.UsbReceiver">
+            <intent-filter >
+                <action android:name="android.hardware.usb.action.USB_STATE"/>
+            </intent-filter>
         </receiver>
         <provider android:name="com.phoenix.data.PoliceProvider"
             android:authorities="com.phoenix.police">

@@ -67,4 +67,7 @@
 	<string name="police_left">Police</string>
 	<string name="police_right">Police</string>
 	<string name="police_detail">Police</string>
+	<string name="usb_warming">Usb Warming</string>
+	<string name="usb_yes">yes</string>
+	<string name="usb_no">no</string>
 </resources>
