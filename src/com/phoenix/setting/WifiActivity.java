@@ -13,6 +13,8 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo.State;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
@@ -75,6 +77,7 @@ public class WifiActivity extends SlidingPreferenceActivity implements Preferenc
 	private ArrayList<AccessPoint> accessPoints = new ArrayList<AccessPoint>();
 	private HashMap<String, ScanResult> mResults = new HashMap<String, ScanResult>();
 	private SlidingMenu mainMenu;
+	ConnectivityManager conn;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -83,7 +86,10 @@ public class WifiActivity extends SlidingPreferenceActivity implements Preferenc
 		setContentView(R.layout.preferences_layout);
 		addPreferencesFromResource(R.xml.wifi_preferences);
 		mWifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+		conn = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		_wifiSwitch = (SwitchPreference) findPreference("setting_wifi_switch_preference");
+		State wifi = conn.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
+		_wifiSwitch.setChecked(wifi == State.CONNECTED || wifi == State.CONNECTING);
 		_wifiSwitch.setOnPreferenceChangeListener(this);
 		mWifiSearchCategory = (PreferenceCategory) findPreference("setting_wifi_search_category");
 		

@@ -2,23 +2,11 @@ package com.phoenix.setting;
 
 import java.io.File;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
-import android.net.wifi.ScanResult;
-import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiManager;
+import android.net.NetworkInfo.State;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -26,19 +14,14 @@ import android.os.HandlerThread;
 import android.os.StatFs;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
-import android.widget.EditText;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.phoenix.data.Constants;
 import com.phoenix.lib.SlidingMenu;
@@ -66,6 +49,8 @@ public class SettingActivity extends SlidingPreferenceActivity implements Prefer
 	String mCameraStor = "";
 	String mVideoStor = "";
 	String mAudioStor = "";
+	
+	ConnectivityManager conn;
 	
 	private SlidingMenu mainMenu = null;
 	@Override
@@ -207,7 +192,10 @@ public class SettingActivity extends SlidingPreferenceActivity implements Prefer
 		});
 		
 		SwitchPreference _3gSwitch = (SwitchPreference) findPreference("setting_3g_switch_preference");
+		State mobile = conn.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState();
+		_3gSwitch.setChecked(mobile == State.CONNECTED || mobile == State.CONNECTING);
 		_3gSwitch.setOnPreferenceChangeListener(this);
+		
 		
 		setBehindContentView(R.layout.main_menus);
 		mainMenu = getSlidingMenu();
@@ -229,6 +217,8 @@ public class SettingActivity extends SlidingPreferenceActivity implements Prefer
 		mSettingMenu.setOnClickListener(this);
 		RelativeLayout mWirelessMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_wireless);
 		mWirelessMenu.setOnClickListener(this);
+		
+		conn  = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 	}
 	
 	@Override
