@@ -203,9 +203,9 @@ public class VideoFragment extends Fragment implements OnItemClickListener{
 		}
         int position = 0;  
         for (int i = 0; i < mSections.size(); i++) {  
-            mIndexer.put(mSections.get(i), position);// 存入map中，key为首字母字符串，value为首字母在listview中位置  
-            mPositions.add(position);// 首字母在listview中位置，存入list中  
-            position += mMap.get(mSections.get(i)).size();// 计算下一个首字母在listview的位置  
+            mIndexer.put(mSections.get(i), position); 
+            mPositions.add(position);
+            position += mMap.get(mSections.get(i)).size();  
         }  
         return files.length;
 	}
@@ -248,7 +248,7 @@ public class VideoFragment extends Fragment implements OnItemClickListener{
 	
 	class ImageAdapter extends BaseAdapter implements SectionIndexer, PinnedHeaderAdapter, OnScrollListener{
 
-		private SimpleDateFormat mTimeFormat = new SimpleDateFormat("hh:mm");
+		private SimpleDateFormat mTimeFormat = new SimpleDateFormat("HH:mm");
 		private SimpleDateFormat mDateFormat = new SimpleDateFormat("yy-MM-dd");
 		private Context mContext;
 		private int mLocationPosition = -1;

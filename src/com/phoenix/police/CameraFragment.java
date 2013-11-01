@@ -180,9 +180,9 @@ public class CameraFragment extends Fragment implements OnItemClickListener{
 		}
         int position = 0;  
         for (int i = 0; i < mSections.size(); i++) {  
-            mIndexer.put(mSections.get(i), position);// ´æÈëmapÖÐ£¬keyÎªÊ××ÖÄ¸×Ö·û´®£¬valueÎªÊ××ÖÄ¸ÔÚlistviewÖÐÎ»ÖÃ  
-            mPositions.add(position);// Ê××ÖÄ¸ÔÚlistviewÖÐÎ»ÖÃ£¬´æÈëlistÖÐ  
-            position += mMap.get(mSections.get(i)).size();// ¼ÆËãÏÂÒ»¸öÊ××ÖÄ¸ÔÚlistviewµÄÎ»ÖÃ  
+            mIndexer.put(mSections.get(i), position);// ï¿½ï¿½ï¿½ï¿½mapï¿½Ð£ï¿½keyÎªï¿½ï¿½ï¿½ï¿½Ä¸ï¿½Ö·ï¿½valueÎªï¿½ï¿½ï¿½ï¿½Ä¸ï¿½ï¿½listviewï¿½ï¿½Î»ï¿½ï¿½  
+            mPositions.add(position);// ï¿½ï¿½ï¿½ï¿½Ä¸ï¿½ï¿½listviewï¿½ï¿½Î»ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½listï¿½ï¿½  
+            position += mMap.get(mSections.get(i)).size();// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¸ï¿½ï¿½listviewï¿½ï¿½Î»ï¿½ï¿½  
         }  
         return files.length;
 	}
@@ -224,7 +224,7 @@ public class CameraFragment extends Fragment implements OnItemClickListener{
 	
 	class ImageAdapter extends BaseAdapter implements SectionIndexer, PinnedHeaderAdapter, OnScrollListener{
 
-		private SimpleDateFormat mTimeFormat = new SimpleDateFormat("hh:mm");
+		private SimpleDateFormat mTimeFormat = new SimpleDateFormat("HH:mm");
 		private SimpleDateFormat mDateFormat = new SimpleDateFormat("yy-MM-dd");
 		private Context mContext;
 		private int mLocationPosition = -1;

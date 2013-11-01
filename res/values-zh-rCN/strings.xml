@@ -58,7 +58,7 @@
 	<string name="video_fail">录像失败</string>
 	<string name="audio_fail">录音失败</string>
 	<string name="plus">*</string>
-	<string name="device_name_detail">Phoenix警务终端</string>
+	<string name="device_name_detail">Phenix警务终端</string>
 	<string name="time_range_1">今天</string>
 	<string name="time_range_2">一周内</string>
 	<string name="time_range_3">一个月内</string>
