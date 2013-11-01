@@ -61,6 +61,8 @@ public class FilesActivity extends SlidingActivity implements ActionBar.TabListe
 		mSettingMenu.setOnClickListener(this);
 		RelativeLayout mWirelessMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_wireless);
 		mWirelessMenu.setOnClickListener(this);
+		RelativeLayout mAvIn = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_av);
+		mAvIn.setOnClickListener(this);
 		
 	}
 
@@ -135,6 +137,9 @@ public class FilesActivity extends SlidingActivity implements ActionBar.TabListe
 			startActivity(new Intent(this, SettingActivity.class));
 			break;
 		case R.id.menu_wireless:
+			break;
+		case R.id.menu_av:
+//			startActivity(new Intent(this, AvInActivity.class));
 			break;
 		}
 	}

@@ -32,6 +32,27 @@
                     android:text="@string/camera"/>
             </com.phoenix.widget.ColorRelativeLayout>
             <com.phoenix.widget.ColorRelativeLayout 
+                android:id="@+id/menu_av"
+                android:layout_height="120px"
+                android:layout_width="match_parent">
+                <ImageView 
+                    android:layout_width="60px"
+                    android:layout_height="60px"
+                    android:scaleType="fitXY"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="120px"
+                    android:src="@drawable/menu_camera"/>
+                <TextView 
+                    android:textSize="22dp"
+                    android:textColor="@android:color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="80px"
+                    android:gravity="center_vertical"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="180px"
+                    android:text="@string/av"/>
+            </com.phoenix.widget.ColorRelativeLayout>
+            <com.phoenix.widget.ColorRelativeLayout 
                 android:id="@+id/menu_audio"
                 android:layout_height="120px"
                 android:layout_width="match_parent">

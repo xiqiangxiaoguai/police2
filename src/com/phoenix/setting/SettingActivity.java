@@ -27,6 +27,7 @@ import com.phoenix.data.Constants;
 import com.phoenix.lib.SlidingMenu;
 import com.phoenix.lib.app.SlidingPreferenceActivity;
 import com.phoenix.police.AudioActivity;
+import com.phoenix.police.AvInActivity;
 import com.phoenix.police.FilesActivity;
 import com.phoenix.police.MainScene;
 import com.phoenix.police.R;
@@ -150,6 +151,7 @@ public class SettingActivity extends SlidingPreferenceActivity implements Prefer
 		resolutionList = (ListPreference)findPreference("setting_function_resolution");
 		brightnessPreference = (BrightnessSeekBarPreference) findPreference("setting_function_brightness");
 		brightnessPreference.pushActivity(SettingActivity.this);
+		conn  = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		
 		HandlerThread hThread = new HandlerThread(SettingActivity.class.getSimpleName());
 		hThread.start();
@@ -217,8 +219,8 @@ public class SettingActivity extends SlidingPreferenceActivity implements Prefer
 		mSettingMenu.setOnClickListener(this);
 		RelativeLayout mWirelessMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_wireless);
 		mWirelessMenu.setOnClickListener(this);
-		
-		conn  = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		RelativeLayout mAvIn = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_av);
+		mAvIn.setOnClickListener(this);
 	}
 	
 	@Override
@@ -242,6 +244,9 @@ public class SettingActivity extends SlidingPreferenceActivity implements Prefer
 			mainMenu.toggle();
 			break;
 		case R.id.menu_wireless:
+			break;
+		case R.id.menu_av:
+//			startActivity(new Intent(this, AvInActivity.class));
 			break;
 		}
 	}

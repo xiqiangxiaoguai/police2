@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.phoenix.setting.PhoenixMethod;
@@ -22,12 +23,12 @@ public class UsbReceiver extends  BroadcastReceiver{
 				mWifiManager.setWifiEnabled(false);
 			}
 			PhoenixMethod.set3G(false);
-//		        Bundle extras = intent.getExtras();
-//		        if( extras.getBoolean("connected")){
-//		        	Intent i = new Intent("com.phoenix.police.UsbDialogActivity");
-//		        	i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//		        	context.startActivity(i);
-//		        }
+		        Bundle extras = intent.getExtras();
+		        if( extras.getBoolean("connected")){
+		        	Intent i = new Intent("com.phoenix.police.UsbDialogActivity");
+		        	i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		        	context.startActivity(i);
+		        }
 	}
 	}
 }

@@ -36,7 +36,7 @@ public class Constants {
 	
 	public static final String DEVICE_NAME = "Phenix ÷≥÷÷’∂À";
 	public static final String ANDROID_VERSION = "Android 4.1";
-	public static final String VERSION = "V0.2";
+	public static final String VERSION = "V0.2.1";
 	
 	public static final int MODE_CAMERA = 0;
 	public static final int MODE_VIDEO = 1;

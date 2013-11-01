@@ -51,15 +51,15 @@ import com.phoenix.lib.app.SlidingActivity;
 import com.phoenix.setting.PhoenixMethod;
 import com.phoenix.setting.SettingActivity;
 
-public class MainScene extends SlidingActivity implements OnClickListener{
+public class AvInActivity extends SlidingActivity implements OnClickListener{
 	/** Called when the activity is first created. */
-	private static final String LOG_TAG = MainScene.class.getSimpleName();
+	private static final String LOG_TAG = AvInActivity.class.getSimpleName();
 	private static final boolean LOG_SWITCH = Constants.LOG_SWITCH;
 	
 	private static final int STATE_IDLE = 0;
 	private static final int STATE_RECORDING = 1;
 	private int mState = STATE_IDLE;
-	CameraSurfaceView mySurface;
+	AvCameraSurfaceView mySurface;
 	ImageButton mQiezi;
 	ImageButton mMainMenu;
 	ImageButton mModeSwitch;
@@ -178,9 +178,9 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 		imageLoader.stop();
 	}
 	private void createSurfaceView(){
-		mySurface = new CameraSurfaceView(this);
+		mySurface = new AvCameraSurfaceView(this);
 		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
-
+		mySurface.setSize(1, 0);
 		mySurface.setLayoutParams(new LayoutParams(480, (int)(480*Constants.resolutions[mySurface.getRes()][1]/Constants.resolutions[mySurface.getRes()][0])));
 		RelativeLayout.LayoutParams containerParams = new RelativeLayout.LayoutParams(480, (int)(480*Constants.resolutions[mySurface.getRes()][1]/Constants.resolutions[mySurface.getRes()][0]));
 		containerParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, -1);
@@ -309,7 +309,7 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 			mainMenu.toggle();
 			break;
 		case R.id.menu_camera:
-			mainMenu.toggle();
+			startActivity(new Intent(this, MainScene.class));
 			break;
 		case R.id.menu_audio:
 			startActivity(new Intent(this, AudioActivity.class));
@@ -323,7 +323,7 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 		case R.id.menu_wireless:
 			break;
 		case R.id.menu_av:
-//			startActivity(new Intent(this, AvInActivity.class));
+			mainMenu.toggle();
 			break;
 		}
 	}
@@ -513,7 +513,7 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 				break;
 			case 4:
 				imageLoader.displayImage("file:/" + previewImagePath, mPreview ,options,null);
-				Toast.makeText(MainScene.this, R.string.video_success, Toast.LENGTH_SHORT).show();
+				Toast.makeText(AvInActivity.this, R.string.video_success, Toast.LENGTH_SHORT).show();
 				break;
 			}
 		};
@@ -576,19 +576,19 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 		updateResForMode();
 	}
 	private void updateResForMode(){
-//		if (LOG_SWITCH) {
-//			Log.d(LOG_TAG, "set size 480*" + (int)(480*Constants.resolutions[mySurface.getRes()][1]/Constants.resolutions[mySurface.getRes()][0]));
-//		}
+		if (LOG_SWITCH) {
+			Log.d(LOG_TAG, "set size 480*" + (int)(480*Constants.resolutions[mySurface.getRes()][1]/Constants.resolutions[mySurface.getRes()][0]));
+		}
 		
 		if(MODE == Constants.MODE_CAMERA || MODE == Constants.MODE_AUDIO){
-			mySurface.setSize(3, 0);
+			mySurface.setSize(1, 0);
 		}else if( MODE == Constants.MODE_VIDEO){
 			int i = Integer.valueOf(sharedPreferences.getString(Constants.PREFERENCES_RESOLUTION, "0"));
 			if(preRes == i){
-				mySurface.setSize(preRes,0);	
+				mySurface.setSize(1,0);	
 			}else{
 				preRes = i;
-				mySurface.setSize(preRes, 1);
+				mySurface.setSize(1, 1);
 			}
 		}
 		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
@@ -669,16 +669,10 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_CAMERA:
-			if(mainMenu.isMenuShowing()){
-				mainMenu.toggle();
-			}
 			cameraEvent();
 			break;
 			
 		case KeyEvent.KEYCODE_MEDIA_RECORD:
-			if(mainMenu.isMenuShowing()){
-				mainMenu.toggle();
-			}
 			mHandler.removeMessages(3);
 			videoEvent();
 			break;

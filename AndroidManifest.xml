@@ -41,6 +41,15 @@
         </activity>
 
         <activity 
+            android:name=".AvInActivity"
+            >
+            <intent-filter >
+                <action android:name="com.phoenix.police.AvInActivity"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data />
+            </intent-filter>
+        </activity>
+        <activity 
             android:name=".FilesActivity"
             android:screenOrientation="portrait"
             >

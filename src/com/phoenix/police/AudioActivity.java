@@ -134,6 +134,8 @@ public class AudioActivity extends Activity implements OnClickListener {
 		mSettingMenu.setOnClickListener(this);
 		RelativeLayout mWirelessMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_wireless);
 		mWirelessMenu.setOnClickListener(this);
+		RelativeLayout mAvIn = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_av);
+		mAvIn.setOnClickListener(this);
 		if(getIntent() != null){
 			if(getIntent().getExtras()!= null){
 				if(getIntent().getExtras().getBoolean(Constants.AUTO_AUDIO, false)){
@@ -200,6 +202,9 @@ public class AudioActivity extends Activity implements OnClickListener {
 				break;
 			case R.id.menu_wireless:
 				break;
+			case R.id.menu_av:
+//				startActivity(new Intent(this, AvInActivity.class));
+				break;
 		}
 	}
 	
@@ -224,6 +229,9 @@ public class AudioActivity extends Activity implements OnClickListener {
 			break;
 			
 		case KeyEvent.KEYCODE_MUSIC:
+			if(mainMenu.isMenuShowing()){
+				mainMenu.toggle();
+			}
 			audioEvent();
 			break;
 			

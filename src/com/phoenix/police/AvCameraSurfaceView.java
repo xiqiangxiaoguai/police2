@@ -16,9 +16,9 @@ import android.view.SurfaceView;
 
 import com.phoenix.data.Constants;
 
-public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
+public class AvCameraSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
 	
-	private static final String LOG_TAG = CameraSurfaceView.class.getSimpleName();
+	private static final String LOG_TAG = AvCameraSurfaceView.class.getSimpleName();
 	private static final boolean LOG_SWITCH = Constants.LOG_SWITCH;
 	
 	public final static int FLASH_MODE_AUTO = 0;
@@ -36,15 +36,15 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 	Camera myCamera;
 	boolean bIfPreview = false;
 	int mRes = 3;
-	public CameraSurfaceView(Context context) {
+	public AvCameraSurfaceView(Context context) {
 		super(context);
 		init();
 	}
-	public CameraSurfaceView(Context context, AttributeSet attrs) {
+	public AvCameraSurfaceView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init();
 	}
-	public CameraSurfaceView(Context context, AttributeSet attrs, int defStyle) {
+	public AvCameraSurfaceView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		init();
 	}
@@ -71,7 +71,12 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 		@Override
 		public void run() {
 			if (myCamera == null) {
-				myCamera = Camera.open();// 开启相机,不能放在构造函数中，不然不会显示画面.
+				if(Camera.getNumberOfCameras() > 1){
+					if (LOG_SWITCH) {
+						Log.d(LOG_TAG, "getNumberOfCameras:"+ Camera.getNumberOfCameras());
+					}
+					myCamera = Camera.open(1);// 开启相机,不能放在构造函数中，不然不会显示画面.
+				}
 				if(null == myCamera){
 					if (LOG_SWITCH)
 						Log.d(LOG_TAG, "ERROR: Camera == null!");

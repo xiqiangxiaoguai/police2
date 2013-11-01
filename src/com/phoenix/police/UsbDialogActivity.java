@@ -25,5 +25,13 @@ public class UsbDialogActivity extends Activity{
 				finish();
 			}
 		});
+		Button btn2 = (Button) findViewById(R.id.negative);
+		btn2.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				finish();
+			}
+		});
 	}
 }
