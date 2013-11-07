@@ -71,4 +71,5 @@
 	<string name="usb_yes">yes</string>
 	<string name="usb_no">no</string>
 	<string name="av">AvIn</string>
+	<string name="usb_connected">haha</string>
 </resources>

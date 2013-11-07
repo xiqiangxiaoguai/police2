@@ -119,14 +119,6 @@
                 <data />
             </intent-filter>
         </activity>
-        <activity android:name="com.phoenix.police.UsbDialogActivity"
-            android:theme="@android:style/Theme.Holo.Dialog">
-            <intent-filter >
-                <action android:name="com.phoenix.police.UsbDialogActivity"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data />
-            </intent-filter>
-        </activity>
         <receiver android:name="com.phoenix.police.LogReceiver">
 			<intent-filter >
 			    <action android:name="android.intent.action.BOOT_COMPLETED"/>

@@ -3,31 +3,47 @@ package com.phoenix.police;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.util.Log;
+import android.widget.Toast;
 
 import com.phoenix.setting.PhoenixMethod;
 
 
 public class UsbReceiver extends  BroadcastReceiver{
-
+	static boolean two_flag = true;
+	static int j = 0;
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		String action = intent.getAction();
-		Log.d("qiqi:", action);
 		if (action.equals("android.hardware.usb.action.USB_STATE")) {
-			//¹Ø±ÕwifiºÍ3g
-			WifiManager mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-			if(mWifiManager.isWifiEnabled()){
-				mWifiManager.setWifiEnabled(false);
-			}
-			PhoenixMethod.set3G(false);
 		        Bundle extras = intent.getExtras();
 		        if( extras.getBoolean("connected")){
-		        	Intent i = new Intent("com.phoenix.police.UsbDialogActivity");
-		        	i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		        	context.startActivity(i);
+		        	if(two_flag){
+			        	WifiManager mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+						if(mWifiManager.isWifiEnabled()){
+							mWifiManager.setWifiEnabled(false);
+						}
+						PhoenixMethod.set3G(false);
+						ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+						cm.setUsbTethering(true);
+			        	j++;
+			        	Toast.makeText(context, R.string.usb_connected, Toast.LENGTH_SHORT).show();
+			        	two_flag = false;
+		        	}
+		        	new Thread(new Runnable() {
+						
+						@Override
+						public void run() {
+							try {
+								Thread.sleep(3000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							two_flag = true;
+						}
+					}).start();
 		        }
 	}
 	}
