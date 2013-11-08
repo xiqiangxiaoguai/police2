@@ -63,7 +63,7 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 	ImageButton mQiezi;
 	ImageButton mMainMenu;
 	ImageButton mModeSwitch;
-//	ImageButton bFlashBtn;
+	ImageButton mFlashBtn;
 //	Button bSetting;
 //	Button bFiles;
 	ImageView mPreview;
@@ -74,7 +74,7 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 	
 	private int cSecs =0;
 	private TextView timeCount;
-	
+	private boolean cFlash = false;
 	private int MODE = Constants.MODE_CAMERA;
 	SharedPreferences sharedPreferences;
 	
@@ -120,6 +120,8 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 		mQiezi = (ImageButton) findViewById(R.id.qiezi);
 		mQiezi.setOnClickListener(this);
 		
+		mFlashBtn = (ImageButton) findViewById(R.id.flash_button);
+		mFlashBtn.setOnClickListener(this);
 		mPreview = (ImageView)findViewById(R.id.preview);
 		mPreview.setOnClickListener(this);
 		bar_timer = (LinearLayout)findViewById(R.id.bar_timer);
@@ -163,7 +165,6 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 		mWirelessMenu.setOnClickListener(this);
 		RelativeLayout mAvIn = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_av);
 		mAvIn.setOnClickListener(this);
-		//´ÓÂ¼Òô¹ýÀ´£¬ÐèÒªÑÓ³Ù¿ªÆôÂ¼Ïñ£¬¸øÔ¤ÀÀ×ã¹»µÄ×¼±¸Ê±¼ä
 		if(getIntent() != null){
 			if(getIntent().getExtras()!= null){
 				if(getIntent().getExtras().getBoolean(Constants.AUTO_VIDEO, false)){
@@ -325,6 +326,17 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 		case R.id.menu_av:
 //			startActivity(new Intent(this, AvInActivity.class));
 			break;
+		case R.id.flash_button:
+			if(cFlash){
+				PhoenixMethod.setFlashLed(false);
+				mFlashBtn.setImageResource(R.drawable.ic_flash_off_holo_light);
+				cFlash = false;
+			}else{
+				PhoenixMethod.setFlashLed(true);
+				mFlashBtn.setImageResource(R.drawable.ic_flash_on_holo_light);
+				cFlash = true;
+			}
+			break;
 		}
 	}
 	
@@ -333,7 +345,7 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 	}
 	
 	//***********************************************************Camera**************************************************
-	//ÅÄÕÕ »Øµ÷º¯Êý
+	//ï¿½ï¿½ï¿½ï¿½ ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½
 	private PictureCallback jpegCallback = new PictureCallback(){
 		public void onPictureTaken(byte[] data, Camera camera) {
 			final byte[] mData =  data;
@@ -351,7 +363,7 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 			mKeyLockForFrequentClick = false;
 		}
 	};
-	//ÅÄÕÕ ±£´æÍ¼Æ¬
+	//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Í¼Æ¬
 	private String save(byte[] data){
 		if (LOG_SWITCH)
 			Log.d(LOG_TAG, "Start to save the bitmap.");

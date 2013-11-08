@@ -3,51 +3,47 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#4682B4">
-    <RelativeLayout 
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="200px"
-        >
-        <ImageButton 
+        android:layout_height="200px" >
+
+        <ImageButton
             android:id="@+id/main_menu"
-            android:layout_height="80px"
             android:layout_width="80px"
-            android:layout_marginLeft="10px"
+            android:layout_height="80px"
             android:layout_centerVertical="true"
+            android:layout_marginLeft="10px"
             android:background="@android:color/transparent"
-            android:src="@drawable/main_menu"
-            android:scaleType="fitXY"
             android:clickable="true"
-            />
-	   	<LinearLayout 
-	            android:id="@+id/header"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:orientation="horizontal"
-	            android:layout_centerInParent="true"
-	            android:background="@android:color/transparent"
-	            >
-	            <TextView 
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:textSize="36sp"
-	                android:textColor="@android:color/white"
-	                android:text="@string/police_left"
-	                android:gravity="bottom"
-	                android:layout_marginRight="20px"/>
-	            <ImageView 
-	                android:layout_height="80px"
-	                android:layout_width="80px"
-	                android:src="@drawable/ic_launcher"/>
-	            <TextView 
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:textSize="36sp"
-	                android:textColor="@android:color/white"
-	                android:text="@string/police_right"
-	                android:gravity="bottom"
-	                android:layout_marginLeft="20px"/>
-	        </LinearLayout>
+            android:scaleType="fitXY"
+            android:src="@drawable/main_menu" />
+
+        <LinearLayout
+            android:id="@+id/header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="@android:color/transparent"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:layout_width="80px"
+                android:layout_height="80px"
+                android:src="@drawable/ic_launcher" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/flash_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:layout_alignParentRight="true"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_flash_off_holo_light" />
     </RelativeLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="360px"

@@ -50,7 +50,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 	}
 
 	private void init(){
-		holder = getHolder();// »ñµÃsurfaceHolderÒýÓÃ
+		holder = getHolder();// ï¿½ï¿½ï¿½surfaceHolderï¿½ï¿½ï¿½ï¿½
 		holder.addCallback(this); 
 //		holder.setFixedSize(176, 144);
 		holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);// set display device typeb
@@ -71,7 +71,7 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 		@Override
 		public void run() {
 			if (myCamera == null) {
-				myCamera = Camera.open();// ¿ªÆôÏà»ú,²»ÄÜ·ÅÔÚ¹¹Ôìº¯ÊýÖÐ£¬²»È»²»»áÏÔÊ¾»­Ãæ.
+				myCamera = Camera.open();// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½Ü·ï¿½ï¿½Ú¹ï¿½ï¿½ìº¯ï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½È»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½.
 				if(null == myCamera){
 					if (LOG_SWITCH)
 						Log.d(LOG_TAG, "ERROR: Camera == null!");
@@ -103,14 +103,14 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 			try {
 				Camera.Parameters parameters = myCamera.getParameters();
 				// parameters.setFlashMode("off");
-				parameters.setPictureFormat(PixelFormat.JPEG);// Sets the image format for picture Éè¶¨ÏàÆ¬¸ñÊ½ÎªJPEG£¬Ä¬ÈÏÎªNV21
-				parameters.setPreviewFormat(PixelFormat.YCbCr_420_SP);// Sets the image format for preview picture£¬Ä¬ÈÏÎªNV21
+				parameters.setPictureFormat(PixelFormat.JPEG);// Sets the image format for picture ï¿½è¶¨ï¿½ï¿½Æ¬ï¿½ï¿½Ê½ÎªJPEGï¿½ï¿½Ä¬ï¿½ï¿½ÎªNV21
+				parameters.setPreviewFormat(PixelFormat.YCbCr_420_SP);// Sets the image format for preview pictureï¿½ï¿½Ä¬ï¿½ï¿½ÎªNV21
 				/*
-				 * ¡¾ImageFormat¡¿JPEG/NV16(YCrCb format£¬used for
-				 * Video)/NV21(YCrCb format£¬used for Image)/RGB_565/YUY2/YU12
+				 * ï¿½ï¿½ImageFormatï¿½ï¿½JPEG/NV16(YCrCb formatï¿½ï¿½used for
+				 * Video)/NV21(YCrCb formatï¿½ï¿½used for Image)/RGB_565/YUY2/YU12
 				 */
 
-				// ¡¾µ÷ÊÔ¡¿»ñÈ¡caeraÖ§³ÖµÄPictrueSize£¬¿´¿´ÄÜ·ñÉèÖÃ£¿£¿
+				// ï¿½ï¿½ï¿½ï¿½ï¿½Ô¡ï¿½ï¿½ï¿½È¡caeraÖ§ï¿½Öµï¿½PictrueSizeï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü·ï¿½ï¿½ï¿½ï¿½Ã£ï¿½ï¿½ï¿½
 				List<Size> pictureSizes = myCamera.getParameters()
 						.getSupportedPictureSizes();
 				List<Size> previewSizes = myCamera.getParameters()
@@ -143,37 +143,37 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 					Log.d("qiqi", "" + parameters.getMaxZoom());
 					
 				}
-				// ÉèÖÃÅÄÕÕºÍÔ¤ÀÀÍ¼Æ¬´óÐ¡
-//				parameters.setPictureSize(2592, 1944); // Ö¸¶¨ÅÄÕÕÍ¼Æ¬µÄ´óÐ¡
+				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õºï¿½Ô¤ï¿½ï¿½Í¼Æ¬ï¿½ï¿½Ð¡
+//				parameters.setPictureSize(2592, 1944); // Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼Æ¬ï¿½Ä´ï¿½Ð¡
 				parameters.setPictureSize(Constants.resolutions[mRes][0], Constants.resolutions[mRes][1]);
 				if(mRes == 3)
 				{
-					parameters.setPreviewSize(640, 480); // Ö¸¶¨previewµÄ´óÐ¡
+					parameters.setPreviewSize(640, 480); // Ö¸ï¿½ï¿½previewï¿½Ä´ï¿½Ð¡
 				}else{
-					parameters.setPreviewSize(Constants.resolutions[mRes][0], Constants.resolutions[mRes][1]); // Ö¸¶¨previewµÄ´óÐ¡
+					parameters.setPreviewSize(Constants.resolutions[mRes][0], Constants.resolutions[mRes][1]); // Ö¸ï¿½ï¿½previewï¿½Ä´ï¿½Ð¡
 				}
 				
-				// ÕâÁ½¸öÊôÐÔ Èç¹ûÕâÁ½¸öÊôÐÔÉèÖÃµÄºÍÕæÊµÊÖ»úµÄ²»Ò»ÑùÊ±£¬¾Í»á±¨´í
+				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÃµÄºï¿½ï¿½ï¿½Êµï¿½Ö»ï¿½Ä²ï¿½Ò»ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Í»á±¨ï¿½ï¿½
 
-//				// ºáÊúÆÁ¾µÍ·×Ô¶¯µ÷Õû
+//				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½
 //				if (this.getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
 //					parameters.set("orientation", "landscape"); //
-//					parameters.set("rotation", -90); // ¾µÍ·½Ç¶È×ª90¶È£¨Ä¬ÈÏÉãÏñÍ·ÊÇºáÅÄ£©
-//					myCamera.setDisplayOrientation(180); // ÔÚ2.2ÒÔÉÏ¿ÉÒÔÊ¹ÓÃ
-//				} else// Èç¹ûÊÇºáÆÁ
+//					parameters.set("rotation", -90); // ï¿½ï¿½Í·ï¿½Ç¶ï¿½×ª90ï¿½È£ï¿½Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½Çºï¿½ï¿½Ä£ï¿½
+//					myCamera.setDisplayOrientation(180); // ï¿½ï¿½2.2ï¿½ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½
+//				} else// ï¿½ï¿½ï¿½ï¿½Çºï¿½ï¿½ï¿½
 //				{
 //					parameters.set("orientation", "landscape"); //
-//					myCamera.setDisplayOrientation(0); // ÔÚ2.2ÒÔÉÏ¿ÉÒÔÊ¹ÓÃ
+//					myCamera.setDisplayOrientation(0); // ï¿½ï¿½2.2ï¿½ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½
 //				}
 
-				/* ÊÓÆµÁ÷±àÂë´¦Àí */
-				// Ìí¼Ó¶ÔÊÓÆµÁ÷´¦Àíº¯Êý
-				// Éè¶¨ÅäÖÃ²ÎÊý²¢¿ªÆôÔ¤ÀÀ
-				myCamera.setParameters(parameters); // ½«Camera.ParametersÉè¶¨ÓèCamera
-				myCamera.startPreview(); // ´ò¿ªÔ¤ÀÀ»­Ãæ
+				/* ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ë´¦ï¿½ï¿½ */
+				// ï¿½ï¿½Ó¶ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½
+				// ï¿½è¶¨ï¿½ï¿½ï¿½Ã²ï¿½ï¿½ï¿½ï¿½ï¿½Ô¤ï¿½ï¿½
+				myCamera.setParameters(parameters); // ï¿½ï¿½Camera.Parametersï¿½è¶¨ï¿½ï¿½Camera
+				myCamera.startPreview(); // ï¿½ï¿½Ô¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				bIfPreview = true;
 
-				// ¡¾µ÷ÊÔ¡¿ÉèÖÃºóµÄÍ¼Æ¬´óÐ¡ºÍÔ¤ÀÀ´óÐ¡ÒÔ¼°Ö¡ÂÊ
+				// ï¿½ï¿½ï¿½ï¿½ï¿½Ô¡ï¿½ï¿½ï¿½ï¿½Ãºï¿½ï¿½Í¼Æ¬ï¿½ï¿½Ð¡ï¿½ï¿½Ô¤ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½Ô¼ï¿½Ö¡ï¿½ï¿½
 				Camera.Size csize = myCamera.getParameters().getPreviewSize();
 				Log.i(LOG_TAG + "initCamera", "after setting, previewSize:width: "
 						+ csize.width + " height: " + csize.height);
@@ -223,14 +223,13 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 //			parameters.setPictureSize(Constants.resolutions[size][0], Constants.resolutions[size][1]);
 //			if(size == 3)
 //				size = 0;
-//			parameters.setPreviewSize(Constants.resolutions[size][0], Constants.resolutions[size][1]); // Ö¸¶¨previewµÄ´óÐ¡
+//			parameters.setPreviewSize(Constants.resolutions[size][0], Constants.resolutions[size][1]); // Ö¸ï¿½ï¿½previewï¿½Ä´ï¿½Ð¡
 //			myCamera.setParameters(parameters);
 //		}else if(flag == 1){
 			mRes = size;
 			initCamera();
 //		}
 	}
-	
 	public int getRes(){
 		return mRes;
 	}
