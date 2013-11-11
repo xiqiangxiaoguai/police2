@@ -18,6 +18,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
+import android.media.CamcorderProfile;
+import android.media.CameraProfile;
 import android.media.MediaRecorder;
 import android.media.ThumbnailUtils;
 import android.os.AsyncTask;
@@ -177,7 +179,9 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 	protected void onStop() {
 		super.onStop();
 		imageLoader.stop();
+		PhoenixMethod.setFlashLed(false);
 	}
+	
 	private void createSurfaceView(){
 		mySurface = new CameraSurfaceView(this);
 		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
@@ -345,7 +349,6 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 	}
 	
 	//***********************************************************Camera**************************************************
-	//���� �ص�����
 	private PictureCallback jpegCallback = new PictureCallback(){
 		public void onPictureTaken(byte[] data, Camera camera) {
 			final byte[] mData =  data;
@@ -363,7 +366,6 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 			mKeyLockForFrequentClick = false;
 		}
 	};
-	//���� ����ͼƬ
 	private String save(byte[] data){
 		if (LOG_SWITCH)
 			Log.d(LOG_TAG, "Start to save the bitmap.");
@@ -393,6 +395,13 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 				bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
 				fos.flush();
 				fos.close();
+				
+				if(bitmap != null && !bitmap.isRecycled()){
+					bitmap.recycle();
+					bitmap = null;
+				}
+				System.gc();
+					
 //				Toast.makeText(this, R.string.camera_succcess, Toast.LENGTH_SHORT).show();
 				if (LOG_SWITCH)
 					Log.d(LOG_TAG, "Image captured successfully!");
@@ -470,6 +479,8 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 //        mrec.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
         mrec.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         mrec.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+        mrec.setVideoEncodingBitRate(12000000);
+//        mrec.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
         mrec.setVideoSize(Constants.resolutions[resolution][0], Constants.resolutions[resolution][1]);
         if (LOG_SWITCH) {
 			Log.d(LOG_TAG, "setVideoSize :" + resolution);
