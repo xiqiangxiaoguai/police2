@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -36,322 +35,301 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class PlayerView implements OnBufferingUpdateListener,
-                OnCompletionListener, MediaPlayer.OnPreparedListener,
-                SurfaceHolder.Callback {
+		OnCompletionListener, MediaPlayer.OnPreparedListener,
+		SurfaceHolder.Callback {
 
+	private int videoWidth;
+	private int videoHeight;
 
-        private int videoWidth;
-        private int videoHeight;
-        
-        public MediaPlayer mediaPlayer;
-        private Activity context;
-        
-        private SurfaceHolder surfaceHolder;
-        private ProgressBar skbProgress;
-        private TextView curTime,totalTime;
-        
-        private ImageView thumb;
-        private SurfaceView surfaceView;
-        private ImageView btnPlay;
-        private ImageView btnStop;
-        private TextView title;
-        
-        private RelativeLayout layout_control;
-        private LinearLayout layout_title;
-        private String titleStr="";
-        private String url;
-        private Timer mTimer=new Timer();
+	public MediaPlayer mediaPlayer;
+	private Activity context;
 
+	private SurfaceHolder surfaceHolder;
+	private ProgressBar skbProgress;
+	private TextView curTime, totalTime;
 
-        LayoutInflater inflater;
-        View view=null;
-        
-        boolean isAnim;
-        /**
-         * ¹¹ÔìÌå
-         * @param context
-         * @param url  ×ÊÔ´Â·¾¶
-         */
-        public PlayerView(Activity context,String url,String titleStr)
-        {
-                this.inflater=LayoutInflater.from(context);
-                this.context=context;
-                this.url=url;        
-                this.titleStr=titleStr;
-                
-                initPlayerView();
-                Bitmap thumbImg=getThumbnail(context, 2000, Uri.parse(url));
-                if(thumbImg!=null){
-                        thumb.setImageBitmap(thumbImg);
-                }
-        }
+	private ImageView thumb;
+	private SurfaceView surfaceView;
+	private ImageView btnPlay;
+	private ImageView btnStop;
+	private TextView title;
 
+	private RelativeLayout layout_control;
+	private LinearLayout layout_title;
+	private String titleStr = "";
+	private String url;
+	private Timer mTimer = new Timer();
 
-        /**
-         * ·µ»ØPlayerView
-         * 
-         * @return View
-         */
-        public View getPlayerView(){
-                if(view!=null){
-                        return view;
-                }
-                return null;
-        }
-        
-        
-        /***
-         * ³õÊ¼»¯PlayerView
-         */
-        public void initPlayerView(){                
-                view=inflater.inflate(R.layout.videoplayer, null);                
-                thumb=(ImageView) view.findViewById(R.id.thumb);
-                surfaceView = (SurfaceView) view.findViewById(R.id.surfaceView);
-                skbProgress = (ProgressBar) view.findViewById(R.id.palyer_control_progress);
-                title = (TextView) view.findViewById(R.id.player_title_name);
-        
-                curTime = (TextView) view.findViewById(R.id.cur_time);
-                totalTime = (TextView) view.findViewById(R.id.total_time);
-                
-                layout_title=(LinearLayout) view.findViewById(R.id.palyer_title_layout);
-                layout_control=(RelativeLayout) view.findViewById(R.id.palyer_control_layout);
-                
+	LayoutInflater inflater;
+	View view = null;
 
-                btnPlay = (ImageView) view.findViewById(R.id.palyer_control_paly);
-                btnPlay.setClickable(true);
-                btnPlay.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                                if(STATE ==STOP){
-                                        playUrl();
-                                        layout_title.startAnimation(getAnimUp());
-                                        layout_control.startAnimation(getAnimDown());
-                                        btnPlay.setVisibility(View.GONE);
-                                        btnStop.setVisibility(View.GONE);
-                                        isAnim = true;
-                                        
-                                }else
-                                if(STATE==PLAYING){
-                                        pause();
-                                        
-                                }else if(STATE==PAUSE){
-                                        play();
-                                        layout_title.startAnimation(getAnimUp());
-                                        layout_control.startAnimation(getAnimDown());
-                                        btnPlay.setVisibility(View.GONE);
-                                        btnStop.setVisibility(View.GONE);
-                                        isAnim = true;
-                                }
-                        }
-                });
-                btnStop = (ImageView) view.findViewById(R.id.palyer_control_stop);
-                btnStop.setClickable(true);
-                btnStop.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View arg0) {
-						stop();
-						context.finish();
+	boolean isAnim;
+
+	public PlayerView(Activity context, String url, String titleStr) {
+		this.inflater = LayoutInflater.from(context);
+		this.context = context;
+		this.url = url;
+		this.titleStr = titleStr;
+
+		initPlayerView();
+		Bitmap thumbImg = getThumbnail(context, 2000, Uri.parse(url));
+		if (thumbImg != null) {
+			thumb.setImageBitmap(thumbImg);
+		}
+	}
+
+	public View getPlayerView() {
+		if (view != null) {
+			return view;
+		}
+		return null;
+	}
+	public void initPlayerView() {
+		view = inflater.inflate(R.layout.videoplayer, null);
+		thumb = (ImageView) view.findViewById(R.id.thumb);
+		surfaceView = (SurfaceView) view.findViewById(R.id.surfaceView);
+		skbProgress = (ProgressBar) view
+				.findViewById(R.id.palyer_control_progress);
+		title = (TextView) view.findViewById(R.id.player_title_name);
+
+		curTime = (TextView) view.findViewById(R.id.cur_time);
+		totalTime = (TextView) view.findViewById(R.id.total_time);
+
+		layout_title = (LinearLayout) view
+				.findViewById(R.id.palyer_title_layout);
+		layout_control = (RelativeLayout) view
+				.findViewById(R.id.palyer_control_layout);
+
+		btnPlay = (ImageView) view.findViewById(R.id.palyer_control_paly);
+		btnPlay.setClickable(true);
+		btnPlay.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (STATE == STOP) {
+					playUrl();
+					layout_title.startAnimation(getAnimUp());
+					layout_control.startAnimation(getAnimDown());
+					btnPlay.setVisibility(View.GONE);
+					btnStop.setVisibility(View.GONE);
+					isAnim = true;
+
+				} else if (STATE == PLAYING) {
+					pause();
+
+				} else if (STATE == PAUSE) {
+					play();
+					layout_title.startAnimation(getAnimUp());
+					layout_control.startAnimation(getAnimDown());
+					btnPlay.setVisibility(View.GONE);
+					btnStop.setVisibility(View.GONE);
+					isAnim = true;
+				}
+			}
+		});
+		btnStop = (ImageView) view.findViewById(R.id.palyer_control_stop);
+		btnStop.setClickable(true);
+		btnStop.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				stop();
+				context.finish();
+			}
+		});
+		this.title.setText(titleStr);
+		surfaceHolder = surfaceView.getHolder();
+		surfaceHolder.addCallback(this);
+		surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+		mTimer.schedule(mTimerTask, 0, 1000);
+
+		isAnim = false;
+		surfaceView.setOnTouchListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				if (event.getAction() == MotionEvent.ACTION_UP) {
+					if (isAnim == false) {
+						layout_title.startAnimation(getAnimUp());
+						layout_control.startAnimation(getAnimDown());
+						btnPlay.setVisibility(View.GONE);
+						btnStop.setVisibility(View.GONE);
+						isAnim = true;
+					} else {
+						btnPlay.setVisibility(View.VISIBLE);
+						btnStop.setVisibility(View.VISIBLE);
+						layout_title.clearAnimation();
+						layout_control.clearAnimation();
+						isAnim = false;
 					}
-				});
-                this.title.setText(titleStr);
-                surfaceHolder=surfaceView.getHolder();
-                surfaceHolder.addCallback(this);
-                surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-                mTimer.schedule(mTimerTask, 0, 1000);
-                
-                //Òþ²Ø»òÏÔÊ¾±êÌâÀ¸Óë¿ØÖÆÀ¸
-                isAnim=false;
-                surfaceView.setOnTouchListener(new OnTouchListener() {
-                        @Override
-                        public boolean onTouch(View v, MotionEvent event) {
-                                if (event.getAction() == MotionEvent.ACTION_UP) {
-                                        if (isAnim == false) {
-                                                layout_title.startAnimation(getAnimUp());
-                                                layout_control.startAnimation(getAnimDown());
-                                                btnPlay.setVisibility(View.GONE);
-                                                btnStop.setVisibility(View.GONE);
-                                                isAnim = true;
-                                        } else {
-	                                        	btnPlay.setVisibility(View.VISIBLE);
-                                        		btnStop.setVisibility(View.VISIBLE);
-                                                layout_title.clearAnimation();
-                                                layout_control.clearAnimation();
-                                                isAnim = false;
-                                        }
-                                }
-                                return true;
-                        }
-                });
-        }
+				}
+				return true;
+			}
+		});
+	}
 
+	TimerTask mTimerTask = new TimerTask() {
+		@Override
+		public void run() {
+			if (mediaPlayer == null)
+				return;
+			if (mediaPlayer.isPlaying() && skbProgress.isPressed() == false) {
+				handleProgress.sendEmptyMessage(0);
+			}
+		}
+	};
 
-        /*******************************************************
-         * Í¨¹ý¶¨Ê±Æ÷ºÍHandlerÀ´¸üÐÂ½ø¶ÈÌõ
-         ******************************************************/
-        TimerTask mTimerTask = new TimerTask() {
-                @Override
-                public void run() {
-                        if(mediaPlayer==null)
-                                return;
-                        if (mediaPlayer.isPlaying() && skbProgress.isPressed() == false) {
-                                handleProgress.sendEmptyMessage(0);
-                        }
-                }
-        };
+	Handler handleProgress = new Handler() {
+		public void handleMessage(Message msg) {
 
-        Handler handleProgress = new Handler() {
-                public void handleMessage(Message msg) {
+			int position = mediaPlayer.getCurrentPosition();
+			int duration = mediaPlayer.getDuration();
 
-                        int position = mediaPlayer.getCurrentPosition();
-                        int duration = mediaPlayer.getDuration();
-                
-                        if (duration > 0) {
-                                long pos = skbProgress.getMax() * position / duration;
-                                skbProgress.setProgress((int) pos);                                
-                                curTime.setText(""+DateFormat.format("mm:ss", position).toString() );
-                                totalTime.setText("/"+DateFormat.format("mm:ss", duration).toString() );
-                        }
-                };
-        };
-        //********************************************************************
-        /**
-         * Ê×´Î²¥·Å
-         */
-        public void playUrl()
-        {
-                try {
-                        thumb.setVisibility(View.GONE);
-                        mediaPlayer.reset();
-                        mediaPlayer.setDataSource(url);
-                        mediaPlayer.prepare();//prepareÖ®ºó×Ô¶¯²¥·Å
-                } catch (IllegalArgumentException e) {
-                        e.printStackTrace();
-                } catch (IllegalStateException e) {
-                        e.printStackTrace();
-                } catch (IOException e) {
-                        e.printStackTrace();
-                }
-                STATE = PLAYING;
-                btnPlay.setImageResource(R.drawable.audio_pause);
-        }
-        /**
-         * ²¥·Å
-        */
-        public void play()
-        {
-                mediaPlayer.start();
-                STATE = PLAYING;
-                btnPlay.setImageResource(R.drawable.audio_pause);
-        }
+			if (duration > 0) {
+				long pos = skbProgress.getMax() * position / duration;
+				skbProgress.setProgress((int) pos);
+				curTime.setText(""
+						+ DateFormat.format("mm:ss", position).toString());
+				totalTime.setText("/"
+						+ DateFormat.format("mm:ss", duration).toString());
+			}
+		};
+	};
 
-        /**
-         * ÔÝÍ£
-         */
-        public void pause()
-        {
-                mediaPlayer.pause();
-                STATE = PAUSE;
-                btnPlay.setImageResource(R.drawable.audio_play);
-        }
-        /**
-         * Í£Ö¹
-         */
-        public void stop()
-        {
-                if (mediaPlayer != null) { 
-                        mediaPlayer.stop();
-            mediaPlayer.release(); 
-            mediaPlayer = null; 
+	// ********************************************************************
+	public void playUrl() {
+		try {
+			thumb.setVisibility(View.GONE);
+			mediaPlayer.reset();
+			mediaPlayer.setDataSource(url);
+			mediaPlayer.prepare();// prepareÖ®ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		STATE = PLAYING;
+		btnPlay.setImageResource(R.drawable.audio_pause);
+	}
 
-            skbProgress.setProgress(0);
-            thumb.setVisibility(View.VISIBLE);
-            STATE =STOP;
-            btnPlay.setImageResource(R.drawable.audio_play);
-        } 
-        }
-        
-        
-        
-        //********************************************************************
-        @Override
-        public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3) {
-                Log.e("mediaPlayer", "surface changed");
-        }
+	/**
+	 * ï¿½ï¿½ï¿½ï¿½
+	 */
+	public void play() {
+		mediaPlayer.start();
+		STATE = PLAYING;
+		btnPlay.setImageResource(R.drawable.audio_pause);
+	}
 
-        @Override
-        public void surfaceCreated(SurfaceHolder arg0) {
-                try {
-                        if(mediaPlayer==null){
-                                mediaPlayer = new MediaPlayer();
-                                mediaPlayer.setDisplay(surfaceHolder);
-                                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                                mediaPlayer.setOnBufferingUpdateListener(this);
-                                mediaPlayer.setOnPreparedListener(this);
-                                mediaPlayer.setOnCompletionListener(this);
-                        }
-                } catch (Exception e) {
-                        Log.e("mediaPlayer", "error", e);
-                }
-                Log.e("mediaPlayer", "surface created");
-        }
-        @Override
-        public void surfaceDestroyed(SurfaceHolder arg0) {
-                Log.e("mediaPlayer", "surface destroyed");
-                
-        }
-        
+	/**
+	 * ï¿½ï¿½Í£
+	 */
+	public void pause() {
+		mediaPlayer.pause();
+		STATE = PAUSE;
+		btnPlay.setImageResource(R.drawable.audio_play);
+	}
 
-        //********************************************************************
-        @Override
-        /**
-         * Í¨¹ýonPrepared²¥·Å
-         */
-        public void onPrepared(MediaPlayer mediaplayer) {
-                videoWidth = mediaPlayer.getVideoWidth();
-                videoHeight = mediaPlayer.getVideoHeight();
-                if (videoHeight != 0 && videoWidth != 0) {
-                        mediaplayer.start();
-                }
-                Log.e("mediaPlayer", "onPrepared");
-        }
+	/**
+	 * Í£Ö¹
+	 */
+	public void stop() {
+		if (mediaPlayer != null) {
+			mediaPlayer.stop();
+			mediaPlayer.release();
+			mediaPlayer = null;
 
-        @Override
-        public void onCompletion(MediaPlayer mediaplayer) {
-                this.stop();
-                context.finish();//²¥·ÅÍêºóÍË³ö´ËActivity
-        }
+			skbProgress.setProgress(0);
+			thumb.setVisibility(View.VISIBLE);
+			STATE = STOP;
+			btnPlay.setImageResource(R.drawable.audio_play);
+		}
+	}
 
-        @Override
-        public void onBufferingUpdate(MediaPlayer arg0, int bufferingProgress) {
-                skbProgress.setSecondaryProgress(bufferingProgress);
-                int currentProgress=skbProgress.getMax()*mediaPlayer.getCurrentPosition()/mediaPlayer.getDuration();
-                Log.e(currentProgress+"% play", bufferingProgress + "% buffer");
-                
-        }
-        
-        
-        //-----------------------------------------------------------------------------------------------
-        
-        /**
-         * »ñÈ¡Ö¸¶¨Ö¡µÄÍ¼Æ¬(¾ÖÏÞÓÚSDcardÊÓÆµ)
-         * @param paramContext ÄÚÈÝ
-         * @param paramLong     Ö¸¶¨Ê±¼ä(mm)
-         * @param paramUri        ×ÊÔ´Â·¾¶
-         * @return Bitmap
-         */
-	
+	// ********************************************************************
+	@Override
+	public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3) {
+		Log.e("mediaPlayer", "surface changed");
+	}
+
+	@Override
+	public void surfaceCreated(SurfaceHolder arg0) {
+		try {
+			if (mediaPlayer == null) {
+				mediaPlayer = new MediaPlayer();
+				mediaPlayer.setDisplay(surfaceHolder);
+				mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+				mediaPlayer.setOnBufferingUpdateListener(this);
+				mediaPlayer.setOnPreparedListener(this);
+				mediaPlayer.setOnCompletionListener(this);
+			}
+		} catch (Exception e) {
+			Log.e("mediaPlayer", "error", e);
+		}
+		Log.e("mediaPlayer", "surface created");
+	}
+
+	@Override
+	public void surfaceDestroyed(SurfaceHolder arg0) {
+		Log.e("mediaPlayer", "surface destroyed");
+
+	}
+
+	// ********************************************************************
+	@Override
+	/**
+	 * Í¨ï¿½ï¿½onPreparedï¿½ï¿½ï¿½ï¿½
+	 */
+	public void onPrepared(MediaPlayer mediaplayer) {
+		videoWidth = mediaPlayer.getVideoWidth();
+		videoHeight = mediaPlayer.getVideoHeight();
+		if (videoHeight != 0 && videoWidth != 0) {
+			mediaplayer.start();
+		}
+		Log.e("mediaPlayer", "onPrepared");
+	}
+
+	@Override
+	public void onCompletion(MediaPlayer mediaplayer) {
+		this.stop();
+		context.finish();// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½ï¿½Activity
+	}
+
+	@Override
+	public void onBufferingUpdate(MediaPlayer arg0, int bufferingProgress) {
+		skbProgress.setSecondaryProgress(bufferingProgress);
+		int currentProgress = skbProgress.getMax()
+				* mediaPlayer.getCurrentPosition() / mediaPlayer.getDuration();
+		Log.e(currentProgress + "% play", bufferingProgress + "% buffer");
+
+	}
+
+	// -----------------------------------------------------------------------------------------------
+
+	/**
+	 * ï¿½ï¿½È¡Ö¸ï¿½ï¿½Ö¡ï¿½ï¿½Í¼Æ¬(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½SDcardï¿½ï¿½Æµ)
+	 * 
+	 * @param paramContext
+	 *            ï¿½ï¿½ï¿½ï¿½
+	 * @param paramLong
+	 *            Ö¸ï¿½ï¿½Ê±ï¿½ï¿½(mm)
+	 * @param paramUri
+	 *            ï¿½ï¿½Ô´Â·ï¿½ï¿½
+	 * @return Bitmap
+	 */
+
 	private Bitmap getThumbnail(Context paramContext, long paramLong,
 			Uri paramUri) {
 		MediaMetadataRetriever localMediaMetadataRetriever = new MediaMetadataRetriever();
 		Bitmap localBitmap1;
 		try {
-			localMediaMetadataRetriever.setDataSource(paramContext, paramUri);// »ñÈ¡Í¼ÏñÇ°±ØÐëÏÈÉèÖÃdataSource
+			localMediaMetadataRetriever.setDataSource(paramContext, paramUri);// ï¿½ï¿½È¡Í¼ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½dataSource
 
 			Bitmap localBitmap2 = localMediaMetadataRetriever
-					.getFrameAtTime(1000L * paramLong);// »ñÈ¡Ö¸¶¨Ê±¼äÊÓÆµÎÄ¼þÍ¼Ïñ
+					.getFrameAtTime(1000L * paramLong);// ï¿½ï¿½È¡Ö¸ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Æµï¿½Ä¼ï¿½Í¼ï¿½ï¿½
 			localBitmap1 = localBitmap2;
 			if (localBitmap1 == null) {
-				localBitmap1 = BitmapFactory.decodeResource(paramContext.getResources(), R.drawable.background);
+				localBitmap1 = BitmapFactory.decodeResource(
+						paramContext.getResources(), R.drawable.background);
 			}
 			return localBitmap1;
 		} catch (RuntimeException localRuntimeException)
@@ -363,49 +341,51 @@ public class PlayerView implements OnBufferingUpdateListener,
 		}
 
 	}
-        
-        
-        
-          //-------------------------------------------------------------Animation
-                public static final int Time=200;
-                /**
-                 * ÏòÉÏÒÆ¶¯
-                 * @return Animation
-                 */
-                public Animation getAnimUp(){
-                        Animation anim = new TranslateAnimation(
-                                        TranslateAnimation.RELATIVE_TO_SELF, 0,
-                                        TranslateAnimation.RELATIVE_TO_SELF, 0f,
-                                        TranslateAnimation.RELATIVE_TO_SELF, 0f,
-                                        TranslateAnimation.RELATIVE_TO_SELF, -1f);
-                        LinearInterpolator inter=new LinearInterpolator();
-                anim.setInterpolator(inter);
-                        anim.setDuration(Time);
-                        anim.setFillBefore(false);
-                        anim.setFillAfter(true);
-                        return anim;
-                }
-                /**
-                 * ÏòÏÂÒÆ¶¯
-                 * @return Animation
-                 */
-                public Animation getAnimDown(){
-                        Animation anim = new TranslateAnimation(
-                                        TranslateAnimation.RELATIVE_TO_SELF, 0,
-                                        TranslateAnimation.RELATIVE_TO_SELF, 0f,
-                                        TranslateAnimation.RELATIVE_TO_SELF, 0f,
-                                        TranslateAnimation.RELATIVE_TO_SELF, 1f);
-                        LinearInterpolator inter=new LinearInterpolator();
-                anim.setInterpolator(inter);
-                        anim.setDuration(Time);
-                        anim.setFillBefore(false);
-                        anim.setFillAfter(true);
-                        return anim;
-                }
-                
-        //---------------------------------------------------------------×´Ì¬
-        public static final int PLAYING=1;//²¥·ÅÖÐ
-        public static final int PAUSE=2;//ÔÝÍ£
-        public static final int STOP=3;//Í£Ö¹
-        public int STATE=STOP;
+
+	// -------------------------------------------------------------Animation
+	public static final int Time = 200;
+
+	/**
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½
+	 * 
+	 * @return Animation
+	 */
+	public Animation getAnimUp() {
+		Animation anim = new TranslateAnimation(
+				TranslateAnimation.RELATIVE_TO_SELF, 0,
+				TranslateAnimation.RELATIVE_TO_SELF, 0f,
+				TranslateAnimation.RELATIVE_TO_SELF, 0f,
+				TranslateAnimation.RELATIVE_TO_SELF, -1f);
+		LinearInterpolator inter = new LinearInterpolator();
+		anim.setInterpolator(inter);
+		anim.setDuration(Time);
+		anim.setFillBefore(false);
+		anim.setFillAfter(true);
+		return anim;
+	}
+
+	/**
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½
+	 * 
+	 * @return Animation
+	 */
+	public Animation getAnimDown() {
+		Animation anim = new TranslateAnimation(
+				TranslateAnimation.RELATIVE_TO_SELF, 0,
+				TranslateAnimation.RELATIVE_TO_SELF, 0f,
+				TranslateAnimation.RELATIVE_TO_SELF, 0f,
+				TranslateAnimation.RELATIVE_TO_SELF, 1f);
+		LinearInterpolator inter = new LinearInterpolator();
+		anim.setInterpolator(inter);
+		anim.setDuration(Time);
+		anim.setFillBefore(false);
+		anim.setFillAfter(true);
+		return anim;
+	}
+
+	// ---------------------------------------------------------------×´Ì¬
+	public static final int PLAYING = 1;// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	public static final int PAUSE = 2;// ï¿½ï¿½Í£
+	public static final int STOP = 3;// Í£Ö¹
+	public int STATE = STOP;
 }

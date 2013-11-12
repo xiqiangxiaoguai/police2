@@ -238,6 +238,7 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 					if (LOG_SWITCH) {
 						Log.d(LOG_TAG, "child count:" + cameraLayout.getChildCount());
 					}
+					mModeSwitch.setImageResource(R.drawable.mode_video);
 				}
 			});
 			appPaused = false;

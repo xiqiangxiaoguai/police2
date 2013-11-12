@@ -22,17 +22,17 @@ public class AudioRecordFunc {
 	private static final boolean LOG_SWITCH = Constants.LOG_SWITCH;
 	private static final String LOG_TAG = AudioRecordFunc.class.getSimpleName();
 	
-    // »º³åÇø×Ö½Ú´óÐ¡  
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö½Ú´ï¿½Ð¡  
     private int bufferSizeInBytes = 0;
      
-    //AudioNameÂãÒôÆµÊý¾ÝÎÄ¼þ £¬Âó¿Ë·ç
+    //AudioNameï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ ï¿½ï¿½ï¿½ï¿½Ë·ï¿½
     private String AudioName = "";  
      
-    //NewAudioName¿É²¥·ÅµÄÒôÆµÎÄ¼þ  
+    //NewAudioNameï¿½É²ï¿½ï¿½Åµï¿½ï¿½ï¿½Æµï¿½Ä¼ï¿½  
     public String NewAudioName = "";
      
     private AudioRecord audioRecord;  
-    private boolean isRecord = false;// ÉèÖÃÕýÔÚÂ¼ÖÆµÄ×´Ì¬  
+    private boolean isRecord = false;// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½Æµï¿½×´Ì¬  
      
     private static final String audioPath = "police/audio/";
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -52,7 +52,7 @@ public class AudioRecordFunc {
     }
      
     public boolean startRecordAndFile() {
-        //ÅÐ¶ÏÊÇ·ñÓÐÍâ²¿´æ´¢Éè±¸sdcard
+        //ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½â²¿ï¿½æ´¢ï¿½è±¸sdcard
         if(AudioFileFunc.isSdcardExit())
         {
             if(isRecord)
@@ -67,9 +67,9 @@ public class AudioRecordFunc {
                     creatAudioRecord();
                  
                 audioRecord.startRecording();  
-                // ÈÃÂ¼ÖÆ×´Ì¬Îªtrue  
+                // ï¿½ï¿½Â¼ï¿½ï¿½×´Ì¬Îªtrue  
                 isRecord = true;  
-                // ¿ªÆôÒôÆµÎÄ¼þÐ´ÈëÏß³Ì  
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½Ä¼ï¿½Ð´ï¿½ï¿½ï¿½ß³ï¿½  
                 new Thread(new AudioRecordThread()).start();  
                 return true;
             }
@@ -97,9 +97,9 @@ public class AudioRecordFunc {
     private void close() {  
         if (audioRecord != null) {  
             System.out.println("stopRecord");  
-            isRecord = false;//Í£Ö¹ÎÄ¼þÐ´Èë  
+            isRecord = false;//Í£Ö¹ï¿½Ä¼ï¿½Ð´ï¿½ï¿½  
             audioRecord.stop();  
-            audioRecord.release();//ÊÍ·Å×ÊÔ´  
+            audioRecord.release();//ï¿½Í·ï¿½ï¿½ï¿½Ô´  
             audioRecord = null;  
         }  
     }
@@ -107,7 +107,7 @@ public class AudioRecordFunc {
      
     private void creatAudioRecord() {  
     	
-        // »ñÈ¡ÒôÆµÎÄ¼þÂ·¾¶
+        // ï¿½ï¿½È¡ï¿½ï¿½Æµï¿½Ä¼ï¿½Â·ï¿½ï¿½
         AudioName = AudioFileFunc.getRawFilePath();
         File folderPath = new File(AudioFileFunc.getWavFilePath() + audioPath);
         if(!folderPath.exists())
@@ -116,11 +116,11 @@ public class AudioRecordFunc {
         String police_num = sharedPreferences.getString(Constants.SHARED_POL_NUM, Constants.SHARED_POL_NUM_DEF);
         NewAudioName = AudioFileFunc.getWavFilePath() + audioPath + Constants.AUDIO_NAME_HEAD + police_num + "_" + dateFormat.format(new Date()) +".wav";
          
-        // »ñµÃ»º³åÇø×Ö½Ú´óÐ¡  
+        // ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö½Ú´ï¿½Ð¡  
         bufferSizeInBytes = AudioRecord.getMinBufferSize(AudioFileFunc.AUDIO_SAMPLE_RATE,  
                 AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT);  
          
-        // ´´½¨AudioRecord¶ÔÏó  
+        // ï¿½ï¿½ï¿½ï¿½AudioRecordï¿½ï¿½ï¿½ï¿½  
         audioRecord = new AudioRecord(AudioFileFunc.AUDIO_INPUT, AudioFileFunc.AUDIO_SAMPLE_RATE,  
                 AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT, bufferSizeInBytes);  
     }
@@ -129,18 +129,18 @@ public class AudioRecordFunc {
     class AudioRecordThread implements Runnable {  
         @Override 
         public void run() {  
-            writeDateTOFile();//ÍùÎÄ¼þÖÐÐ´ÈëÂãÊý¾Ý  
-            copyWaveFile(AudioName, NewAudioName);//¸øÂãÊý¾Ý¼ÓÉÏÍ·ÎÄ¼þ  
+            writeDateTOFile();//ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  
+            copyWaveFile(AudioName, NewAudioName);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¼ï¿½ï¿½ï¿½Í·ï¿½Ä¼ï¿½  
         }  
     }  
    
     /** 
-     * ÕâÀï½«Êý¾ÝÐ´ÈëÎÄ¼þ£¬µ«ÊÇ²¢²»ÄÜ²¥·Å£¬ÒòÎªAudioRecord»ñµÃµÄÒôÆµÊÇÔ­Ê¼µÄÂãÒôÆµ£¬ 
-     * Èç¹ûÐèÒª²¥·Å¾Í±ØÐë¼ÓÈëÒ»Ð©¸ñÊ½»òÕß±àÂëµÄÍ·ÐÅÏ¢¡£µ«ÊÇÕâÑùµÄºÃ´¦¾ÍÊÇÄã¿ÉÒÔ¶ÔÒôÆµµÄ ÂãÊý¾Ý½øÐÐ´¦Àí£¬±ÈÈçÄãÒª×öÒ»¸ö°®Ëµ»°µÄTOM 
-     * Ã¨ÔÚÕâÀï¾Í½øÐÐÒôÆµµÄ´¦Àí£¬È»ºóÖØÐÂ·â×° ËùÒÔËµÕâÑùµÃµ½µÄÒôÆµ±È½ÏÈÝÒ××öÒ»Ð©ÒôÆµµÄ´¦Àí¡£ 
+     * ï¿½ï¿½ï¿½ï½«ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç²ï¿½ï¿½ï¿½ï¿½Ü²ï¿½ï¿½Å£ï¿½ï¿½ï¿½ÎªAudioRecordï¿½ï¿½Ãµï¿½ï¿½ï¿½Æµï¿½ï¿½Ô­Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ 
+     * ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Å¾Í±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Ð©ï¿½ï¿½Ê½ï¿½ï¿½ï¿½ß±ï¿½ï¿½ï¿½ï¿½Í·ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÄºÃ´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½Æµï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ý½ï¿½ï¿½Ð´ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½TOM 
+     * Ã¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í½ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½Ä´ï¿½ï¿½?È»ï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½×° ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Ð©ï¿½ï¿½Æµï¿½Ä´ï¿½ï¿½? 
      */ 
     private void writeDateTOFile() {  
-        // newÒ»¸öbyteÊý×éÓÃÀ´´æÒ»Ð©×Ö½ÚÊý¾Ý£¬´óÐ¡Îª»º³åÇø´óÐ¡  
+        // newÒ»ï¿½ï¿½byteï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Ð©ï¿½Ö½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½Ð¡Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡  
         byte[] audiodata = new byte[bufferSizeInBytes];  
         FileOutputStream fos = null;  
         int readsize = 0;  
@@ -149,14 +149,14 @@ public class AudioRecordFunc {
             if (file.exists()) {  
                 file.delete();  
             }  
-            fos = new FileOutputStream(file);// ½¨Á¢Ò»¸ö¿É´æÈ¡×Ö½ÚµÄÎÄ¼þ  
+            fos = new FileOutputStream(file);// ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½É´ï¿½È¡ï¿½Ö½Úµï¿½ï¿½Ä¼ï¿½  
         } catch (Exception e) {  
             e.printStackTrace(); 
 //            Toast.makeText(mContext, R.string.audio_fail, Toast.LENGTH_SHORT).show();
         }  
         while (isRecord == true) {  
             readsize = audioRecord.read(audiodata, 0, bufferSizeInBytes);  
-            if (AudioRecord.ERROR_INVALID_OPERATION != readsize && fos!=null) {  
+            if (fos!=null) {  
                 try {  
                     fos.write(audiodata);
                 } catch (IOException e) {  
@@ -167,7 +167,7 @@ public class AudioRecordFunc {
         }  
         try {
             if(fos != null)
-                fos.close();// ¹Ø±ÕÐ´ÈëÁ÷  
+                fos.close();// ï¿½Ø±ï¿½Ð´ï¿½ï¿½ï¿½ï¿½  
         } catch (IOException e) {  
             e.printStackTrace(); 
 //            Toast.makeText(mContext, R.string.audio_fail, Toast.LENGTH_SHORT).show();
@@ -177,7 +177,7 @@ public class AudioRecordFunc {
         
     }  
    
-    // ÕâÀïµÃµ½¿É²¥·ÅµÄÒôÆµÎÄ¼þ  
+    // ï¿½ï¿½ï¿½ï¿½Ãµï¿½ï¿½É²ï¿½ï¿½Åµï¿½ï¿½ï¿½Æµï¿½Ä¼ï¿½  
     private void copyWaveFile(String inFilename, String outFilename) {  
         FileInputStream in = null;  
         FileOutputStream out = null;  
@@ -207,10 +207,10 @@ public class AudioRecordFunc {
     }  
    
     /** 
-     * ÕâÀïÌá¹©Ò»¸öÍ·ÐÅÏ¢¡£²åÈëÕâÐ©ÐÅÏ¢¾Í¿ÉÒÔµÃµ½¿ÉÒÔ²¥·ÅµÄÎÄ¼þ¡£ 
-     * ÎªÎÒÎªÉ¶²åÈëÕâ44¸ö×Ö½Ú£¬Õâ¸ö»¹ÕæÃ»ÉîÈëÑÐ¾¿£¬²»¹ýÄãËæ±ã´ò¿ªÒ»¸öwav 
-     * ÒôÆµµÄÎÄ¼þ£¬¿ÉÒÔ·¢ÏÖÇ°ÃæµÄÍ·ÎÄ¼þ¿ÉÒÔËµ»ù±¾Ò»ÑùÅ¶¡£Ã¿ÖÖ¸ñÊ½µÄÎÄ¼þ¶¼ÓÐ 
-     * ×Ô¼ºÌØÓÐµÄÍ·ÎÄ¼þ¡£ 
+     * ï¿½ï¿½ï¿½ï¿½ï¿½á¹©Ò»ï¿½ï¿½Í·ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð©ï¿½ï¿½Ï¢ï¿½Í¿ï¿½ï¿½ÔµÃµï¿½ï¿½ï¿½ï¿½Ô²ï¿½ï¿½Åµï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ 
+     * Îªï¿½ï¿½ÎªÉ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½44ï¿½ï¿½ï¿½Ö½Ú£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½Ð¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½wav 
+     * ï¿½ï¿½Æµï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô·ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½Í·ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½Ò»ï¿½ï¿½Å¶ï¿½ï¿½Ã¿ï¿½Ö¸ï¿½Ê½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ 
+     * ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½Ðµï¿½Í·ï¿½Ä¼ï¿½ï¿½ï¿½ 
      */ 
     private void WriteWaveFileHeader(FileOutputStream out, long totalAudioLen,  
             long totalDataLen, long longSampleRate, int channels, long byteRate)  

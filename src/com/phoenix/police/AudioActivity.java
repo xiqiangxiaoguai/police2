@@ -1,11 +1,15 @@
 package com.phoenix.police;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.KeyEvent;
@@ -56,12 +60,14 @@ public class AudioActivity extends Activity implements OnClickListener {
 				timeCount.setText(String.format("%1$02d:%2$02d:%3$02d",hour, min, sec));
 				break;
 			case 2:
-				startRecord();
-				mState = STATE_RECORDING;
-				startTimer();
-				timeBar.setVisibility(View.VISIBLE);
-				mHandler.sendEmptyMessage(0);
-				PhoenixMethod.setAudioLed(true);
+				mKeyLockForFrequentClick = false;
+//				startRecord();
+//				mState = STATE_RECORDING;
+//				startTimer();
+//				timeBar.setVisibility(View.VISIBLE);
+//				mHandler.sendEmptyMessage(0);
+//				PhoenixMethod.setAudioLed(true);
+				audioEvent();
 				break;
 			}
 		};
@@ -139,6 +145,7 @@ public class AudioActivity extends Activity implements OnClickListener {
 		if(getIntent() != null){
 			if(getIntent().getExtras()!= null){
 				if(getIntent().getExtras().getBoolean(Constants.AUTO_AUDIO, false)){
+					mKeyLockForFrequentClick= true;
 					mHandler.sendEmptyMessageDelayed(2, 1000);
 				}}}
 	}
@@ -169,14 +176,42 @@ public class AudioActivity extends Activity implements OnClickListener {
 			timeCount.setText(String.format("%1$02d:%2$02d:%3$02d",0, 0, 0));
 		}
 	}
+	ExtAudioRecorder extAudioRecorder = null;
+	class Run implements Runnable{
+
+		@Override
+		public void run() {
+			extAudioRecorder = ExtAudioRecorder.getInstanse(false);
+			String audioPath = "police/audio/";
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+			SharedPreferences sharedPreferences = getSharedPreferences(Constants.SETTING_PREFERENCES, Context.MODE_PRIVATE);
+			String police_num = sharedPreferences.getString(Constants.SHARED_POL_NUM, Constants.SHARED_POL_NUM_DEF);
+			String savePath = AudioFileFunc.getWavFilePath() + audioPath;
+			String fileName = Constants.AUDIO_NAME_HEAD + police_num + "_" + dateFormat.format(new Date()) +".wav";
+			File dir = new File(savePath);
+			if(dir.list() == null){
+				dir.mkdirs();
+			}
+			File file=new File(savePath+fileName);
+			extAudioRecorder.setOutputFile(savePath+fileName);
+			extAudioRecorder.prepare();
+			extAudioRecorder.start();
+		}
+		
+	}
 	
 	private void startRecord(){
-		AudioRecordFunc func = AudioRecordFunc.getInstance(this);
-		func.startRecordAndFile();
+//		AudioRecordFunc func = AudioRecordFunc.getInstance(this);
+//		func.startRecordAndFile();
+		new Thread(new Run()).start();
 	}
 	private void stopRecord(){
-		AudioRecordFunc func = AudioRecordFunc.getInstance(this);
-		func.stopRecordAndFile();
+//		AudioRecordFunc func = AudioRecordFunc.getInstance(this);
+//		func.stopRecordAndFile();
+		if(null != extAudioRecorder){
+			extAudioRecorder.stop();
+			extAudioRecorder.release();
+		}
 		Toast.makeText(this, R.string.audio_success, Toast.LENGTH_SHORT).show();
 	}
 
