@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.phoenix.data.Constants;
 import com.phoenix.lib.SlidingMenu;
+import com.phoenix.online.A9TerminalActivity;
 import com.phoenix.setting.PhoenixMethod;
 import com.phoenix.setting.SettingActivity;
 
@@ -236,6 +237,7 @@ public class AudioActivity extends Activity implements OnClickListener {
 				startActivity(new Intent(this, SettingActivity.class));
 				break;
 			case R.id.menu_wireless:
+				startActivity(new Intent(this, A9TerminalActivity.class));
 				break;
 			case R.id.menu_av:
 //				startActivity(new Intent(this, AvInActivity.class));

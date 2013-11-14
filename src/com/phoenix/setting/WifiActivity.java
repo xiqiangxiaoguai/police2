@@ -89,7 +89,6 @@ public class WifiActivity extends SlidingPreferenceActivity implements Preferenc
 		conn = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		_wifiSwitch = (SwitchPreference) findPreference("setting_wifi_switch_preference");
 		State wifi = conn.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
-		_wifiSwitch.setChecked(wifi == State.CONNECTED || wifi == State.CONNECTING);
 		_wifiSwitch.setOnPreferenceChangeListener(this);
 		mWifiSearchCategory = (PreferenceCategory) findPreference("setting_wifi_search_category");
 		
@@ -151,24 +150,43 @@ public class WifiActivity extends SlidingPreferenceActivity implements Preferenc
 	public boolean onPreferenceClick(Preference preference) {
 		if(preference.getClass().getName() == AccessPoint.class.getName()){
 			final ScanResult result = mResults.get(preference.getTitle());
-			LayoutInflater factory = LayoutInflater.from(this);
-			View view = factory.inflate(R.layout.pw_edit, null);
-			((TextView)view.findViewById(R.id.leveldetail)).setText(wifiQuality[WifiManager.calculateSignalLevel(result.level, 4)]);
-			final EditText edit =  (EditText) view.findViewById(R.id.passworddetail);
-			AlertDialog dialog = new AlertDialog.Builder(this).setTitle(result.SSID).setView(view)
-					.setPositiveButton(R.string.connect, new OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							String pw = edit.getText().toString();
-							addNetwork(CreateWifiInfo(result.SSID, pw , getSecurity(result)));
-						}
-					})
-					.setNegativeButton(R.string.cancel, new OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-						}
-					}).create();
-			dialog.show();
+			final WifiConfiguration tempConfig = this.IsExsits(result.SSID);  
+			if(tempConfig != null) {  
+				AlertDialog dialog = new AlertDialog.Builder(this).setTitle(R.string.forgetwifi).setMessage(R.string.sure_forgetwifi)
+						.setPositiveButton(android.R.string.ok, new OnClickListener() {
+							
+							@Override
+							public void onClick(DialogInterface arg0, int arg1) {
+								mWifiManager.removeNetwork(tempConfig.networkId);
+							}
+						})
+						.setNegativeButton(android.R.string.cancel, new OnClickListener() {
+							
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+							}
+						}).create();
+				dialog.show();
+			}else{
+				LayoutInflater factory = LayoutInflater.from(this);
+				View view = factory.inflate(R.layout.pw_edit, null);
+				((TextView)view.findViewById(R.id.leveldetail)).setText(wifiQuality[WifiManager.calculateSignalLevel(result.level, 4)]);
+				final EditText edit =  (EditText) view.findViewById(R.id.passworddetail);
+				AlertDialog dialog = new AlertDialog.Builder(this).setTitle(result.SSID).setView(view)
+						.setPositiveButton(R.string.connect, new OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								String pw = edit.getText().toString();
+								addNetwork(CreateWifiInfo(result.SSID, pw , getSecurity(result)));
+							}
+						})
+						.setNegativeButton(R.string.cancel, new OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+							}
+						}).create();
+				dialog.show();
+			}
 		}
 		return true;
 	}
@@ -176,11 +194,10 @@ public class WifiActivity extends SlidingPreferenceActivity implements Preferenc
 	//************************** Join network **************************************
     public void addNetwork(WifiConfiguration wcg) { 
 		 int wcgID = mWifiManager.addNetwork(wcg); 
-	     boolean b =  mWifiManager.enableNetwork(wcgID, true); 
+	     boolean b =  mWifiManager.enableNetwork(wcgID, false); 
 	     Log.d(LOG_TAG, "add Network returned " + wcgID );
 	     Log.d(LOG_TAG, "enableNetwork returned " + b );  
     }
-    
 	public WifiConfiguration CreateWifiInfo(String SSID, String Password, int Type) 
     { 
           WifiConfiguration config = new WifiConfiguration();   
@@ -190,13 +207,6 @@ public class WifiActivity extends SlidingPreferenceActivity implements Preferenc
            config.allowedPairwiseCiphers.clear(); 
            config.allowedProtocols.clear(); 
            config.SSID = "\"" + SSID + "\"";   
-          
-          WifiConfiguration tempConfig = this.IsExsits(SSID);  
-          
-          if(tempConfig != null) {  
-        	  mWifiManager.removeNetwork(tempConfig.networkId); 
-          }
-          
           if(Type == SECURITY_NONE) //WIFICIPHER_NOPASS
           { 
                config.wepKeys[0] = ""; 

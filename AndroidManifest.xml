@@ -119,6 +119,15 @@
                 <data />
             </intent-filter>
         </activity>
+        
+        <activity android:name="com.phoenix.online.A9TerminalActivity"
+            android:label="@string/online">
+            <intent-filter >
+                <action android:name="com.phoenix.online.A9TerminalActivity"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data />
+            </intent-filter>
+        </activity>
         <receiver android:name="com.phoenix.police.LogReceiver">
 			<intent-filter >
 			    <action android:name="android.intent.action.BOOT_COMPLETED"/>

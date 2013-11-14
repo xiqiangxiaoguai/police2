@@ -31,7 +31,6 @@
     <string name="version">Software Version</string>
     <string name="level">Level</string>
     <string name="security">Security</string>
-    <string name="password">Password</string>
     <string name="connect">Connect</string>
     <string name="cancel">Cancel</string>
     <string name="video_recording">Video Recording</string>
@@ -72,4 +71,11 @@
 	<string name="usb_no">no</string>
 	<string name="av">AvIn</string>
 	<string name="usb_connected">haha</string>
+    <string name="userName">name</string>
+    <string name="password">password</string>
+    <string name="serverIP">server</string>
+    <string name="login">login</string>
+    <string name="online">online</string>
+    <string name="forgetwifi">Forget</string>
+    <string name="sure_forgetwifi">Sure to forget the information?</string>
 </resources>

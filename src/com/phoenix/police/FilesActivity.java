@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 import com.phoenix.data.Constants;
 import com.phoenix.lib.SlidingMenu;
 import com.phoenix.lib.app.SlidingActivity;
+import com.phoenix.online.A9TerminalActivity;
 import com.phoenix.setting.SettingActivity;
 
 public class FilesActivity extends SlidingActivity implements ActionBar.TabListener, OnClickListener{
@@ -137,6 +138,7 @@ public class FilesActivity extends SlidingActivity implements ActionBar.TabListe
 			startActivity(new Intent(this, SettingActivity.class));
 			break;
 		case R.id.menu_wireless:
+			startActivity(new Intent(this, A9TerminalActivity.class));
 			break;
 		case R.id.menu_av:
 //			startActivity(new Intent(this, AvInActivity.class));

@@ -48,6 +48,7 @@ import com.phoenix.lib.SlidingMenu;
 import com.phoenix.lib.SlidingMenu.OnClosedListener;
 import com.phoenix.lib.SlidingMenu.OnStartOpenListener;
 import com.phoenix.lib.app.SlidingActivity;
+import com.phoenix.online.A9TerminalActivity;
 import com.phoenix.setting.PhoenixMethod;
 import com.phoenix.setting.SettingActivity;
 
@@ -163,7 +164,7 @@ public class AvInActivity extends SlidingActivity implements OnClickListener{
 		mWirelessMenu.setOnClickListener(this);
 		RelativeLayout mAvIn = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_av);
 		mAvIn.setOnClickListener(this);
-		//´ÓÂ¼Òô¹ýÀ´£¬ÐèÒªÑÓ³Ù¿ªÆôÂ¼Ïñ£¬¸øÔ¤ÀÀ×ã¹»µÄ×¼±¸Ê±¼ä
+		//ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½Ó³Ù¿ï¿½ï¿½ï¿½Â¼ï¿½ñ£¬¸ï¿½Ô¤ï¿½ï¿½ï¿½ã¹»ï¿½ï¿½×¼ï¿½ï¿½Ê±ï¿½ï¿½
 		if(getIntent() != null){
 			if(getIntent().getExtras()!= null){
 				if(getIntent().getExtras().getBoolean(Constants.AUTO_VIDEO, false)){
@@ -321,6 +322,7 @@ public class AvInActivity extends SlidingActivity implements OnClickListener{
 			startActivity(new Intent(this, SettingActivity.class));
 			break;
 		case R.id.menu_wireless:
+			startActivity(new Intent(this, A9TerminalActivity.class));
 			break;
 		case R.id.menu_av:
 			mainMenu.toggle();
@@ -333,7 +335,7 @@ public class AvInActivity extends SlidingActivity implements OnClickListener{
 	}
 	
 	//***********************************************************Camera**************************************************
-	//ÅÄÕÕ »Øµ÷º¯Êý
+	//ï¿½ï¿½ï¿½ï¿½ ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½
 	private PictureCallback jpegCallback = new PictureCallback(){
 		public void onPictureTaken(byte[] data, Camera camera) {
 			final byte[] mData =  data;
@@ -351,7 +353,7 @@ public class AvInActivity extends SlidingActivity implements OnClickListener{
 			mKeyLockForFrequentClick = false;
 		}
 	};
-	//ÅÄÕÕ ±£´æÍ¼Æ¬
+	//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Í¼Æ¬
 	private String save(byte[] data){
 		if (LOG_SWITCH)
 			Log.d(LOG_TAG, "Start to save the bitmap.");

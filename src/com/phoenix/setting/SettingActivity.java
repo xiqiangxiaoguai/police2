@@ -26,6 +26,7 @@ import android.widget.RelativeLayout;
 import com.phoenix.data.Constants;
 import com.phoenix.lib.SlidingMenu;
 import com.phoenix.lib.app.SlidingPreferenceActivity;
+import com.phoenix.online.A9TerminalActivity;
 import com.phoenix.police.AudioActivity;
 import com.phoenix.police.AvInActivity;
 import com.phoenix.police.FilesActivity;
@@ -194,8 +195,6 @@ public class SettingActivity extends SlidingPreferenceActivity implements Prefer
 		});
 		
 		SwitchPreference _3gSwitch = (SwitchPreference) findPreference("setting_3g_switch_preference");
-		State mobile = conn.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState();
-		_3gSwitch.setChecked(mobile == State.CONNECTED || mobile == State.CONNECTING);
 		_3gSwitch.setOnPreferenceChangeListener(this);
 		
 		
@@ -244,6 +243,7 @@ public class SettingActivity extends SlidingPreferenceActivity implements Prefer
 			mainMenu.toggle();
 			break;
 		case R.id.menu_wireless:
+			startActivity(new Intent(this, A9TerminalActivity.class));
 			break;
 		case R.id.menu_av:
 //			startActivity(new Intent(this, AvInActivity.class));

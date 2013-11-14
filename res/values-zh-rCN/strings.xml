@@ -31,7 +31,6 @@
     <string name="version">软件版本</string>
     <string name="level">信号</string>
     <string name="security">安全性</string>
-    <string name="password">密码</string>
     <string name="connect">连接</string>
     <string name="cancel">取消</string>
     <string name="video_recording">正在录像</string>
@@ -72,4 +71,11 @@
 	<string name="usb_no">取消</string>
 	<string name="av">AvIn功能</string>
 	<string name="usb_connected">设备已连接电脑！3G、WIFI功能被关闭！</string>
+    <string name="userName">用户名</string>
+    <string name="password">密\u0020\u0020\u0020\u0020码</string>
+    <string name="serverIP">服务器</string>
+    <string name="login">登录</string>
+    <string name="online">在线视频</string>
+    <string name="forgetwifi">忘记网络</string>
+    <string name="sure_forgetwifi">确认忘记网络?</string>
 </resources>
