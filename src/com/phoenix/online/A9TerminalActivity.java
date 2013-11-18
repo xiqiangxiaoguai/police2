@@ -48,6 +48,15 @@ implements Login.IXmppStateObserver
 	private VideoRendererView    mVideoRenderer;
 //	private VideoStreamsView     mVideoStreamView;
 	private SlidingMenu mainMenu = null;
+	
+	class Run implements Runnable{
+
+		@Override
+		public void run() {
+			abortUnless(PeerConnection.InitAndroidGlobals(A9TerminalActivity.this), "Failed to initializeAndroidGlobals");
+		}
+		
+	};
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
@@ -61,19 +70,23 @@ implements Login.IXmppStateObserver
 //	    mVideoStreamView = new VideoStreamsView(this, displaySize);
 		setContentView(R.layout.a9_activity);
 		//PeerConnection.InitAndroidGlobals(this);
-	    abortUnless(PeerConnection.InitAndroidGlobals(this), "Failed to initializeAndroidGlobals");
-
+		
+		new Thread(new Run()).start();
+//		abortUnless(PeerConnection.InitAndroidGlobals(this), "Failed to initializeAndroidGlobals");
+		
 	    AudioManager audioManager = ((AudioManager)getSystemService(AUDIO_SERVICE));
 	    @SuppressWarnings("deprecation")
 	    boolean isWiredHeadsetOn = audioManager.isWiredHeadsetOn();
 	    audioManager.setMode(isWiredHeadsetOn ? AudioManager.MODE_IN_CALL : AudioManager.MODE_IN_COMMUNICATION);
 	    audioManager.setSpeakerphoneOn(!isWiredHeadsetOn);
-
 	    final Intent intent = getIntent();
 	    if ("android.intent.action.VIEW".equals(intent.getAction())) 
 	    {
 	      return;
 	    }
+	    
+	    
+	    
 	    
 	    setBehindContentView(R.layout.main_menus);
 		mainMenu = getSlidingMenu();

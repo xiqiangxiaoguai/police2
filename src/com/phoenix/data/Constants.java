@@ -64,7 +64,7 @@ public class Constants {
 	public static final String SHARED_DEV_NUM_DEF = "DSJA900001";
 	public static final String SHARED_POL_NUM = "police_num";
 	public static final String SHARED_POL_NUM_DEF = "XXXX0001";
-	
+	public static final String SHARED_POL_PS_DEF ="123456";
 	public static final String SHARED_PREVIEW_PATH = "preview";
 	public static final int TIME_AUTO_SAVED = 10;//min
 	

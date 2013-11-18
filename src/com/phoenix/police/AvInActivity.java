@@ -181,20 +181,12 @@ public class AvInActivity extends SlidingActivity implements OnClickListener{
 	private void createSurfaceView(){
 		mySurface = new AvCameraSurfaceView(this);
 		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
-		mySurface.setSize(1, 0);
-		mySurface.setLayoutParams(new LayoutParams(480, (int)(480*Constants.resolutions[mySurface.getRes()][1]/Constants.resolutions[mySurface.getRes()][0])));
-		RelativeLayout.LayoutParams containerParams = new RelativeLayout.LayoutParams(480, (int)(480*Constants.resolutions[mySurface.getRes()][1]/Constants.resolutions[mySurface.getRes()][0]));
+		mySurface.setSize(0, 0);
+		mySurface.setLayoutParams(new LayoutParams(480, (int)(480*Constants.resolutions[0][1]/Constants.resolutions[0][0])));
+		RelativeLayout.LayoutParams containerParams = new RelativeLayout.LayoutParams(480, (int)(480*Constants.resolutions[0][1]/Constants.resolutions[0][0]));
 		containerParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, -1);
 		cameraLayout.setLayoutParams(containerParams);
 		cameraLayout.addView(mySurface, 0);
-//		mySurface = new CameraSurfaceView(this);
-//		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
-//		cameraLayout.setGravity(Gravity.CENTER);
-//		mySurface.setLayoutParams(new LayoutParams(480, (int)(480*((double)Constants.resolution_height_4/Constants.resolution_with_4))));
-//		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(480, (int)(480*((double)Constants.resolution_height_4/Constants.resolution_with_4)));
-//		params.addRule(RelativeLayout.CENTER_IN_PARENT, -1);
-//		cameraLayout.setLayoutParams(params);
-//		cameraLayout.addView(mySurface, 0);
 	}
 	private void destoySurfaceView(){
 		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
@@ -579,23 +571,23 @@ public class AvInActivity extends SlidingActivity implements OnClickListener{
 	}
 	private void updateResForMode(){
 		if (LOG_SWITCH) {
-			Log.d(LOG_TAG, "set size 480*" + (int)(480*Constants.resolutions[mySurface.getRes()][1]/Constants.resolutions[mySurface.getRes()][0]));
+			Log.d(LOG_TAG, "set size 480*" + (int)(480*Constants.resolutions[0][1]/Constants.resolutions[0][0]));
 		}
 		
 		if(MODE == Constants.MODE_CAMERA || MODE == Constants.MODE_AUDIO){
-			mySurface.setSize(1, 0);
+			mySurface.setSize(0, 0);
 		}else if( MODE == Constants.MODE_VIDEO){
 			int i = Integer.valueOf(sharedPreferences.getString(Constants.PREFERENCES_RESOLUTION, "0"));
 			if(preRes == i){
-				mySurface.setSize(1,0);	
+				mySurface.setSize(0,0);	
 			}else{
 				preRes = i;
-				mySurface.setSize(1, 1);
+				mySurface.setSize(0, 1);
 			}
 		}
 		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
-		mySurface.setLayoutParams(new RelativeLayout.LayoutParams(480, (int)(480*Constants.resolutions[mySurface.getRes()][1]/Constants.resolutions[mySurface.getRes()][0])));
-		RelativeLayout.LayoutParams containerParams = new RelativeLayout.LayoutParams(480, (int)(480*Constants.resolutions[mySurface.getRes()][1]/Constants.resolutions[mySurface.getRes()][0]));
+		mySurface.setLayoutParams(new RelativeLayout.LayoutParams(480, (int)(480*Constants.resolutions[0][1]/Constants.resolutions[0][0])));
+		RelativeLayout.LayoutParams containerParams = new RelativeLayout.LayoutParams(480, (int)(480*Constants.resolutions[0][1]/Constants.resolutions[0][0]));
 		containerParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, -1);
 		cameraLayout.setLayoutParams(containerParams);
 	}

@@ -53,10 +53,10 @@
         android:inputType="textPassword"/>
 
     <EditText
-        android:id="@+id/tv_serverIP"
+        android:id="@+id/tf_serverIP"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf=""
+        android:layout_toRightOf="@+id/tv_serverIP"
         android:ems="10" />
 
 </RelativeLayout>

@@ -186,9 +186,8 @@ public class AudioActivity extends Activity implements OnClickListener {
 			String audioPath = "police/audio/";
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 			SharedPreferences sharedPreferences = getSharedPreferences(Constants.SETTING_PREFERENCES, Context.MODE_PRIVATE);
-			String police_num = sharedPreferences.getString(Constants.SHARED_POL_NUM, Constants.SHARED_POL_NUM_DEF);
 			String savePath = AudioFileFunc.getWavFilePath() + audioPath;
-			String fileName = Constants.AUDIO_NAME_HEAD + police_num + "_" + dateFormat.format(new Date()) +".wav";
+			String fileName = Constants.AUDIO_NAME_HEAD + PhoenixMethod.getDeviceID() + "_" + PhoenixMethod.getPoliceId() + "_" + dateFormat.format(new Date()) +".wav";
 			File dir = new File(savePath);
 			if(dir.list() == null){
 				dir.mkdirs();

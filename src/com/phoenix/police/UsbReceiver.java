@@ -19,6 +19,7 @@ public class UsbReceiver extends  BroadcastReceiver{
 		String action = intent.getAction();
 		if (action.equals("android.hardware.usb.action.USB_STATE")) {
 		        Bundle extras = intent.getExtras();
+		        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		        if( extras.getBoolean("connected")){
 		        	if(two_flag){
 			        	WifiManager mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
@@ -26,7 +27,7 @@ public class UsbReceiver extends  BroadcastReceiver{
 							mWifiManager.setWifiEnabled(false);
 						}
 						PhoenixMethod.set3G(false);
-						ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+						
 						cm.setUsbTethering(true);
 			        	j++;
 			        	Toast.makeText(context, R.string.usb_connected, Toast.LENGTH_SHORT).show();
@@ -44,6 +45,8 @@ public class UsbReceiver extends  BroadcastReceiver{
 							two_flag = true;
 						}
 					}).start();
+		        }else{
+		        	cm.setUsbTethering(false);
 		        }
 	}
 	}

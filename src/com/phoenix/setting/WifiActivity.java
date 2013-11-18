@@ -36,6 +36,7 @@ import android.widget.TextView;
 import com.phoenix.data.Constants;
 import com.phoenix.lib.SlidingMenu;
 import com.phoenix.lib.app.SlidingPreferenceActivity;
+import com.phoenix.online.A9TerminalActivity;
 import com.phoenix.police.AudioActivity;
 import com.phoenix.police.FilesActivity;
 import com.phoenix.police.MainScene;
@@ -78,7 +79,7 @@ public class WifiActivity extends SlidingPreferenceActivity implements Preferenc
 	private HashMap<String, ScanResult> mResults = new HashMap<String, ScanResult>();
 	private SlidingMenu mainMenu;
 	ConnectivityManager conn;
-	
+	private int nPriority = 1;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -88,7 +89,12 @@ public class WifiActivity extends SlidingPreferenceActivity implements Preferenc
 		mWifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 		conn = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		_wifiSwitch = (SwitchPreference) findPreference("setting_wifi_switch_preference");
-		State wifi = conn.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
+		final int wifiState = mWifiManager.getWifiState();
+        boolean isEnabled = wifiState == WifiManager.WIFI_STATE_ENABLED;
+        boolean isDisabled = wifiState == WifiManager.WIFI_STATE_DISABLED;
+        _wifiSwitch.setChecked(isEnabled);
+        _wifiSwitch.setEnabled(isEnabled || isDisabled);
+	        
 		_wifiSwitch.setOnPreferenceChangeListener(this);
 		mWifiSearchCategory = (PreferenceCategory) findPreference("setting_wifi_search_category");
 		
@@ -131,16 +137,27 @@ public class WifiActivity extends SlidingPreferenceActivity implements Preferenc
 	@Override
 	public boolean onPreferenceChange(Preference preference, Object arg1) {
 		if(preference.getKey().equals("setting_wifi_switch_preference")){
-			if(((SwitchPreference)preference).isChecked()){
-				if(mWifiManager.isWifiEnabled()){
-					mWifiManager.setWifiEnabled(false);
-				}
+			
+			boolean isChecked = ((SwitchPreference)preference).isChecked();
+			
+			// Disable tethering if enabling Wifi
+	        int wifiApState = mWifiManager.getWifiApState();
+	        if (isChecked && ((wifiApState == WifiManager.WIFI_AP_STATE_ENABLING) ||
+	                (wifiApState == WifiManager.WIFI_AP_STATE_ENABLED))) {
+	            mWifiManager.setWifiApEnabled(null, false);
+	        }
+
+	        if (mWifiManager.setWifiEnabled(isChecked)) {
+	            // Intent has been taken into account, disable until new state is active
+	        } else {
+	            // Error
+//	            Toast.makeText(mContext, R.string.wifi_error, Toast.LENGTH_SHORT).show();
+	        }
+		
+			if(isChecked){
 				mWifiSearchCategory.removeAll();
 			}else{
-				if(!mWifiManager.isWifiEnabled()){
-					mWifiManager.setWifiEnabled(true);
-					mHandler.post(scanWifiRun);
-				}
+				mHandler.post(scanWifiRun);
 			}
 		}
 		return true;
@@ -158,6 +175,7 @@ public class WifiActivity extends SlidingPreferenceActivity implements Preferenc
 							@Override
 							public void onClick(DialogInterface arg0, int arg1) {
 								mWifiManager.removeNetwork(tempConfig.networkId);
+								mWifiManager.saveConfiguration();
 							}
 						})
 						.setNegativeButton(android.R.string.cancel, new OnClickListener() {
@@ -194,9 +212,8 @@ public class WifiActivity extends SlidingPreferenceActivity implements Preferenc
 	//************************** Join network **************************************
     public void addNetwork(WifiConfiguration wcg) { 
 		 int wcgID = mWifiManager.addNetwork(wcg); 
-	     boolean b =  mWifiManager.enableNetwork(wcgID, false); 
-	     Log.d(LOG_TAG, "add Network returned " + wcgID );
-	     Log.d(LOG_TAG, "enableNetwork returned " + b );  
+	     boolean b =  mWifiManager.enableNetwork(wcgID, true); 
+	     mWifiManager.saveConfiguration();
     }
 	public WifiConfiguration CreateWifiInfo(String SSID, String Password, int Type) 
     { 
@@ -227,31 +244,35 @@ public class WifiActivity extends SlidingPreferenceActivity implements Preferenc
           } 
           if(Type == SECURITY_WPA) //WIFICIPHER_WPA
           { 
-          config.preSharedKey = "\""+Password+"\""; 
-          config.hiddenSSID = true;   
-          config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);   
-          config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);                         
-          config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);                         
-          config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);                    
-          //config.allowedProtocols.set(WifiConfiguration.Protocol.WPA);  
-          config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
-          config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
-          config.status = WifiConfiguration.Status.ENABLED;   
+	          config.preSharedKey = "\""+Password+"\""; 
+	          config.hiddenSSID = true;   
+	          config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);   
+	          config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);                         
+	          config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);                         
+	          config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);                    
+	          //config.allowedProtocols.set(WifiConfiguration.Protocol.WPA);  
+	          config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+	          config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
+	          config.status = WifiConfiguration.Status.ENABLED;   
           }
+          config.priority = nPriority;
            return config; 
     } 
 	
 	private WifiConfiguration IsExsits(String SSID)  
     {  
-        List<WifiConfiguration> existingConfigs = mWifiManager.getConfiguredNetworks();  
-           for (WifiConfiguration existingConfig : existingConfigs)   
-           {  
-             if (existingConfig.SSID.contains(SSID))  
-             {  
-                 return existingConfig;  
-             }  
-           }  
-        return null;   
+		List<WifiConfiguration> existingConfigs = mWifiManager
+				.getConfiguredNetworks();
+		nPriority = 0;
+		WifiConfiguration existingConfig = null;
+		for (WifiConfiguration a : existingConfigs) {
+			if (a.SSID.contains(SSID)) {
+				existingConfig = a;
+			}
+			nPriority = a.priority;
+		}
+		nPriority ++;
+		return existingConfig;
     }
 	
 	//************************** Join network **************************************	
@@ -359,6 +380,7 @@ public class WifiActivity extends SlidingPreferenceActivity implements Preferenc
 			mainMenu.toggle();
 			break;
 		case R.id.menu_wireless:
+			startActivity(new Intent(this, A9TerminalActivity.class));
 			break;
 		case R.id.back:
 			finish();

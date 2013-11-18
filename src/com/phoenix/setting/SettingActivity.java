@@ -37,7 +37,6 @@ public class SettingActivity extends SlidingPreferenceActivity implements Prefer
 	private static final boolean LOG_SWITCH = Constants.LOG_SWITCH;
 	private static final String LOG_TAG = SettingActivity.class.getSimpleName();
 	
-	
 	PreferenceScreen wifiScreen;
 	Preference storageScreen;
 	PreferenceScreen aboutScreen;
@@ -62,7 +61,7 @@ public class SettingActivity extends SlidingPreferenceActivity implements Prefer
 		}
 
 		if(preference.getKey().equals("setting_3g_switch_preference")){
-			PhoenixMethod.set3G(((SwitchPreference)preference).isChecked());
+			PhoenixMethod.set3G(!((SwitchPreference)preference).isChecked());
 		}
 		return true;
 	}
