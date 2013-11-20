@@ -149,8 +149,8 @@ public class SettingActivity extends SlidingPreferenceActivity implements Prefer
 		storageScreen = (Preference) findPreference("setting_storage_preference");
 		aboutScreen = (PreferenceScreen) findPreference("setting_about_preference");
 		resolutionList = (ListPreference)findPreference("setting_function_resolution");
-		brightnessPreference = (BrightnessSeekBarPreference) findPreference("setting_function_brightness");
-		brightnessPreference.pushActivity(SettingActivity.this);
+//		brightnessPreference = (BrightnessSeekBarPreference) findPreference("setting_function_brightness");
+//		brightnessPreference.pushActivity(SettingActivity.this);
 		conn  = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		
 		HandlerThread hThread = new HandlerThread(SettingActivity.class.getSimpleName());

@@ -1,6 +1,7 @@
 package com.phoenix.data;
 
 import com.phoenix.police.R;
+import com.phoenix.setting.PhoenixMethod;
 
 public class Constants {
 	public static final boolean LOG_SWITCH = true;
@@ -22,21 +23,21 @@ public class Constants {
 						,{resolution_with_3, resolution_height_3}
 						,{resolution_with_4, resolution_height_4}};
 	
-	public static final String CAMERA_PATH = "/mnt/sdcard/police/camera/";
-	public static final String VIDEO_PATH = "/mnt/sdcard/police/video/";
-	public static final String VIDEO_THUMBNAIL_PATH = "/mnt/sdcard/police/video/thumbnail/";
-	public static final String AUDIO_PATH = "/mnt/sdcard/police/audio/";
+	public static final String CAMERA_PATH = "/mnt/sdcard/police/"+ PhoenixMethod.getPoliceId() + "/camera/";
+	public static final String VIDEO_PATH = "/mnt/sdcard/police/"+ PhoenixMethod.getPoliceId() + "/video/";
+	public static final String VIDEO_THUMBNAIL_PATH = "/mnt/sdcard/police/"+ PhoenixMethod.getPoliceId() + "/video/thumbnail/";
+	public static final String AUDIO_PATH = "/mnt/sdcard/police/"+ PhoenixMethod.getPoliceId() + "/audio/";
 	
 	public static final String CAMERA_NAME_HEAD = "IMG_";
 	public static final String VIDEO_NAME_HEAD = "VID_";
 	public static final String AUDIO_NAME_HEAD = "AUD_";
 	
-	public static final String LOG_PATH = "/mnt/sdcard/police/log/";
+	public static final String LOG_PATH = "/mnt/sdcard/police/"+ PhoenixMethod.getPoliceId() + "/log/";
 	public static final String LOG_NAME = "log.txt";
 	
 	public static final String DEVICE_NAME = "Phenix手持终端";
 	public static final String ANDROID_VERSION = "Android 4.1";
-	public static final String VERSION = "V0.2.1";
+	public static final String VERSION = "V0.3.0";
 	
 	public static final int MODE_CAMERA = 0;
 	public static final int MODE_VIDEO = 1;

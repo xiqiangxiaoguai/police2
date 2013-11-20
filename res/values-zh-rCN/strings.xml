@@ -66,7 +66,7 @@
 	<string name="police_left">警</string>
 	<string name="police_right">察</string>
 	<string name="police_detail">凤凰警务终端</string>
-	<string name="usb_warming">正在连接电脑，继续请确认。。</string>
+	<string name="usb_warming">请确认是否连接客户端软件,WiFi及3G功能将被关闭。</string>
 	<string name="usb_yes">确认</string>
 	<string name="usb_no">取消</string>
 	<string name="av">AvIn功能</string>

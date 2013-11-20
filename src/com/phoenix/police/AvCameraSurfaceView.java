@@ -75,7 +75,11 @@ public class AvCameraSurfaceView extends SurfaceView implements SurfaceHolder.Ca
 					if (LOG_SWITCH) {
 						Log.d(LOG_TAG, "getNumberOfCameras:"+ Camera.getNumberOfCameras());
 					}
-					myCamera = Camera.open(1);// �������,���ܷ��ڹ��캯���У���Ȼ������ʾ����.
+					try {
+						myCamera = Camera.open(1);
+					} catch (Exception e) {
+						return;
+					}
 				}
 				if(null == myCamera){
 					if (LOG_SWITCH)

@@ -104,7 +104,7 @@ public class VideoFragment extends Fragment implements OnItemClickListener{
 			if(str.split("\\.").length < 2){
 				return l;
 			}else{
-				l =  mDateFormats[3].parse(str.split("\\.")[0].split("\\_")[2]).getTime();
+				l =  mDateFormats[3].parse(str.split("\\.")[0].split("\\_")[3]).getTime();
 			}
 		} catch (ParseException e) {
 			e.printStackTrace();

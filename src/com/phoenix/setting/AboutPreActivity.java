@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 import com.phoenix.data.Constants;
 import com.phoenix.lib.SlidingMenu;
 import com.phoenix.lib.app.SlidingPreferenceActivity;
+import com.phoenix.online.A9TerminalActivity;
 import com.phoenix.police.AudioActivity;
 import com.phoenix.police.FilesActivity;
 import com.phoenix.police.MainScene;
@@ -80,6 +81,7 @@ public class AboutPreActivity extends SlidingPreferenceActivity implements View.
 			mainMenu.toggle();
 			break;
 		case R.id.menu_wireless:
+			startActivity(new Intent(this, A9TerminalActivity.class));
 			break;
 		case R.id.back:
 			finish();

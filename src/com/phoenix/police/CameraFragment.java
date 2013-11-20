@@ -95,7 +95,7 @@ public class CameraFragment extends Fragment implements OnItemClickListener{
 	private Long getTimeFromFileName(String str){
 		long l = 0;
 		try {
-			l =  mDateFormats[3].parse(str.split("\\.")[0].split("\\_")[2]).getTime();
+			l =  mDateFormats[3].parse(str.split("\\.")[0].split("\\_")[3]).getTime();
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}

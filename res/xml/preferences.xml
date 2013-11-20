@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <PreferenceCategory android:title="@string/function">
-         <com.phoenix.setting.VolumeSeekBarPreference
+<!--          <com.phoenix.setting.VolumeSeekBarPreference
             android:key="setting_function_valume"
  			android:title="@string/valume"
  			android:summary="@string/valume_modify"
@@ -21,7 +21,7 @@
  			android:text="@string/baifenbi"
  			android:max="100"
  			android:icon="@drawable/ic_appwidget_settings_brightness_full_holo"
-         />
+         /> -->
          <ListPreference 
 			android:key="setting_function_resolution"
 			android:title="@string/video_resolution"

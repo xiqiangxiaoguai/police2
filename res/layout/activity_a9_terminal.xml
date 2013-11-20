@@ -23,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/tv_userName"
-        android:layout_below="@+id/tf_userName"
+        android:layout_below="@+id/tv_userName"
         android:layout_marginTop="20dp"
         android:text="@string/password" />
 
@@ -32,7 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/tv_userName"
-        android:layout_below="@+id/tf_password"
+        android:layout_below="@+id/tv_password"
         android:layout_marginTop="20dp"
         android:text="@string/serverIP" />
 
@@ -49,6 +49,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/tv_password"
+        android:layout_below="@+id/tf_userName"
         android:ems="10"
         android:inputType="textPassword"/>
 
@@ -57,6 +58,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/tv_serverIP"
+        android:layout_below="@+id/tf_password"
         android:ems="10" />
 
 </RelativeLayout>

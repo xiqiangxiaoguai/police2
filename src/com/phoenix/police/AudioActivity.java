@@ -183,17 +183,14 @@ public class AudioActivity extends Activity implements OnClickListener {
 		@Override
 		public void run() {
 			extAudioRecorder = ExtAudioRecorder.getInstanse(false);
-			String audioPath = "police/audio/";
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-			SharedPreferences sharedPreferences = getSharedPreferences(Constants.SETTING_PREFERENCES, Context.MODE_PRIVATE);
-			String savePath = AudioFileFunc.getWavFilePath() + audioPath;
 			String fileName = Constants.AUDIO_NAME_HEAD + PhoenixMethod.getDeviceID() + "_" + PhoenixMethod.getPoliceId() + "_" + dateFormat.format(new Date()) +".wav";
-			File dir = new File(savePath);
+			File dir = new File(Constants.AUDIO_PATH);
 			if(dir.list() == null){
 				dir.mkdirs();
 			}
-			File file=new File(savePath+fileName);
-			extAudioRecorder.setOutputFile(savePath+fileName);
+			File file=new File(Constants.AUDIO_PATH+fileName);
+			extAudioRecorder.setOutputFile(Constants.AUDIO_PATH+fileName);
 			extAudioRecorder.prepare();
 			extAudioRecorder.start();
 		}

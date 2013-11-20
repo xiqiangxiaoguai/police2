@@ -6,7 +6,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="200px" >
+        android:layout_height="120px" >
 
         <ImageButton
             android:id="@+id/main_menu"
@@ -47,7 +47,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="360px"
-        android:layout_marginTop="200px"
+        android:layout_marginTop="120px"
         >
         
        <RelativeLayout
