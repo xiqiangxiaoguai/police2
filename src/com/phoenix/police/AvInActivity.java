@@ -68,7 +68,7 @@ public class AvInActivity extends SlidingActivity implements OnClickListener{
 //	Button bSetting;
 //	Button bFiles;
 	ImageView mPreview;
-	private String cameraPath = Constants.CAMERA_PATH;
+	private String cameraPath = Constants.getCameraPath();
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 	public MediaRecorder mrec;
 	private String cPath = null;
@@ -87,7 +87,7 @@ public class AvInActivity extends SlidingActivity implements OnClickListener{
 	private boolean mKeyLockForFrequentClick = false;
 	private String police_num;
 	private boolean appPaused = false;
-	private String[] fold_paths = new String[]{Constants.CAMERA_PATH, Constants.VIDEO_PATH, Constants.VIDEO_THUMBNAIL_PATH, Constants.AUDIO_PATH, Constants.LOG_PATH};
+	private String[] fold_paths = new String[]{Constants.getCameraPath(), Constants.getVideoPath(), Constants.getThumbnailPath(), Constants.getAudioPath(), Constants.getLogPath()};
 	
 	private ImageLoader imageLoader;
 	
@@ -164,7 +164,6 @@ public class AvInActivity extends SlidingActivity implements OnClickListener{
 		mWirelessMenu.setOnClickListener(this);
 		RelativeLayout mAvIn = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_av);
 		mAvIn.setOnClickListener(this);
-		//��¼����������Ҫ�ӳٿ���¼�񣬸�Ԥ���㹻��׼��ʱ��
 		if(getIntent() != null){
 			if(getIntent().getExtras()!= null){
 				if(getIntent().getExtras().getBoolean(Constants.AUTO_VIDEO, false)){
@@ -232,6 +231,9 @@ public class AvInActivity extends SlidingActivity implements OnClickListener{
 		}
 		mHandler.postDelayed(dirRun, 3000);
 		previewImagePath = sharedPreferences.getString(Constants.SHARED_PREVIEW_PATH, "");
+		if(!previewImagePath.contains(PhoenixMethod.getPoliceId())){
+			previewImagePath = "";
+		}
 		mHandler.sendEmptyMessage(2);
 	}
 	
@@ -400,7 +402,7 @@ public class AvInActivity extends SlidingActivity implements OnClickListener{
 	//***********************************************************Camera**************************************************
 	//***********************************************************Video**************************************************
 	private void stopRecording(String path){
-		File myCaptureFile = new File( Constants.VIDEO_THUMBNAIL_PATH + path.substring(path.lastIndexOf('/'),path.lastIndexOf('.')) + ".jpg");
+		File myCaptureFile = new File( Constants.getThumbnailPath() + path.substring(path.lastIndexOf('/'),path.lastIndexOf('.')) + ".jpg");
 		BufferedOutputStream bos;
 		try {
 			bos = new BufferedOutputStream(new FileOutputStream(
@@ -429,17 +431,17 @@ public class AvInActivity extends SlidingActivity implements OnClickListener{
 	private void startRecording() throws IOException 
     {
 		mrec = new MediaRecorder();
-		File folderFile = new File(Constants.VIDEO_PATH);
+		File folderFile = new File(Constants.getVideoPath());
 		if(!folderFile.exists()){
 			folderFile.mkdirs();
 		}
-		File thumbnailFile = new File(Constants.VIDEO_THUMBNAIL_PATH);
+		File thumbnailFile = new File(Constants.getThumbnailPath());
 		if(!thumbnailFile.exists()){
 			thumbnailFile.mkdirs();
 		}
 		resolution = Integer.parseInt(sharedPreferences.getString("setting_function_resolution", "0"));
 		police_num = sharedPreferences.getString(Constants.SHARED_POL_NUM, Constants.SHARED_POL_NUM_DEF);
-		cPath = Constants.VIDEO_PATH + Constants.VIDEO_NAME_HEAD + police_num + "_" + dateFormat.format(new Date()) +".mp4";
+		cPath = Constants.getVideoPath() + Constants.VIDEO_NAME_HEAD + police_num + "_" + dateFormat.format(new Date()) +".mp4";
 
 		Camera mCamera = mySurface.getCamera();
 		SurfaceHolder surfaceHolder = mySurface.getHolder();

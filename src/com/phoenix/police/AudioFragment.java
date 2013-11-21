@@ -90,6 +90,7 @@ public class AudioFragment extends Fragment{
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		MainScene.checkAndMkdirs();
 		HandlerThread hThread = new HandlerThread(AudioFragment.class.getSimpleName());
 		hThread.start();
 	}
@@ -103,7 +104,7 @@ public class AudioFragment extends Fragment{
 		return l;
 	}
 	private int getImages(){
-		File[] files = new File(Constants.AUDIO_PATH).listFiles();
+		File[] files = new File(Constants.getAudioPath()).listFiles();
 		Arrays.sort(files, new Comparator<File>(){
 		    public int compare(File f1, File f2)
 		    {

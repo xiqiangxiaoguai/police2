@@ -70,7 +70,7 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 //	Button bSetting;
 //	Button bFiles;
 	ImageView mPreview;
-	private String cameraPath = Constants.CAMERA_PATH;
+	private String cameraPath = Constants.getCameraPath();
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 	public MediaRecorder mrec;
 	private String cPath = null;
@@ -89,7 +89,6 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 	private boolean mKeyLockForFrequentClick = false;
 	private String police_num;
 	private boolean appPaused = false;
-	private String[] fold_paths = new String[]{Constants.CAMERA_PATH, Constants.VIDEO_PATH, Constants.VIDEO_THUMBNAIL_PATH, Constants.AUDIO_PATH, Constants.LOG_PATH};
 	
 	private ImageLoader imageLoader;
 	
@@ -189,7 +188,7 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 
 		mySurface.setLayoutParams(new LayoutParams(480, (int)(480*Constants.resolutions[mySurface.getRes()][1]/Constants.resolutions[mySurface.getRes()][0])));
 		RelativeLayout.LayoutParams containerParams = new RelativeLayout.LayoutParams(480, (int)(480*Constants.resolutions[mySurface.getRes()][1]/Constants.resolutions[mySurface.getRes()][0]));
-		containerParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, -1);
+		containerParams.addRule(RelativeLayout.CENTER_VERTICAL, -1);
 		cameraLayout.setLayoutParams(containerParams);
 		cameraLayout.addView(mySurface, 0);
 //		mySurface = new CameraSurfaceView(this);
@@ -240,29 +239,28 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 						Log.d(LOG_TAG, "child count:" + cameraLayout.getChildCount());
 					}
 					mModeSwitch.setImageResource(R.drawable.mode_video);
+					setMode(Constants.MODE_CAMERA);
 				}
 			});
 			appPaused = false;
 		}
-		mHandler.postDelayed(dirRun, 3000);
 		previewImagePath = sharedPreferences.getString(Constants.SHARED_PREVIEW_PATH, "");
+		if(!previewImagePath.contains(PhoenixMethod.getPoliceId())){
+			previewImagePath = "";
+		}
 		mHandler.sendEmptyMessage(2);
+		checkAndMkdirs();
 	}
 	
-	Runnable dirRun = new Runnable() {
-		@Override
-		public void run() {
-			for(String str : fold_paths){
-				File floderPath = new File(str);
-				if(!floderPath.exists()){
-					floderPath.mkdirs();
-				}
-			}
-			if(!new File(fold_paths[fold_paths.length -1]).exists()){
-				mHandler.postDelayed(dirRun, 3000);
+	public static void checkAndMkdirs(){
+		 String[] fold_paths = new String[]{Constants.getCameraPath(), Constants.getVideoPath(), Constants.getThumbnailPath(), Constants.getAudioPath(), Constants.getLogPath()};
+		for(String str : fold_paths){
+			File floderPath = new File(str);
+			if(!floderPath.exists()){
+				floderPath.mkdirs();
 			}
 		}
-	};
+	}
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()){
@@ -368,13 +366,12 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 			if(!mVideoKeyLocked){
 				mySurface.resumePreview();
 			}
-			mKeyLockForFrequentClick = false;
 		}
 	};
 	private String save(byte[] data){
 		if (LOG_SWITCH)
 			Log.d(LOG_TAG, "Start to save the bitmap.");
-		police_num = sharedPreferences.getString(Constants.SHARED_POL_NUM, Constants.SHARED_POL_NUM_DEF);
+		checkAndMkdirs();
 		String path = cameraPath +Constants.CAMERA_NAME_HEAD + PhoenixMethod.getDeviceID() + "_" + PhoenixMethod.getPoliceId() + "_" + PhoenixMethod.getPicTime()+".jpg";
 		
 		try {
@@ -432,7 +429,7 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 	//***********************************************************Camera**************************************************
 	//***********************************************************Video**************************************************
 	private void stopRecording(String path){
-		File myCaptureFile = new File( Constants.VIDEO_THUMBNAIL_PATH + path.substring(path.lastIndexOf('/'),path.lastIndexOf('.')) + ".jpg");
+		File myCaptureFile = new File( Constants.getThumbnailPath() + path.substring(path.lastIndexOf('/'),path.lastIndexOf('.')) + ".jpg");
 		BufferedOutputStream bos;
 		try {
 			bos = new BufferedOutputStream(new FileOutputStream(
@@ -460,18 +457,11 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 	}
 	private void startRecording() throws IOException 
     {
+		checkAndMkdirs();
 		mrec = new MediaRecorder();
-		File folderFile = new File(Constants.VIDEO_PATH);
-		if(!folderFile.exists()){
-			folderFile.mkdirs();
-		}
-		File thumbnailFile = new File(Constants.VIDEO_THUMBNAIL_PATH);
-		if(!thumbnailFile.exists()){
-			thumbnailFile.mkdirs();
-		}
 		resolution = Integer.parseInt(sharedPreferences.getString("setting_function_resolution", "0"));
 		police_num = sharedPreferences.getString(Constants.SHARED_POL_NUM, Constants.SHARED_POL_NUM_DEF);
-		cPath = Constants.VIDEO_PATH + Constants.VIDEO_NAME_HEAD + PhoenixMethod.getDeviceID() + "_" + PhoenixMethod.getPoliceId() + "_" + dateFormat.format(new Date()) +".mp4";
+		cPath = Constants.getVideoPath() + Constants.VIDEO_NAME_HEAD + PhoenixMethod.getDeviceID() + "_" + PhoenixMethod.getPoliceId() + "_" + dateFormat.format(new Date()) +".mp4";
 
 		Camera mCamera = mySurface.getCamera();
 		SurfaceHolder surfaceHolder = mySurface.getHolder();
@@ -535,6 +525,7 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 				break;
 			case 2:
 				imageLoader.displayImage("file:/" + previewImagePath, mPreview ,options,null);
+				mKeyLockForFrequentClick = false;
 				break;
 			case 3:
 				videoEvent();
@@ -622,7 +613,7 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
 		mySurface.setLayoutParams(new RelativeLayout.LayoutParams(480, (int)(480*Constants.resolutions[mySurface.getRes()][1]/Constants.resolutions[mySurface.getRes()][0])));
 		RelativeLayout.LayoutParams containerParams = new RelativeLayout.LayoutParams(480, (int)(480*Constants.resolutions[mySurface.getRes()][1]/Constants.resolutions[mySurface.getRes()][0]));
-		containerParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, -1);
+		containerParams.addRule(RelativeLayout.CENTER_VERTICAL, -1);
 		cameraLayout.setLayoutParams(containerParams);
 	}
 	private void cameraEvent(){

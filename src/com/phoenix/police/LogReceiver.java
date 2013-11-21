@@ -20,7 +20,7 @@ public class LogReceiver extends BroadcastReceiver{
 	public void onReceive(Context context, Intent intent) {
 		String action = intent.getAction();
 		try {
-			FileWriter fw = new FileWriter(Constants.LOG_PATH + Constants.LOG_NAME, true);
+			FileWriter fw = new FileWriter(Constants.getLogPath() + Constants.LOG_NAME, true);
 			fw.write(format.format(new Date()) + " ");
 			fw.write(action);
 			fw.write("\n");

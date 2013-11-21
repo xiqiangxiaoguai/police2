@@ -185,12 +185,12 @@ public class AudioActivity extends Activity implements OnClickListener {
 			extAudioRecorder = ExtAudioRecorder.getInstanse(false);
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 			String fileName = Constants.AUDIO_NAME_HEAD + PhoenixMethod.getDeviceID() + "_" + PhoenixMethod.getPoliceId() + "_" + dateFormat.format(new Date()) +".wav";
-			File dir = new File(Constants.AUDIO_PATH);
+			File dir = new File(Constants.getAudioPath());
 			if(dir.list() == null){
 				dir.mkdirs();
 			}
-			File file=new File(Constants.AUDIO_PATH+fileName);
-			extAudioRecorder.setOutputFile(Constants.AUDIO_PATH+fileName);
+			File file=new File(Constants.getAudioPath()+fileName);
+			extAudioRecorder.setOutputFile(Constants.getAudioPath()+fileName);
 			extAudioRecorder.prepare();
 			extAudioRecorder.start();
 		}
@@ -200,6 +200,7 @@ public class AudioActivity extends Activity implements OnClickListener {
 	private void startRecord(){
 //		AudioRecordFunc func = AudioRecordFunc.getInstance(this);
 //		func.startRecordAndFile();
+		MainScene.checkAndMkdirs();
 		new Thread(new Run()).start();
 	}
 	private void stopRecord(){

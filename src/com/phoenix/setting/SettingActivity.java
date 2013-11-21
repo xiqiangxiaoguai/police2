@@ -81,21 +81,21 @@ public class SettingActivity extends SlidingPreferenceActivity implements Prefer
 				
 //				storPreference = new Preference(SettingActivity.this);
 //				storPreference.setTitle(R.string.camera_file);
-//				storPreference.setSummary(getFolderStor(Constants.CAMERA_PATH));
+//				storPreference.setSummary(getFolderStor(Constants.getCameraPath()));
 //				storageScreen.addPreference(storPreference);
-				mCameraStor = getFolderStor(Constants.CAMERA_PATH);
+				mCameraStor = getFolderStor(Constants.getCameraPath());
 				
 //				storPreference = new Preference(SettingActivity.this);
 //				storPreference.setTitle(R.string.video_file);
-//				storPreference.setSummary(getFolderStor(Constants.VIDEO_PATH));
+//				storPreference.setSummary(getFolderStor(Constants.getVideoPath()));
 //				storageScreen.addPreference(storPreference);
-				mVideoStor = getFolderStor(Constants.VIDEO_PATH);
+				mVideoStor = getFolderStor(Constants.getVideoPath());
 				
 //				storPreference = new Preference(SettingActivity.this);
 //				storPreference.setTitle(R.string.audio_file);
-//				storPreference.setSummary(getFolderStor(Constants.AUDIO_PATH));
+//				storPreference.setSummary(getFolderStor(Constants.getAudioPath()));
 //				storageScreen.addPreference(storPreference);
-				mAudioStor = getFolderStor(Constants.AUDIO_PATH);
+				mAudioStor = getFolderStor(Constants.getAudioPath());
 				
 			}
 		}

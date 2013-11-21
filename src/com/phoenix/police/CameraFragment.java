@@ -83,7 +83,7 @@ public class CameraFragment extends Fragment implements OnItemClickListener{
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		
+		MainScene.checkAndMkdirs();
 		HandlerThread hThread = new HandlerThread(CameraFragment.class.getSimpleName());
 		hThread.start();
 		mHandler = new Handler(hThread.getLooper()){
@@ -102,7 +102,7 @@ public class CameraFragment extends Fragment implements OnItemClickListener{
 		return l;
 	}
 	public int getImages(){
-		File[] files = new File(Constants.CAMERA_PATH).listFiles();
+		File[] files = new File(Constants.getCameraPath()).listFiles();
 		if(files.length == 0){
 			return files.length;
 		}

@@ -23,16 +23,31 @@ public class Constants {
 						,{resolution_with_3, resolution_height_3}
 						,{resolution_with_4, resolution_height_4}};
 	
-	public static final String CAMERA_PATH = "/mnt/sdcard/police/"+ PhoenixMethod.getPoliceId() + "/camera/";
-	public static final String VIDEO_PATH = "/mnt/sdcard/police/"+ PhoenixMethod.getPoliceId() + "/video/";
-	public static final String VIDEO_THUMBNAIL_PATH = "/mnt/sdcard/police/"+ PhoenixMethod.getPoliceId() + "/video/thumbnail/";
-	public static final String AUDIO_PATH = "/mnt/sdcard/police/"+ PhoenixMethod.getPoliceId() + "/audio/";
+	public static final String CAMERA_PATH = getCameraPath();
+	public static final String getCameraPath(){
+		return "/mnt/sdcard/police/"+ PhoenixMethod.getPoliceId() + "/camera/";
+	}
+	public static final String VIDEO_PATH = getVideoPath();
+	public static final String getVideoPath(){
+		return "/mnt/sdcard/police/"+ PhoenixMethod.getPoliceId() + "/video/";
+	}
+	public static final String VIDEO_THUMBNAIL_PATH = getThumbnailPath() ;
+	public static final String getThumbnailPath(){
+		return "/mnt/sdcard/police/"+ PhoenixMethod.getPoliceId() + "/video/thumbnail/";
+	}
+	public static final String AUDIO_PATH =getAudioPath();
+	public static final String getAudioPath(){
+		return  "/mnt/sdcard/police/"+ PhoenixMethod.getPoliceId() + "/audio/";
+	}
 	
 	public static final String CAMERA_NAME_HEAD = "IMG_";
 	public static final String VIDEO_NAME_HEAD = "VID_";
 	public static final String AUDIO_NAME_HEAD = "AUD_";
 	
-	public static final String LOG_PATH = "/mnt/sdcard/police/"+ PhoenixMethod.getPoliceId() + "/log/";
+	public static final String LOG_PATH = getLogPath();
+	public static final String getLogPath(){
+		return "/mnt/sdcard/police/"+ PhoenixMethod.getPoliceId() + "/log/";
+	}
 	public static final String LOG_NAME = "log.txt";
 	
 	public static final String DEVICE_NAME = "Phenix手持终端";

@@ -28,8 +28,8 @@ public class FileHelper {
 		new SimpleDateFormat("dd"),
 		new SimpleDateFormat("yyyyMMddhhmmss")
 	};
-	private String[] mDirPaths = new String[]{Constants.CAMERA_PATH,
-			Constants.VIDEO_PATH};
+	private String[] mDirPaths = new String[]{Constants.getCameraPath(),
+			Constants.getVideoPath()};
 	
 	class Info{
 		public ArrayList<String> info_imageUrls;

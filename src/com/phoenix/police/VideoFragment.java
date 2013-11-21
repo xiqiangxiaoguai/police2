@@ -90,7 +90,7 @@ public class VideoFragment extends Fragment implements OnItemClickListener{
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		
+		MainScene.checkAndMkdirs();
 		HandlerThread hThread = new HandlerThread(VideoFragment.class.getSimpleName());
 		hThread.start();
 		mHandler = new Handler(hThread.getLooper()){
@@ -112,7 +112,7 @@ public class VideoFragment extends Fragment implements OnItemClickListener{
 		return l;
 	}
 	private int getImages(){
-		File[] files = new File(Constants.VIDEO_THUMBNAIL_PATH).listFiles();
+		File[] files = new File(Constants.getThumbnailPath()).listFiles();
 		if(files.length == 0){
 			return files.length;
 		}
@@ -124,7 +124,7 @@ public class VideoFragment extends Fragment implements OnItemClickListener{
 		for(int i=0; i <files.length; i++){
 			info.info_imageUrls.add(files[i].getAbsolutePath());
 		}
-		files = new File(Constants.VIDEO_PATH).listFiles();
+		files = new File(Constants.getVideoPath()).listFiles();
 		Arrays.sort(files, new Comparator<File>(){
 		    public int compare(File f1, File f2)
 		    {
