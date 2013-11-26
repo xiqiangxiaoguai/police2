@@ -70,20 +70,22 @@ public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Call
 
 		@Override
 		public void run() {
-			if (myCamera == null) {
-				myCamera = Camera.open();// �������,���ܷ��ڹ��캯���У���Ȼ������ʾ����.
-				if(null == myCamera){
-					if (LOG_SWITCH)
-						Log.d(LOG_TAG, "ERROR: Camera == null!");
-				}
-				try {
-					myCamera.setPreviewDisplay(holder);//set the surface to used for live preview
-				} catch (IOException e) {
-					e.printStackTrace();
-					if(null != myCamera){
-						myCamera.release();
-						myCamera = null;
-					}
+			if(myCamera != null){
+				myCamera.release();
+				myCamera = null;
+			}
+			myCamera = Camera.open(0);
+			if(null == myCamera){
+				if (LOG_SWITCH)
+					Log.d(LOG_TAG, "ERROR: Camera == null!");
+			}
+			try {
+				myCamera.setPreviewDisplay(holder);//set the surface to used for live preview
+			} catch (IOException e) {
+				e.printStackTrace();
+				if(null != myCamera){
+					myCamera.release();
+					myCamera = null;
 				}
 			}
 			initCamera();

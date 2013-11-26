@@ -15,14 +15,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
-import android.media.CamcorderProfile;
-import android.media.CameraProfile;
 import android.media.MediaRecorder;
 import android.media.ThumbnailUtils;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -35,6 +31,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -45,9 +43,11 @@ import android.widget.Toast;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.phoenix.data.Constants;
 import com.phoenix.lib.SlidingMenu;
 import com.phoenix.lib.SlidingMenu.OnClosedListener;
+import com.phoenix.lib.SlidingMenu.OnOpenListener;
 import com.phoenix.lib.SlidingMenu.OnStartOpenListener;
 import com.phoenix.lib.app.SlidingActivity;
 import com.phoenix.online.A9TerminalActivity;
@@ -94,11 +94,19 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 	
 	private String previewImagePath;
 	DisplayImageOptions options = new DisplayImageOptions.Builder()
-	.showImageForEmptyUri(R.drawable.image_loading)
+	.showImageForEmptyUri(R.drawable.buttonbackground2)
 	.imageScaleType(ImageScaleType.EXACTLY)
-	.showStubImage(R.drawable.image_loading)
+	.showStubImage(R.drawable.buttonbackground2)
 	.cacheInMemory().cacheOnDisc().build(); 
 	
+	SimpleImageLoadingListener mSimpleImageLoadingListener = new SimpleImageLoadingListener(){
+		public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+			Animation anim = AnimationUtils.loadAnimation(  
+                    MainScene.this, R.anim.zoomin);  
+			view.setAnimation(anim);  
+            anim.start();
+		};
+	};
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -140,7 +148,12 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 		mainMenu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
 		mainMenu.setFadeDegree(0.35f);
 		mainMenu.setDragEnabled(false);
-		
+		mainMenu.setOnOpenListener(new OnOpenListener() {
+			@Override
+			public void onOpen() {
+				PhoenixMethod.setFlashLed(false);
+			}
+		});
 		mainMenu.setOnStartOpenListener(new OnStartOpenListener() {
 			@Override
 			public void onStartOpen() {
@@ -239,6 +252,7 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 						Log.d(LOG_TAG, "child count:" + cameraLayout.getChildCount());
 					}
 					mModeSwitch.setImageResource(R.drawable.mode_video);
+					mFlashBtn.setImageResource(R.drawable.ic_flash_off_holo_light);
 					setMode(Constants.MODE_CAMERA);
 				}
 			});
@@ -363,9 +377,7 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 				}
 				
 			}).start();
-			if(!mVideoKeyLocked){
-				mySurface.resumePreview();
-			}
+			mySurface.resumePreview();
 		}
 	};
 	private String save(byte[] data){
@@ -524,14 +536,14 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 				}
 				break;
 			case 2:
-				imageLoader.displayImage("file:/" + previewImagePath, mPreview ,options,null);
+				imageLoader.displayImage("file:/" + previewImagePath, mPreview ,options,mSimpleImageLoadingListener);
 				mKeyLockForFrequentClick = false;
 				break;
 			case 3:
 				videoEvent();
 				break;
 			case 4:
-				imageLoader.displayImage("file:/" + previewImagePath, mPreview ,options,null);
+				imageLoader.displayImage("file:/" + previewImagePath, mPreview ,options,mSimpleImageLoadingListener);
 				Toast.makeText(MainScene.this, R.string.video_success, Toast.LENGTH_SHORT).show();
 				break;
 			}
@@ -619,6 +631,7 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 	private void cameraEvent(){
 		if(mKeyLockForFrequentClick)
 			return;
+		mKeyLockForFrequentClick = true;
 		if(mVideoKeyLocked){
 			Camera camera = mySurface.getCamera();
 			camera.takePicture(null, null, jpegCallback);
@@ -626,7 +639,6 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 		}
 		setMode(Constants.MODE_CAMERA);
 		//Camera
-		mKeyLockForFrequentClick = true;
 		Camera camera = mySurface.getCamera();
 		camera.takePicture(null, null, jpegCallback);
 	}

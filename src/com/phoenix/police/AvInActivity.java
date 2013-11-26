@@ -401,32 +401,43 @@ public class AvInActivity extends SlidingActivity implements OnClickListener{
 	}
 	//***********************************************************Camera**************************************************
 	//***********************************************************Video**************************************************
-	private void stopRecording(String path){
-		File myCaptureFile = new File( Constants.getThumbnailPath() + path.substring(path.lastIndexOf('/'),path.lastIndexOf('.')) + ".jpg");
-		BufferedOutputStream bos;
-		try {
-			bos = new BufferedOutputStream(new FileOutputStream(
-					myCaptureFile));
-			ThumbnailUtils.createVideoThumbnail(path,
-					Thumbnails.MINI_KIND).compress( 
-					Bitmap.CompressFormat.JPEG, 80, bos);
+	class StopRecordingRun implements Runnable{
+		public String path;
+		@Override
+		public void run() {
+			File myCaptureFile = new File( Constants.getThumbnailPath() + path.substring(path.lastIndexOf('/'),path.lastIndexOf('.')) + ".jpg");
+			BufferedOutputStream bos;
 			try {
-				bos.flush();
-				bos.close();
-			} catch (IOException e) {
-				e.printStackTrace();
+				bos = new BufferedOutputStream(new FileOutputStream(
+						myCaptureFile));
+				ThumbnailUtils.createVideoThumbnail(path,
+						Thumbnails.MINI_KIND).compress( 
+						Bitmap.CompressFormat.JPEG, 80, bos);
+				try {
+					bos.flush();
+					bos.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+//					Toast.makeText(this, R.string.video_fail, Toast.LENGTH_SHORT).show();
+				}
+//				Toast.makeText(this, R.string.video_success, Toast.LENGTH_SHORT).show();
+				Intent intent = new Intent(Constants.ACTION_VIDEO_END);
+				sendBroadcast(intent);
+				previewImagePath = myCaptureFile.getAbsolutePath();
+				sharedPreferences.edit().putString(Constants.SHARED_PREVIEW_PATH, previewImagePath).commit();
+				mHandler.sendEmptyMessage(4);
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
 //				Toast.makeText(this, R.string.video_fail, Toast.LENGTH_SHORT).show();
 			}
-//			Toast.makeText(this, R.string.video_success, Toast.LENGTH_SHORT).show();
-			Intent intent = new Intent(Constants.ACTION_VIDEO_END);
-			sendBroadcast(intent);
-			previewImagePath = myCaptureFile.getAbsolutePath();
-			sharedPreferences.edit().putString(Constants.SHARED_PREVIEW_PATH, previewImagePath).commit();
-			mHandler.sendEmptyMessage(4);
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-//			Toast.makeText(this, R.string.video_fail, Toast.LENGTH_SHORT).show();
 		}
+		
+	}
+	private void stopRecording(String path){
+		StopRecordingRun mStopRecordingRun = new StopRecordingRun();
+		mStopRecordingRun.path = path;
+		new Thread(mStopRecordingRun).start();
+
 	}
 	private void startRecording() throws IOException 
     {
@@ -454,6 +465,7 @@ public class AvInActivity extends SlidingActivity implements OnClickListener{
 //        mrec.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
         mrec.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         mrec.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+        mrec.setVideoEncodingBitRate(12000000);
         mrec.setVideoSize(Constants.resolutions[resolution][0], Constants.resolutions[resolution][1]);
         if (LOG_SWITCH) {
 			Log.d(LOG_TAG, "setVideoSize :" + resolution);
@@ -468,7 +480,6 @@ public class AvInActivity extends SlidingActivity implements OnClickListener{
 
         mrec.prepare();
         mrec.start();
-        
         Intent intent = new Intent(Constants.ACTION_VIDEO_START);
         intent.putExtra("name", cPath);
         sendBroadcast(intent);
