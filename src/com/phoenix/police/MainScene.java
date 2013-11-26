@@ -698,6 +698,10 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 	}
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if(mainMenu.isMenuShowing()){
+			mainMenu.toggle();
+			return true;
+		}
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_CAMERA:
 			if(mainMenu.isMenuShowing()){

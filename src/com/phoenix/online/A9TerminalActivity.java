@@ -1,28 +1,21 @@
 package com.phoenix.online;
 
-import android.media.AudioManager;
-import android.os.Bundle;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Point;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.util.Log;
-
 import a9.terminal.Login;
 import a9.terminal.Login.EXmppState;
-import a9.terminal.Presence;
-import a9.terminal.Presence.EPresStatus;
 import a9.terminal.PeerConnection;
 import a9.terminal.PeerConnection.I420Frame;
+import a9.terminal.Presence;
+import a9.terminal.Presence.EPresStatus;
+import android.content.Intent;
+import android.graphics.Point;
+import android.media.AudioManager;
+import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.phoenix.lib.SlidingMenu;
 import com.phoenix.lib.app.SlidingActivity;
@@ -30,6 +23,7 @@ import com.phoenix.police.AudioActivity;
 import com.phoenix.police.FilesActivity;
 import com.phoenix.police.MainScene;
 import com.phoenix.police.R;
+import com.phoenix.setting.PhoenixMethod;
 import com.phoenix.setting.SettingActivity;
 public class A9TerminalActivity extends SlidingActivity 
 implements Login.IXmppStateObserver
@@ -48,7 +42,18 @@ implements Login.IXmppStateObserver
 	private VideoRendererView    mVideoRenderer;
 //	private VideoStreamsView     mVideoStreamView;
 	private SlidingMenu mainMenu = null;
-	
+	private TextView mTextView = null;
+	Handler  mHandler = new Handler(){
+		public void handleMessage(android.os.Message msg) {
+			switch(msg.what){
+			case 0:
+				if(null != mTextView){
+					mTextView.setText(R.string.a9_connected);
+				}
+				break;
+			}
+		};
+	};
 	class Run implements Runnable{
 
 		@Override
@@ -84,10 +89,7 @@ implements Login.IXmppStateObserver
 	    {
 	      return;
 	    }
-	    
-	    
-	    
-	    
+	    mTextView = (TextView) findViewById(R.id.progress);
 	    setBehindContentView(R.layout.main_menus);
 		mainMenu = getSlidingMenu();
 		mainMenu.setMode(SlidingMenu.LEFT);
@@ -111,9 +113,24 @@ implements Login.IXmppStateObserver
 		RelativeLayout mAvIn = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_av);
 		mAvIn.setOnClickListener(this);
 		
-	    showLoginUI();
+		mLogin.DoLogin(Observer, PhoenixMethod.getPoliceId(), 
+				PhoenixMethod.getPolicePS(),
+				PhoenixMethod.getServerIP(), 
+				"A9Terminal");
+		Log.d("A9", "DoLogin:" + PhoenixMethod.getPoliceId() + "|" + PhoenixMethod.getPolicePS() + "|" + PhoenixMethod.getServerIP());
+		mHandler.sendEmptyMessage(0);
+		
 	}
-
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+			}
+		}).start();
+	}
 	@Override
 	public void onClick(View v) {
 		switch(v.getId()){
@@ -137,38 +154,6 @@ implements Login.IXmppStateObserver
 				break;
 		}
 	}
-	  private void showLoginUI() 
-	  {
-		    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		    LayoutInflater inflater = getLayoutInflater();
-		    View loginView = inflater.inflate(R.layout.activity_a9_terminal, null);
-
-			final EditText etUsrName  = (EditText) loginView.findViewById(R.id.tf_userName);
-			final EditText etPassword = (EditText) loginView.findViewById(R.id.tf_password);
-			final EditText etServerIP = (EditText) loginView.findViewById(R.id.tf_serverIP);
-			etUsrName.setText("ter2");
-			etPassword.setText("ter2");
-			etServerIP.setText("120.236.21.179");
-		    DialogInterface.OnClickListener listener =
-		            new DialogInterface.OnClickListener()
-		    {
-		              @Override public void onClick(DialogInterface dialog, int which) 
-		              {
-		                abortUnless(which == DialogInterface.BUTTON_POSITIVE, "lolwat?");
-		                dialog.dismiss();
-		                mLogin.DoLogin(Observer, etUsrName.getText().toString(), 
-								etPassword.getText().toString(),
-								etServerIP.getText().toString(), 
-								"A9Terminal");
-		              }
-		     };
-
-		    builder.setTitle("用户登录")
-		           .setView(loginView)
-		           .setPositiveButton(R.string.login, listener)
-		           .setCancelable(false)
-		           .show();
-		  }
 	  
 	private static void abortUnless(boolean condition, String msg) 
 	{

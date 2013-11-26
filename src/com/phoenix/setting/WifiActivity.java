@@ -91,9 +91,8 @@ public class WifiActivity extends SlidingPreferenceActivity implements Preferenc
 		_wifiSwitch = (SwitchPreference) findPreference("setting_wifi_switch_preference");
 		final int wifiState = mWifiManager.getWifiState();
         boolean isEnabled = wifiState == WifiManager.WIFI_STATE_ENABLED;
-        boolean isDisabled = wifiState == WifiManager.WIFI_STATE_DISABLED;
-        _wifiSwitch.setChecked(isEnabled);
-        _wifiSwitch.setEnabled(isEnabled || isDisabled);
+        boolean isEnabling = wifiState == WifiManager.WIFI_STATE_ENABLING;
+        _wifiSwitch.setChecked(isEnabled || isEnabling);
 	        
 		_wifiSwitch.setOnPreferenceChangeListener(this);
 		mWifiSearchCategory = (PreferenceCategory) findPreference("setting_wifi_search_category");

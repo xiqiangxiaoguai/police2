@@ -78,4 +78,6 @@
     <string name="online">在线视频</string>
     <string name="forgetwifi">忘记网络</string>
     <string name="sure_forgetwifi">确认忘记网络?</string>
+    <string name="a9_loading">请稍等，正在连接……</string>
+    <string name="a9_connected">服务已连接.</string>
 </resources>

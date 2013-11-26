@@ -78,4 +78,6 @@
     <string name="online">online</string>
     <string name="forgetwifi">Forget</string>
     <string name="sure_forgetwifi">Sure to forget the information?</string>
+    <string name="a9_loading">loading</string>
+    <string name="a9_connected">connected</string>
 </resources>

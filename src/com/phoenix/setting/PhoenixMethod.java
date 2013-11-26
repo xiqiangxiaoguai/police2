@@ -36,4 +36,7 @@ public class PhoenixMethod {
 	public static String getPolicePS(){
 		return SystemProperties.get("sys.PoliceIDPasswd.config", Constants.SHARED_POL_PS_DEF);
 	}
+	public static String getServerIP(){
+		return SystemProperties.get("sys.RtspServerIP.config", Constants.SHARED_SERVER_IP);
+	}
 }
