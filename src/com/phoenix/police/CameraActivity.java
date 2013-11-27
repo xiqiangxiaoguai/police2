@@ -10,8 +10,13 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,6 +24,8 @@ import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.media.MediaRecorder;
 import android.media.ThumbnailUtils;
+import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -45,18 +52,11 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.phoenix.data.Constants;
-import com.phoenix.lib.SlidingMenu;
-import com.phoenix.lib.SlidingMenu.OnClosedListener;
-import com.phoenix.lib.SlidingMenu.OnOpenListener;
-import com.phoenix.lib.SlidingMenu.OnStartOpenListener;
-import com.phoenix.lib.app.SlidingActivity;
-import com.phoenix.online.A9TerminalActivity;
 import com.phoenix.setting.PhoenixMethod;
-import com.phoenix.setting.SettingActivity;
 
-public class MainScene extends SlidingActivity implements OnClickListener{
+public class CameraActivity extends Activity implements OnClickListener{
 	/** Called when the activity is first created. */
-	private static final String LOG_TAG = MainScene.class.getSimpleName();
+	private static final String LOG_TAG = CameraActivity.class.getSimpleName();
 	private static final boolean LOG_SWITCH = Constants.LOG_SWITCH;
 	
 	private static final int STATE_IDLE = 0;
@@ -81,17 +81,16 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 	private int MODE = Constants.MODE_CAMERA;
 	SharedPreferences sharedPreferences;
 	
-	SlidingMenu mainMenu = null;
 	LinearLayout bar_timer;
 	private int resolution = 0;
 	private int preRes = -1;
-	private boolean mVideoKeyLocked = false;
+	public static boolean mVideoKeyLocked = false;
 	private boolean mKeyLockForFrequentClick = false;
 	private String police_num;
 	private boolean appPaused = false;
-	
+	private boolean mSurfaceReady = false;
 	private ImageLoader imageLoader;
-	
+	private boolean two_flag = true;
 	private String previewImagePath;
 	DisplayImageOptions options = new DisplayImageOptions.Builder()
 	.showImageForEmptyUri(R.drawable.buttonbackground2)
@@ -102,11 +101,60 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 	SimpleImageLoadingListener mSimpleImageLoadingListener = new SimpleImageLoadingListener(){
 		public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
 			Animation anim = AnimationUtils.loadAnimation(  
-                    MainScene.this, R.anim.zoomin);  
+                    CameraActivity.this, R.anim.zoomin);  
 			view.setAnimation(anim);  
             anim.start();
 		};
 	};
+	
+	BroadcastReceiver mUsbReceiver = new BroadcastReceiver(){
+		AlertDialog usbDialog = null;
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+			final Context mContext = context;
+			if (action.equals("android.hardware.usb.action.USB_STATE")) {
+			        Bundle extras = intent.getExtras();
+			        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+			        if( extras.getBoolean("connected")){
+			        	if(two_flag && mVideoKeyLocked){
+			        		two_flag = false;
+			        		usbDialog = new AlertDialog.Builder(CameraActivity.this).setIcon(R.drawable.ic_dialog_alert)
+									.setTitle(android.R.string.dialog_alert_title)
+									.setMessage(R.string.usb_warming)
+									.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+										@Override
+										public void onClick(DialogInterface dialog, int which) {
+											mHandler.sendEmptyMessageDelayed(5, 3000);
+										}
+									})
+									.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+										@Override
+										public void onClick(DialogInterface dialog, int which) {
+											ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+				                            WifiManager mWifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+				    						if(mWifiManager.isWifiEnabled()){
+				    							mWifiManager.setWifiEnabled(false);
+				    						}
+				    						PhoenixMethod.set3G(false);
+				    						cm.setUsbTethering(true);
+				    						mHandler.sendEmptyMessageDelayed(5, 3000);
+										}
+									})
+									.create();
+							usbDialog.show();
+			        	}
+			        }else{
+			        	if(null != usbDialog && usbDialog.isShowing()){
+			        		usbDialog.dismiss();
+			        	}
+			        	cm.setUsbTethering(false);
+			        	two_flag = true;
+			        }
+		}
+		}
+	};
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -138,80 +186,34 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 		timeCount = (TextView) findViewById(R.id.timeCount);
 		bar_timer.setVisibility(View.GONE);
 		
-		setBehindContentView(R.layout.main_menus);
-		
-		mainMenu = getSlidingMenu();
-		mainMenu.setMode(SlidingMenu.LEFT);
-		mainMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-		mainMenu.setShadowWidthRes(R.dimen.shadow_width);
-//        menu.setShadowDrawable(R.drawable.shadow);
-		mainMenu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
-		mainMenu.setFadeDegree(0.35f);
-		mainMenu.setDragEnabled(false);
-		mainMenu.setOnOpenListener(new OnOpenListener() {
-			@Override
-			public void onOpen() {
-				PhoenixMethod.setFlashLed(false);
-			}
-		});
-		mainMenu.setOnStartOpenListener(new OnStartOpenListener() {
-			@Override
-			public void onStartOpen() {
-				onPause();
-			}
-		});
-		mainMenu.setOnClosedListener(new OnClosedListener() {
-			@Override
-			public void onClosed() {
-				if(null == mySurface){
-					onResume();
-				}
-			}
-		});
-		RelativeLayout mCameraMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_camera);
-		mCameraMenu.setOnClickListener(this);
-		RelativeLayout mAudioMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_audio);
-		mAudioMenu.setOnClickListener(this);
-		RelativeLayout mFilesMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_files);
-		mFilesMenu.setOnClickListener(this);
-		RelativeLayout mSettingMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_setting);
-		mSettingMenu.setOnClickListener(this);
-		RelativeLayout mWirelessMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_wireless);
-		mWirelessMenu.setOnClickListener(this);
-		RelativeLayout mAvIn = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_av);
-		mAvIn.setOnClickListener(this);
-		if(getIntent() != null){
-			if(getIntent().getExtras()!= null){
-				if(getIntent().getExtras().getBoolean(Constants.AUTO_VIDEO, false)){
-					mHandler.sendEmptyMessageDelayed(3, 3000);
-				}
-			}
-		}
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("android.hardware.usb.action.USB_STATE");
+        registerReceiver(mUsbReceiver, filter);
 	}
 	@Override
 	protected void onStop() {
 		super.onStop();
 		imageLoader.stop();
 		PhoenixMethod.setFlashLed(false);
+		mHandler.removeCallbacks(createSuafaceRun);
+		try {
+			unregisterReceiver(mUsbReceiver);
+		} catch (Exception e) {
+		}
 	}
 	
 	private void createSurfaceView(){
 		mySurface = new CameraSurfaceView(this);
 		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
-
 		mySurface.setLayoutParams(new LayoutParams(480, (int)(480*Constants.resolutions[mySurface.getRes()][1]/Constants.resolutions[mySurface.getRes()][0])));
 		RelativeLayout.LayoutParams containerParams = new RelativeLayout.LayoutParams(480, (int)(480*Constants.resolutions[mySurface.getRes()][1]/Constants.resolutions[mySurface.getRes()][0]));
 		containerParams.addRule(RelativeLayout.CENTER_VERTICAL, -1);
 		cameraLayout.setLayoutParams(containerParams);
 		cameraLayout.addView(mySurface, 0);
-//		mySurface = new CameraSurfaceView(this);
-//		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
-//		cameraLayout.setGravity(Gravity.CENTER);
-//		mySurface.setLayoutParams(new LayoutParams(480, (int)(480*((double)Constants.resolution_height_4/Constants.resolution_with_4))));
-//		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(480, (int)(480*((double)Constants.resolution_height_4/Constants.resolution_with_4)));
-//		params.addRule(RelativeLayout.CENTER_IN_PARENT, -1);
-//		cameraLayout.setLayoutParams(params);
-//		cameraLayout.addView(mySurface, 0);
+		mSurfaceReady = true;
+		if (LOG_SWITCH) {
+			Log.d(LOG_TAG, "mSurfaceReady set to true");
+		}
 	}
 	private void destoySurfaceView(){
 		RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
@@ -223,6 +225,10 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 				public void run() {
 					mySurface.stopPreview();
 					mySurface = null;
+					mSurfaceReady = false;
+					if (LOG_SWITCH) {
+						Log.d(LOG_TAG, "mSurfaceReady set to false");
+					}
 				}
 			}).start();
 		}
@@ -237,32 +243,33 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 		destoySurfaceView();
 		
 	}
-	
+	Runnable createSuafaceRun = new Runnable() {
+		
+		@Override
+		public void run() {
+			createSurfaceView();
+			RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
+			if (LOG_SWITCH) {
+				Log.d(LOG_TAG, "child count:" + cameraLayout.getChildCount());
+			}
+			mModeSwitch.setImageResource(R.drawable.mode_video);
+			mFlashBtn.setImageResource(R.drawable.ic_flash_off_holo_light);
+			setMode(Constants.MODE_CAMERA);
+		}
+	};
 	@Override
 	protected void onResume() {
 		super.onResume();
 		if(null == mySurface && appPaused){
 //			mySurface.resumePreview();
-			mHandler.post(new Runnable() {
-				@Override
-				public void run() {
-					createSurfaceView();
-					RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
-					if (LOG_SWITCH) {
-						Log.d(LOG_TAG, "child count:" + cameraLayout.getChildCount());
-					}
-					mModeSwitch.setImageResource(R.drawable.mode_video);
-					mFlashBtn.setImageResource(R.drawable.ic_flash_off_holo_light);
-					setMode(Constants.MODE_CAMERA);
-				}
-			});
+			mHandler.postDelayed(createSuafaceRun, 1000);
 			appPaused = false;
 		}
 		previewImagePath = sharedPreferences.getString(Constants.SHARED_PREVIEW_PATH, "");
 		if(!previewImagePath.contains(PhoenixMethod.getPoliceId())){
 			previewImagePath = "";
 		}
-		mHandler.sendEmptyMessage(2);
+		mHandler.sendEmptyMessage(0);
 		checkAndMkdirs();
 	}
 	
@@ -278,18 +285,28 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()){
+		case R.id.main_menu:
+			if(!mVideoKeyLocked)
+				finish();
+			break;
 		case  R.id.preview:
+			if (LOG_SWITCH) {
+				Log.d(LOG_TAG, "previewImagePath:" + previewImagePath);
+			}
+			if(mVideoKeyLocked || previewImagePath.equalsIgnoreCase("")){
+				break;
+			}
 			if(null != previewImagePath){
-				if (LOG_SWITCH) {
-					Log.d(LOG_TAG, "previewImagePath:" + previewImagePath.split("\\.")[1]);
-				}
 				if(previewImagePath.contains("camera")){
 					Intent intent = new Intent("com.phoenix.police.CameraBrowseActivity");
 					Bundle bundle = new Bundle();
 					FileHelper helper = new FileHelper();
 					helper.query(0);
+					if(helper.getUrls().size() < 1){
+						return;
+					}
 					bundle.putStringArrayList("cameraPaths", helper.getUrls());
-					bundle.putInt("currentPic", 0);
+					bundle.putInt("currentPic", helper.getUrls().size() -1);
 					intent.putExtras(bundle);
 					startActivity(intent);
 				}else{
@@ -297,8 +314,10 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 					Bundle bundle = new Bundle();
 					FileHelper helper = new FileHelper();
 					helper.query(1);
-					String cUrl = helper.getUrls().get(0);
-					
+					if(helper.getUrls().size() < 1){
+						return;
+					}
+					String cUrl = helper.getUrls().get(helper.getUrls().size() -1);
 					bundle.putString("url", cUrl);
 					bundle.putString("name", cUrl.substring(cUrl.lastIndexOf('/'), cUrl.lastIndexOf('.')));
 					intent.putExtras(bundle);
@@ -321,29 +340,6 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 			}else{
 				setMode(Constants.MODE_CAMERA);
 			}
-			break;
-		case R.id.main_menu:
-			if(mVideoKeyLocked)
-				break;
-			mainMenu.toggle();
-			break;
-		case R.id.menu_camera:
-			mainMenu.toggle();
-			break;
-		case R.id.menu_audio:
-			startActivity(new Intent(this, AudioActivity.class));
-			break;
-		case R.id.menu_files:
-			startActivity(new Intent(this, FilesActivity.class));
-			break;
-		case R.id.menu_setting:
-			startActivity(new Intent(this, SettingActivity.class));
-			break;
-		case R.id.menu_wireless:
-			startActivity(new Intent(this, A9TerminalActivity.class));
-			break;
-		case R.id.menu_av:
-			startActivity(new Intent(this, AvInActivity.class));
 			break;
 		case R.id.flash_button:
 			if(cFlash){
@@ -384,8 +380,14 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 		if (LOG_SWITCH)
 			Log.d(LOG_TAG, "Start to save the bitmap.");
 		checkAndMkdirs();
-		String path = cameraPath +Constants.CAMERA_NAME_HEAD + PhoenixMethod.getDeviceID() + "_" + PhoenixMethod.getPoliceId() + "_" + PhoenixMethod.getPicTime()+".jpg";
-		
+		String path = "";
+		if(mVideoKeyLocked){
+			path = cameraPath +Constants.CAMERA_NAME_HEAD + PhoenixMethod.getDeviceID() + "_" + PhoenixMethod.getPoliceId() + "_" + dateFormat.format(new Date())+".jpg";
+		}else{
+			path = cameraPath +Constants.CAMERA_NAME_HEAD + PhoenixMethod.getDeviceID() + "_" + PhoenixMethod.getPoliceId() + "_" + PhoenixMethod.getPicTime()+".jpg";
+		}
+		if (LOG_SWITCH)
+			Log.d(LOG_TAG, "path:" + path);
 		try {
 			//if there is a sdcard
 			if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
@@ -502,7 +504,6 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 
         mrec.prepare();
         mrec.start();
-        
         Intent intent = new Intent(Constants.ACTION_VIDEO_START);
         intent.putExtra("name", cPath);
         sendBroadcast(intent);
@@ -514,8 +515,14 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 	Handler mHandler = new Handler(){
 		public void handleMessage(android.os.Message msg) {
 			switch(msg.what){
+			case 0:
+				imageLoader.displayImage("file:/" + previewImagePath, mPreview ,options,null);
+				break;
 			case 1:
 				cSecs ++;
+				if(cSecs == 3){
+					mKeyLockForFrequentClick = false;
+				}
 				int hour = cSecs/3600;
 				int min = (cSecs%3600)/60;
 				int sec = cSecs%60;
@@ -544,8 +551,10 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 				break;
 			case 4:
 				imageLoader.displayImage("file:/" + previewImagePath, mPreview ,options,mSimpleImageLoadingListener);
-				Toast.makeText(MainScene.this, R.string.video_success, Toast.LENGTH_SHORT).show();
+				Toast.makeText(CameraActivity.this, R.string.video_success, Toast.LENGTH_SHORT).show();
 				break;
+			case 5:
+				two_flag = true;
 			}
 		};
 	};
@@ -578,25 +587,6 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 	
 	//***********************************************************Audio**************************************************
 	private void setMode(int mode){
-//		if(MODE != mode){
-//			MODE = mode;
-//			if(null != mySurface){
-//				destoySurfaceView();
-//				RelativeLayout cameraLayout = ( RelativeLayout) findViewById(R.id.camera_layout);
-//				if (LOG_SWITCH) {
-//					Log.d(LOG_TAG, "create SurfaceView...");
-//				}
-//				createSurfaceView();
-//			}
-//			if (LOG_SWITCH) {
-//				Log.d(LOG_TAG, "init preview widget...");
-//			}
-//			initPreviewWidget();
-//		}else{
-//			MODE = mode;
-//			initPreviewWidget();
-//		}
-//		updateResForMode();
 		MODE = mode;
 		if(mode == Constants.MODE_CAMERA){
 			mModeSwitch.setImageResource(R.drawable.mode_video);
@@ -629,7 +619,10 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 		cameraLayout.setLayoutParams(containerParams);
 	}
 	private void cameraEvent(){
-		if(mKeyLockForFrequentClick)
+		if (LOG_SWITCH) {
+			Log.d(LOG_TAG, "mKeyLockForFrequentClick:" + mKeyLockForFrequentClick + " mSurfaceReady:" + mSurfaceReady);
+		}
+		if(mKeyLockForFrequentClick || !mSurfaceReady)
 			return;
 		mKeyLockForFrequentClick = true;
 		if(mVideoKeyLocked){
@@ -643,8 +636,7 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 		camera.takePicture(null, null, jpegCallback);
 	}
 	private void videoEvent(){
-		//Video
-		if(mKeyLockForFrequentClick)
+		if(mKeyLockForFrequentClick || !mSurfaceReady)
 			return;
 		mKeyLockForFrequentClick = true;
 		if(mState == STATE_IDLE){ 
@@ -661,7 +653,6 @@ public class MainScene extends SlidingActivity implements OnClickListener{
                 startRecording();
 				startTimer();
 				mVideoKeyLocked = true;
-				mainMenu.setSlidingEnabled(!mVideoKeyLocked);
             } catch (Exception e) {
                 mrec.release();
 				stopTimer();
@@ -673,13 +664,6 @@ public class MainScene extends SlidingActivity implements OnClickListener{
 			mrec.stop();
             mrec.release();
             mrec = null;
-            //Add into runnable.
-//            mHandler.post(new Runnable() {
-//				@Override
-//				public void run() {
-//					stopRecording(cPath);
-//				}
-//			});
             new Thread(new Runnable() {
 				
 				@Override
@@ -690,30 +674,19 @@ public class MainScene extends SlidingActivity implements OnClickListener{
             bar_timer.setVisibility(View.GONE);
 			stopTimer();
 			mVideoKeyLocked = false;
-			mainMenu.setSlidingEnabled(!mVideoKeyLocked);
 			mState = STATE_IDLE;
 			PhoenixMethod.setVideoLed(false);
+			mKeyLockForFrequentClick = false;
 		}
-		mKeyLockForFrequentClick = false;
 	}
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if(mainMenu.isMenuShowing()){
-			mainMenu.toggle();
-			return true;
-		}
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_CAMERA:
-			if(mainMenu.isMenuShowing()){
-				mainMenu.toggle();
-			}
 			cameraEvent();
 			break;
 			
 		case KeyEvent.KEYCODE_MEDIA_RECORD:
-			if(mainMenu.isMenuShowing()){
-				mainMenu.toggle();
-			}
 			mHandler.removeMessages(3);
 			videoEvent();
 			break;

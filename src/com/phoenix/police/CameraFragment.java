@@ -83,7 +83,7 @@ public class CameraFragment extends Fragment implements OnItemClickListener{
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		MainScene.checkAndMkdirs();
+		CameraActivity.checkAndMkdirs();
 		HandlerThread hThread = new HandlerThread(CameraFragment.class.getSimpleName());
 		hThread.start();
 		mHandler = new Handler(hThread.getLooper()){

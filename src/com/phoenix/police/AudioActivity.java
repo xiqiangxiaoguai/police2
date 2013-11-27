@@ -23,12 +23,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.phoenix.data.Constants;
-import com.phoenix.lib.SlidingMenu;
 import com.phoenix.online.A9TerminalActivity;
 import com.phoenix.setting.PhoenixMethod;
 import com.phoenix.setting.SettingActivity;
 
-public class AudioActivity extends Activity implements OnClickListener {
+public class AudioActivity extends Activity implements OnClickListener{
 	/** Called when the activity is first created. */
 
 	private static final int STATE_IDLE = 0;
@@ -37,7 +36,6 @@ public class AudioActivity extends Activity implements OnClickListener {
 	private ImageButton btnRecord;
 	private int cSecs =0;
 	private TextView timeCount;
-	private SlidingMenu mainMenu = null;
 	private boolean mKeyLockForFrequentClick =false;
 	private boolean mAudioLocked =false;
 	LinearLayout timeBar ;
@@ -84,7 +82,6 @@ public class AudioActivity extends Activity implements OnClickListener {
 		//Audio
 		if(mState == STATE_IDLE){
 			mAudioLocked = true;
-			mainMenu.setSlidingEnabled(false);
 			startRecord();
 			mState = STATE_RECORDING;
 			startTimer();
@@ -99,7 +96,6 @@ public class AudioActivity extends Activity implements OnClickListener {
 			PhoenixMethod.setAudioLed(false);
 			timeBar.setVisibility(View.GONE);
 			mAudioLocked = false;
-			mainMenu.setSlidingEnabled(true);
 		}
 		mKeyLockForFrequentClick = false;
 	}
@@ -121,28 +117,6 @@ public class AudioActivity extends Activity implements OnClickListener {
 		ImageButton mMainMenu = (ImageButton) findViewById(R.id.main_menu);
 		mMainMenu.setOnClickListener(this);
 		
-		mainMenu = new SlidingMenu(this);
-		mainMenu.setMode(SlidingMenu.LEFT);
-		mainMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-		mainMenu.setShadowWidthRes(R.dimen.shadow_width);
-//        menu.setShadowDrawable(R.drawable.shadow);
-		mainMenu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
-		mainMenu.setFadeDegree(0.35f);
-		mainMenu.setDragEnabled(false);
-		mainMenu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
-		mainMenu.setMenu(R.layout.main_menus);
-		RelativeLayout mCameraMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_camera);
-		mCameraMenu.setOnClickListener(this);
-		RelativeLayout mAudioMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_audio);
-		mAudioMenu.setOnClickListener(this);
-		RelativeLayout mFilesMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_files);
-		mFilesMenu.setOnClickListener(this);
-		RelativeLayout mSettingMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_setting);
-		mSettingMenu.setOnClickListener(this);
-		RelativeLayout mWirelessMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_wireless);
-		mWirelessMenu.setOnClickListener(this);
-		RelativeLayout mAvIn = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_av);
-		mAvIn.setOnClickListener(this);
 		if(getIntent() != null){
 			if(getIntent().getExtras()!= null){
 				if(getIntent().getExtras().getBoolean(Constants.AUTO_AUDIO, false)){
@@ -200,7 +174,7 @@ public class AudioActivity extends Activity implements OnClickListener {
 	private void startRecord(){
 //		AudioRecordFunc func = AudioRecordFunc.getInstance(this);
 //		func.startRecordAndFile();
-		MainScene.checkAndMkdirs();
+		CameraActivity.checkAndMkdirs();
 		new Thread(new Run()).start();
 	}
 	private void stopRecord(){
@@ -213,34 +187,6 @@ public class AudioActivity extends Activity implements OnClickListener {
 		Toast.makeText(this, R.string.audio_success, Toast.LENGTH_SHORT).show();
 	}
 
-	@Override
-	public void onClick(View view) {
-		switch(view.getId()){
-			case R.id.main_menu:
-				if (mAudioLocked)
-					break;
-				mainMenu.toggle();
-				break;
-			case R.id.menu_camera:
-				startActivity(new Intent(this, MainScene.class));
-				break;
-			case R.id.menu_audio:
-				mainMenu.toggle();
-				break;
-			case R.id.menu_files:
-				startActivity(new Intent(this, FilesActivity.class));
-				break;
-			case R.id.menu_setting:
-				startActivity(new Intent(this, SettingActivity.class));
-				break;
-			case R.id.menu_wireless:
-				startActivity(new Intent(this, A9TerminalActivity.class));
-				break;
-			case R.id.menu_av:
-//				startActivity(new Intent(this, AvInActivity.class));
-				break;
-		}
-	}
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -249,7 +195,7 @@ public class AudioActivity extends Activity implements OnClickListener {
 		case KeyEvent.KEYCODE_CAMERA:
 			if(mState == STATE_RECORDING)
 				break;
-			intent = new Intent(this, MainScene.class);
+			intent = new Intent(this, CameraActivity.class);
 			intent.putExtra(Constants.AUTO_VIDEO, false);
 			startActivity(intent);
 			break;
@@ -257,15 +203,12 @@ public class AudioActivity extends Activity implements OnClickListener {
 		case KeyEvent.KEYCODE_MEDIA_RECORD:
 			if(mState == STATE_RECORDING)
 				break;
-			intent = new Intent(this, MainScene.class);
+			intent = new Intent(this, CameraActivity.class);
 			intent.putExtra(Constants.AUTO_VIDEO, true);
 			startActivity(intent);
 			break;
 			
 		case KeyEvent.KEYCODE_MUSIC:
-			if(mainMenu.isMenuShowing()){
-				mainMenu.toggle();
-			}
 			audioEvent();
 			break;
 			
@@ -273,6 +216,14 @@ public class AudioActivity extends Activity implements OnClickListener {
 			break;
 		}
 		return super.onKeyDown(keyCode, event);
+	}
+	@Override
+	public void onClick(View v) {
+		switch(v.getId()){
+		case R.id.main_menu:
+			finish();
+			break;
+		}
 	}
 	
 }

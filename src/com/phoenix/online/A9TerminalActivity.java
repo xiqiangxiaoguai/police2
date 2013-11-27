@@ -6,31 +6,26 @@ import a9.terminal.PeerConnection;
 import a9.terminal.PeerConnection.I420Frame;
 import a9.terminal.Presence;
 import a9.terminal.Presence.EPresStatus;
+import android.app.ActionBar;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Point;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.phoenix.lib.SlidingMenu;
-import com.phoenix.lib.app.SlidingActivity;
-import com.phoenix.police.AudioActivity;
-import com.phoenix.police.FilesActivity;
-import com.phoenix.police.MainScene;
 import com.phoenix.police.R;
 import com.phoenix.setting.PhoenixMethod;
-import com.phoenix.setting.SettingActivity;
-public class A9TerminalActivity extends SlidingActivity 
+public class A9TerminalActivity extends Activity 
 implements Login.IXmppStateObserver
 , Presence.IPresenceStatusObserver 
 , PeerConnection.IPeerConnectionObserver
 , PeerConnection.IVideoRenderer
-, OnClickListener
 {
 	private static String TAG = "A9TerminalActivity";
 	
@@ -41,7 +36,6 @@ implements Login.IXmppStateObserver
 	private boolean              mBIsStarted     = false;
 	private VideoRendererView    mVideoRenderer;
 //	private VideoStreamsView     mVideoStreamView;
-	private SlidingMenu mainMenu = null;
 	private TextView mTextView = null;
 	Handler  mHandler = new Handler(){
 		public void handleMessage(android.os.Message msg) {
@@ -90,28 +84,6 @@ implements Login.IXmppStateObserver
 	      return;
 	    }
 	    mTextView = (TextView) findViewById(R.id.progress);
-	    setBehindContentView(R.layout.main_menus);
-		mainMenu = getSlidingMenu();
-		mainMenu.setMode(SlidingMenu.LEFT);
-		mainMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-		mainMenu.setShadowWidthRes(R.dimen.shadow_width);
-//        menu.setShadowDrawable(R.drawable.shadow);
-		mainMenu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
-		mainMenu.setDragEnabled(false);
-		mainMenu.setFadeDegree(0.35f);
-		setSlidingActionBarEnabled(true);
-		RelativeLayout mCameraMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_camera);
-		mCameraMenu.setOnClickListener(this);
-		RelativeLayout mAudioMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_audio);
-		mAudioMenu.setOnClickListener(this);
-		RelativeLayout mFilesMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_files);
-		mFilesMenu.setOnClickListener(this);
-		RelativeLayout mSettingMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_setting);
-		mSettingMenu.setOnClickListener(this);
-		RelativeLayout mWirelessMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_wireless);
-		mWirelessMenu.setOnClickListener(this);
-		RelativeLayout mAvIn = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_av);
-		mAvIn.setOnClickListener(this);
 		
 		mLogin.DoLogin(Observer, PhoenixMethod.getPoliceId(), 
 				PhoenixMethod.getPolicePS(),
@@ -119,6 +91,13 @@ implements Login.IXmppStateObserver
 				"A9Terminal");
 		Log.d("A9", "DoLogin:" + PhoenixMethod.getPoliceId() + "|" + PhoenixMethod.getPolicePS() + "|" + PhoenixMethod.getServerIP());
 		mHandler.sendEmptyMessage(0);
+		
+		ActionBar actionBar = getActionBar();
+//		actionBar.setDisplayShowHomeEnabled(false);
+		actionBar.setDisplayShowTitleEnabled(false);
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setIcon(R.drawable.menu_wireless);
+		
 		
 	}
 	
@@ -131,30 +110,6 @@ implements Login.IXmppStateObserver
 			}
 		}).start();
 	}
-	@Override
-	public void onClick(View v) {
-		switch(v.getId()){
-			case R.id.menu_camera:
-				startActivity(new Intent(this, MainScene.class));
-				break;
-			case R.id.menu_audio:
-				startActivity(new Intent(this, AudioActivity.class));
-				break;
-			case R.id.menu_files:
-				startActivity(new Intent(this, FilesActivity.class));
-				break;
-			case R.id.menu_setting:
-				startActivity(new Intent(this, SettingActivity.class));
-				break;
-			case R.id.menu_wireless:
-				mainMenu.toggle();
-				break;
-			case R.id.menu_av:
-	//			startActivity(new Intent(this, AvInActivity.class));
-				break;
-		}
-	}
-	  
 	private static void abortUnless(boolean condition, String msg) 
 	{
 	    if (!condition) 
@@ -287,5 +242,15 @@ implements Login.IXmppStateObserver
 	{
 		// TODO Auto-generated method stub
 		Log.i(TAG, "SetSize");
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()){
+		case android.R.id.home:
+			finish();
+			break;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 }

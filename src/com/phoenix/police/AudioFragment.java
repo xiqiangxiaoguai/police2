@@ -90,7 +90,7 @@ public class AudioFragment extends Fragment{
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		MainScene.checkAndMkdirs();
+		CameraActivity.checkAndMkdirs();
 		HandlerThread hThread = new HandlerThread(AudioFragment.class.getSimpleName());
 		hThread.start();
 	}

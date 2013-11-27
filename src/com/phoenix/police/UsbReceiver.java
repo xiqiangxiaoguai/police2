@@ -23,7 +23,7 @@ public class UsbReceiver extends  BroadcastReceiver{
 		        Bundle extras = intent.getExtras();
 		        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		        if( extras.getBoolean("connected")){
-		        	if(two_flag){
+		        	if(two_flag && !CameraActivity.mVideoKeyLocked){
 		        		two_flag = false;
 						Intent i = new Intent("com.phoenix.police.UsbDialogActivity");
 						i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

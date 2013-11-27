@@ -29,7 +29,7 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.MyTheme" >
         <activity
-            android:name="com.phoenix.police.MainScene"
+            android:name="com.phoenix.police.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -38,7 +38,14 @@
                 <category android:name="android.intent.category.MONKEY"/>
             </intent-filter>
         </activity>
-
+		<activity
+            android:name=".CameraActivity"
+            android:label="@string/camera">
+            <intent-filter>
+                <caction android:name="com.phoenix.police.CameraActivity"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
         <activity 
             android:name=".AvInActivity"
             >

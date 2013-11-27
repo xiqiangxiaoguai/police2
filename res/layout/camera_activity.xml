@@ -16,7 +16,7 @@
             android:layout_marginLeft="10px"
             android:background="@android:color/transparent"
             android:clickable="true"
-            android:scaleType="fitXY"
+            android:scaleType="fitStart"
             android:src="@drawable/main_menu" />
 
         <LinearLayout

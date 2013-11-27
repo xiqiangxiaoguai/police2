@@ -3,10 +3,10 @@ package com.phoenix.setting;
 import java.io.File;
 import java.text.DecimalFormat;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo.State;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -15,25 +15,25 @@ import android.os.StatFs;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
+import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.RelativeLayout;
 
 import com.phoenix.data.Constants;
-import com.phoenix.lib.SlidingMenu;
-import com.phoenix.lib.app.SlidingPreferenceActivity;
 import com.phoenix.online.A9TerminalActivity;
 import com.phoenix.police.AudioActivity;
-import com.phoenix.police.AvInActivity;
 import com.phoenix.police.FilesActivity;
-import com.phoenix.police.MainScene;
+import com.phoenix.police.CameraActivity;
 import com.phoenix.police.R;
 
-public class SettingActivity extends SlidingPreferenceActivity implements Preference.OnPreferenceChangeListener, android.view.View.OnClickListener{
+public class SettingActivity extends PreferenceActivity implements Preference.OnPreferenceChangeListener{
 	private static final boolean LOG_SWITCH = Constants.LOG_SWITCH;
 	private static final String LOG_TAG = SettingActivity.class.getSimpleName();
 	
@@ -53,7 +53,6 @@ public class SettingActivity extends SlidingPreferenceActivity implements Prefer
 	
 	ConnectivityManager conn;
 	
-	private SlidingMenu mainMenu = null;
 	@Override
 	public boolean onPreferenceChange(Preference preference, Object newValue) {
 		if (LOG_SWITCH) {
@@ -142,7 +141,6 @@ public class SettingActivity extends SlidingPreferenceActivity implements Prefer
 	//*****************************Runnable for scan network***************************
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
 		wifiScreen = (PreferenceScreen) findPreference("setting_wifi_preference");
@@ -152,6 +150,12 @@ public class SettingActivity extends SlidingPreferenceActivity implements Prefer
 //		brightnessPreference = (BrightnessSeekBarPreference) findPreference("setting_function_brightness");
 //		brightnessPreference.pushActivity(SettingActivity.this);
 		conn  = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		
+		ActionBar actionBar = getActionBar();
+//		actionBar.setDisplayShowHomeEnabled(false);
+		actionBar.setDisplayShowTitleEnabled(false);
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setIcon(R.drawable.menu_setting);
 		
 		HandlerThread hThread = new HandlerThread(SettingActivity.class.getSimpleName());
 		hThread.start();
@@ -195,30 +199,6 @@ public class SettingActivity extends SlidingPreferenceActivity implements Prefer
 		
 		SwitchPreference _3gSwitch = (SwitchPreference) findPreference("setting_3g_switch_preference");
 		_3gSwitch.setOnPreferenceChangeListener(this);
-		
-		
-		setBehindContentView(R.layout.main_menus);
-		mainMenu = getSlidingMenu();
-		mainMenu.setMode(SlidingMenu.LEFT);
-		mainMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-		mainMenu.setShadowWidthRes(R.dimen.shadow_width);
-//        menu.setShadowDrawable(R.drawable.shadow);
-		mainMenu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
-		mainMenu.setFadeDegree(0.35f);
-		mainMenu.setSlidingEnabled(true);
-		mainMenu.setDragEnabled(false);
-		RelativeLayout mCameraMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_camera);
-		mCameraMenu.setOnClickListener(this);
-		RelativeLayout mAudioMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_audio);
-		mAudioMenu.setOnClickListener(this);
-		RelativeLayout mFilesMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_files);
-		mFilesMenu.setOnClickListener(this);
-		RelativeLayout mSettingMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_setting);
-		mSettingMenu.setOnClickListener(this);
-		RelativeLayout mWirelessMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_wireless);
-		mWirelessMenu.setOnClickListener(this);
-		RelativeLayout mAvIn = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_av);
-		mAvIn.setOnClickListener(this);
 	}
 	
 	@Override
@@ -227,40 +207,17 @@ public class SettingActivity extends SlidingPreferenceActivity implements Prefer
 		mHandler.removeCallbacks(scanStorageRun);
 	}
 	@Override
-	public void onClick(View v) {
-		switch(v.getId()){
-		case R.id.menu_camera:
-			startActivity(new Intent(this, MainScene.class));
-			break;
-		case R.id.menu_audio:
-			startActivity(new Intent(this, AudioActivity.class));
-			break;
-		case R.id.menu_files:
-			startActivity(new Intent(this, FilesActivity.class));
-			break;
-		case R.id.menu_setting:
-			mainMenu.toggle();
-			break;
-		case R.id.menu_wireless:
-			startActivity(new Intent(this, A9TerminalActivity.class));
-			break;
-		case R.id.menu_av:
-//			startActivity(new Intent(this, AvInActivity.class));
-			break;
-		}
-	}
-	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		Intent intent;
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_CAMERA:
-			intent = new Intent(this, MainScene.class);
+			intent = new Intent(this, CameraActivity.class);
 			intent.putExtra(Constants.AUTO_VIDEO, false);
 			startActivity(intent);
 			break;
 			
 		case KeyEvent.KEYCODE_MEDIA_RECORD:
-			intent = new Intent(this, MainScene.class);
+			intent = new Intent(this, CameraActivity.class);
 			intent.putExtra(Constants.AUTO_VIDEO, true);
 			startActivity(intent);
 			break;
@@ -275,5 +232,14 @@ public class SettingActivity extends SlidingPreferenceActivity implements Prefer
 			break;
 		}
 		return super.onKeyDown(keyCode, event);
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()){
+		case android.R.id.home:
+			finish();
+			break;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 }

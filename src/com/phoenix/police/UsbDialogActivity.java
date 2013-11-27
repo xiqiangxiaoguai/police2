@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 public class UsbDialogActivity extends Activity{
         
+	private BroadcastReceiver mReceiver;
 	Handler mHandler = new Handler(){
 		public void handleMessage(android.os.Message msg) {
 			switch (msg.what){
@@ -60,7 +61,7 @@ public class UsbDialogActivity extends Activity{
                 
                 IntentFilter filter = new IntentFilter();
                 filter.addAction("android.hardware.usb.action.USB_STATE");
-                registerReceiver(new BroadcastReceiver() {
+                mReceiver = new BroadcastReceiver() {
 					
 					@Override
 					public void onReceive(Context context, Intent intent) {
@@ -73,6 +74,17 @@ public class UsbDialogActivity extends Activity{
 							}
 						}
 					}
-				}, filter);
+				};
+                registerReceiver(mReceiver, filter);
+        }
+        @Override
+        protected void onStop() {
+        	super.onStop();
+        	if(null != mReceiver){
+        		try {
+        			unregisterReceiver(mReceiver);
+				} catch (Exception e) {
+				}
+        	}
         }
 }

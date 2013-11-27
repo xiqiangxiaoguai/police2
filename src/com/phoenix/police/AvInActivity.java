@@ -10,17 +10,16 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.media.MediaRecorder;
 import android.media.ThumbnailUtils;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -44,15 +43,11 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.phoenix.data.Constants;
-import com.phoenix.lib.SlidingMenu;
-import com.phoenix.lib.SlidingMenu.OnClosedListener;
-import com.phoenix.lib.SlidingMenu.OnStartOpenListener;
-import com.phoenix.lib.app.SlidingActivity;
 import com.phoenix.online.A9TerminalActivity;
 import com.phoenix.setting.PhoenixMethod;
 import com.phoenix.setting.SettingActivity;
 
-public class AvInActivity extends SlidingActivity implements OnClickListener{
+public class AvInActivity extends Activity implements OnClickListener{
 	/** Called when the activity is first created. */
 	private static final String LOG_TAG = AvInActivity.class.getSimpleName();
 	private static final boolean LOG_SWITCH = Constants.LOG_SWITCH;
@@ -79,7 +74,6 @@ public class AvInActivity extends SlidingActivity implements OnClickListener{
 	private int MODE = Constants.MODE_CAMERA;
 	SharedPreferences sharedPreferences;
 	
-	SlidingMenu mainMenu = null;
 	LinearLayout bar_timer;
 	private int resolution = 0;
 	private int preRes = -1;
@@ -127,50 +121,6 @@ public class AvInActivity extends SlidingActivity implements OnClickListener{
 		timeCount = (TextView) findViewById(R.id.timeCount);
 		bar_timer.setVisibility(View.GONE);
 		
-		setBehindContentView(R.layout.main_menus);
-		
-		mainMenu = getSlidingMenu();
-		mainMenu.setMode(SlidingMenu.LEFT);
-		mainMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-		mainMenu.setShadowWidthRes(R.dimen.shadow_width);
-//        menu.setShadowDrawable(R.drawable.shadow);
-		mainMenu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
-		mainMenu.setFadeDegree(0.35f);
-		mainMenu.setDragEnabled(false);
-		
-		mainMenu.setOnStartOpenListener(new OnStartOpenListener() {
-			@Override
-			public void onStartOpen() {
-				onPause();
-			}
-		});
-		mainMenu.setOnClosedListener(new OnClosedListener() {
-			@Override
-			public void onClosed() {
-				if(null == mySurface){
-					onResume();
-				}
-			}
-		});
-		RelativeLayout mCameraMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_camera);
-		mCameraMenu.setOnClickListener(this);
-		RelativeLayout mAudioMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_audio);
-		mAudioMenu.setOnClickListener(this);
-		RelativeLayout mFilesMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_files);
-		mFilesMenu.setOnClickListener(this);
-		RelativeLayout mSettingMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_setting);
-		mSettingMenu.setOnClickListener(this);
-		RelativeLayout mWirelessMenu = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_wireless);
-		mWirelessMenu.setOnClickListener(this);
-		RelativeLayout mAvIn = (RelativeLayout) mainMenu.getMenu().findViewById(R.id.menu_av);
-		mAvIn.setOnClickListener(this);
-		if(getIntent() != null){
-			if(getIntent().getExtras()!= null){
-				if(getIntent().getExtras().getBoolean(Constants.AUTO_VIDEO, false)){
-					mHandler.sendEmptyMessageDelayed(3, 3000);
-				}
-			}
-		}
 	}
 	@Override
 	protected void onStop() {
@@ -254,6 +204,9 @@ public class AvInActivity extends SlidingActivity implements OnClickListener{
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()){
+		case R.id.main_menu:
+			finish();
+			break;
 		case  R.id.preview:
 			if(null != previewImagePath){
 				if (LOG_SWITCH) {
@@ -297,29 +250,6 @@ public class AvInActivity extends SlidingActivity implements OnClickListener{
 			}else{
 				setMode(Constants.MODE_CAMERA);
 			}
-			break;
-		case R.id.main_menu:
-			if(mVideoKeyLocked)
-				break;
-			mainMenu.toggle();
-			break;
-		case R.id.menu_camera:
-			startActivity(new Intent(this, MainScene.class));
-			break;
-		case R.id.menu_audio:
-			startActivity(new Intent(this, AudioActivity.class));
-			break;
-		case R.id.menu_files:
-			startActivity(new Intent(this, FilesActivity.class));
-			break;
-		case R.id.menu_setting:
-			startActivity(new Intent(this, SettingActivity.class));
-			break;
-		case R.id.menu_wireless:
-			startActivity(new Intent(this, A9TerminalActivity.class));
-			break;
-		case R.id.menu_av:
-			mainMenu.toggle();
 			break;
 		}
 	}
@@ -452,8 +382,7 @@ public class AvInActivity extends SlidingActivity implements OnClickListener{
 		}
 		resolution = Integer.parseInt(sharedPreferences.getString("setting_function_resolution", "0"));
 		police_num = sharedPreferences.getString(Constants.SHARED_POL_NUM, Constants.SHARED_POL_NUM_DEF);
-		cPath = Constants.getVideoPath() + Constants.VIDEO_NAME_HEAD + police_num + "_" + dateFormat.format(new Date()) +".mp4";
-
+		cPath = Constants.getVideoPath() + Constants.VIDEO_NAME_HEAD + PhoenixMethod.getDeviceID() + "_" + PhoenixMethod.getPoliceId() + "_" + dateFormat.format(new Date()) +".mp4";
 		Camera mCamera = mySurface.getCamera();
 		SurfaceHolder surfaceHolder = mySurface.getHolder();
 		mrec = new MediaRecorder();  // Works well
@@ -637,7 +566,6 @@ public class AvInActivity extends SlidingActivity implements OnClickListener{
                 startRecording();
 				startTimer();
 				mVideoKeyLocked = true;
-				mainMenu.setSlidingEnabled(!mVideoKeyLocked);
             } catch (Exception e) {
                 mrec.release();
 				stopTimer();
@@ -666,7 +594,6 @@ public class AvInActivity extends SlidingActivity implements OnClickListener{
             bar_timer.setVisibility(View.GONE);
 			stopTimer();
 			mVideoKeyLocked = false;
-			mainMenu.setSlidingEnabled(!mVideoKeyLocked);
 			mState = STATE_IDLE;
 			PhoenixMethod.setVideoLed(false);
 		}
