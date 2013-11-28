@@ -52,7 +52,7 @@ public class Constants {
 	
 	public static final String DEVICE_NAME = "Phenix手持终端";
 	public static final String ANDROID_VERSION = "Android 4.1";
-	public static final String VERSION = "V0.3.0";
+	public static final String VERSION = "V0.3.1";
 	
 	public static final int MODE_CAMERA = 0;
 	public static final int MODE_VIDEO = 1;
