@@ -245,6 +245,7 @@ public class AudioFragment extends Fragment{
 						}
 					});
 					try {
+						((ImageView)grid.getChildAt(mCurrentPlayPos- grid.getFirstVisiblePosition() + grid.getHeaderViewsCount()).findViewById(R.id.audio_control)).setImageResource(R.drawable.start);
 						ImageView audioControl = (ImageView) arg1.findViewById(R.id.audio_control);
 						audioControl.setImageDrawable(getResources().getDrawable(R.drawable.pause));
 						mediaPlayer.setDataSource( info.info_audioUrls.get(arg2));

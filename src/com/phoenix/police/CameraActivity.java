@@ -342,15 +342,7 @@ public class CameraActivity extends Activity implements OnClickListener{
 			}
 			break;
 		case R.id.flash_button:
-			if(cFlash){
-				PhoenixMethod.setFlashLed(false);
-				mFlashBtn.setImageResource(R.drawable.ic_flash_off_holo_light);
-				cFlash = false;
-			}else{
-				PhoenixMethod.setFlashLed(true);
-				mFlashBtn.setImageResource(R.drawable.ic_flash_on_holo_light);
-				cFlash = true;
-			}
+			cameraEvent();
 			break;
 		}
 	}

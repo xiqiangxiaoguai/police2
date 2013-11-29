@@ -221,7 +221,8 @@ public class AudioActivity extends Activity implements OnClickListener{
 	public void onClick(View v) {
 		switch(v.getId()){
 		case R.id.main_menu:
-			finish();
+			if(!mAudioLocked)
+				finish();
 			break;
 		}
 	}

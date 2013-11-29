@@ -103,8 +103,8 @@ public class CameraFragment extends Fragment implements OnItemClickListener{
 	}
 	public int getImages(){
 		File[] files = new File(Constants.getCameraPath()).listFiles();
-		if(files.length == 0){
-			return files.length;
+		if(null == files || files.length == 0){
+			return 0;
 		}
 		Arrays.sort(files, new Comparator<File>(){
 		    public int compare(File f1, File f2)

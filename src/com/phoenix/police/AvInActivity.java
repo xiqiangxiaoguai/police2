@@ -282,8 +282,12 @@ public class AvInActivity extends Activity implements OnClickListener{
 		if (LOG_SWITCH)
 			Log.d(LOG_TAG, "Start to save the bitmap.");
 		police_num = sharedPreferences.getString(Constants.SHARED_POL_NUM, Constants.SHARED_POL_NUM_DEF);
-		String path = cameraPath +Constants.CAMERA_NAME_HEAD + police_num + "_" + dateFormat.format(new Date())+".jpg";
-		
+		String path = "";
+		if(mVideoKeyLocked){
+			path = cameraPath +Constants.CAMERA_NAME_HEAD + PhoenixMethod.getDeviceID() + "_" + PhoenixMethod.getPoliceId() + "_" + dateFormat.format(new Date())+".jpg";
+		}else{
+			path = cameraPath +Constants.CAMERA_NAME_HEAD + PhoenixMethod.getDeviceID() + "_" + PhoenixMethod.getPoliceId() + "_" + PhoenixMethod.getPicTime()+".jpg";
+		}
 		try {
 			//if there is a sdcard
 			if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
